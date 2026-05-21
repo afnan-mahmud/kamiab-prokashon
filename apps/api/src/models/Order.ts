@@ -22,8 +22,8 @@ export interface ICustomerSnapshot {
   phone: string;
   name: string;
   address: string;
-  city: string;
-  area: string;
+  city?: string;
+  area?: string;
 }
 
 export interface ICourierInfo {
@@ -83,8 +83,8 @@ const customerSnapshotSchema = new Schema<ICustomerSnapshot>(
     phone: { type: String, required: true },
     name: { type: String, required: true },
     address: { type: String, required: true },
-    city: { type: String, required: true },
-    area: { type: String, required: true },
+    city: { type: String, default: '' },
+    area: { type: String, default: '' },
   },
   { _id: false },
 );
