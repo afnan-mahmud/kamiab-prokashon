@@ -3,6 +3,7 @@ import { Hind_Siliguri } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Providers } from '@/components/providers';
 import { PixelScript } from '@/components/pixel-script';
+import { ClarityScript } from '@/components/clarity-script';
 import './globals.css';
 
 const hindSiliguri = Hind_Siliguri({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="bn" className={hindSiliguri.variable}>
       <body>
         <PixelScript />
+        <ClarityScript />
         <Providers>
           {children}
         </Providers>

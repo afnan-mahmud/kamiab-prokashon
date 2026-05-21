@@ -256,8 +256,16 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f /root/.ssh/github_actions -N
 # Public key দেখো — এটা GitHub-এ দেবে
 cat /root/.ssh/github_actions.pub
 
+# Output example:
+# ssh-ed25519 AAAA...<your-public-key>... github-actions-deploy
+
 # Private key দেখো — এটা GitHub Secrets-এ দেবে
 cat /root/.ssh/github_actions
+
+# Output example:
+# -----BEGIN OPENSSH PRIVATE KEY-----
+# <your-private-key-content>
+# -----END OPENSSH PRIVATE KEY-----
 
 # VPS-এ authorized করো
 cat /root/.ssh/github_actions.pub >> /root/.ssh/authorized_keys
