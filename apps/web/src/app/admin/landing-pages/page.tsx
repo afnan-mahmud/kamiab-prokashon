@@ -124,14 +124,14 @@ export default function LandingPagesPage() {
                     variant="ghost"
                     className="h-7 gap-1 px-2 text-xs"
                     onClick={() => {
-                      void navigator.clipboard.writeText(`${siteUrl}/lp/${lp.slug}`);
+                      void navigator.clipboard.writeText(`${siteUrl}/step/${lp.slug}`);
                       toast.success('URL copied!');
                     }}
                   >
                     <Copy className="h-3 w-3" /> Copy URL
                   </Button>
                   <Button asChild size="sm" variant="ghost" className="h-7 px-2 text-xs">
-                    <Link href={`/lp/${lp.slug}`} target="_blank">
+                    <Link href={`/step/${lp.slug}`} target="_blank">
                       <Eye className="h-3 w-3 mr-1" /> Preview
                     </Link>
                   </Button>

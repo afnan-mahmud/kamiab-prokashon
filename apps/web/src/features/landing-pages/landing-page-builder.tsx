@@ -584,7 +584,7 @@ function SettingsStep({
         <div>
           <label className="text-sm font-medium">URL Slug</label>
           <div className="mt-1 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground shrink-0">yoursite.com/lp/</span>
+            <span className="text-sm text-muted-foreground shrink-0">yoursite.com/step/</span>
             <Input
               {...form.register('slug', { onChange: (e) => onChange({ name, slug: e.target.value, isActive }) })}
               placeholder="summer-rice"
@@ -604,7 +604,7 @@ function SettingsStep({
           >
             <div className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-5' : 'translate-x-0.5'}`} />
           </button>
-          <span className="text-xs text-muted-foreground">{isActive ? 'Public — visible on /lp/' + slug : 'Draft — not publicly accessible'}</span>
+          <span className="text-xs text-muted-foreground">{isActive ? 'Public — visible on /step/' + slug : 'Draft — not publicly accessible'}</span>
         </div>
       </div>
     </div>
