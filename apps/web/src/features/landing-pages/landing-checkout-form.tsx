@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react';
 import { landingPagesApi } from './landing-pages.api';
 import { shopApi } from '@/features/shop/shop.api';
 import type { Product } from '@cholonbil/types';
@@ -17,8 +17,8 @@ const checkoutSchema = z.object({
   phone: z.string().regex(/^01[3-9]\d{8}$/, 'Valid Bangladeshi phone required'),
   name: z.string().min(1, 'Name is required').trim(),
   address: z.string().min(5, 'Full address required').trim(),
-  city: z.string().min(1, 'City is required').trim(),
-  area: z.string().min(1, 'Area is required').trim(),
+  city: z.string().optional().default(''),
+  area: z.string().optional().default(''),
   deliveryLocation: z.enum(['inside_dhaka', 'outside_dhaka']),
   paymentMethod: z.enum(['cash', 'bkash', 'card']),
 });
@@ -158,8 +158,24 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
 
       {/* Quantity */}
       <div>
-        <label className="block text-sm font-medium mb-1.5">পরিমাণ (Quantity)</label>
-        <input type="number" min={1} max={50} {...form.register('quantity')} className={inputCls} style={{ focusRingColor: primaryColor } as React.CSSProperties} />
+        <label className="block text-sm font-medium mb-1.5">পরিমাণ</label>
+        <div className="flex items-center gap-0 rounded-lg border border-gray-300 overflow-hidden w-fit">
+          <button
+            type="button"
+            onClick={() => form.setValue('quantity', Math.max(1, quantity - 1))}
+            className="flex items-center justify-center w-10 h-10 text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+          <span className="w-12 text-center text-sm font-semibold select-none">{quantity}</span>
+          <button
+            type="button"
+            onClick={() => form.setValue('quantity', Math.min(50, quantity + 1))}
+            className="flex items-center justify-center w-10 h-10 text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Phone */}
@@ -183,18 +199,6 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
         {form.formState.errors.address && <p className={errorCls}>{form.formState.errors.address.message}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium mb-1.5">জেলা *</label>
-          <input type="text" placeholder="ঢাকা" {...form.register('city')} className={inputCls} />
-          {form.formState.errors.city && <p className={errorCls}>{form.formState.errors.city.message}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1.5">থানা/উপজেলা *</label>
-          <input type="text" placeholder="মিরপুর" {...form.register('area')} className={inputCls} />
-          {form.formState.errors.area && <p className={errorCls}>{form.formState.errors.area.message}</p>}
-        </div>
-      </div>
 
       {/* Delivery location */}
       <div>
@@ -221,22 +225,15 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       {/* Payment */}
       <div>
         <label className="block text-sm font-medium mb-1.5">পেমেন্ট পদ্ধতি</label>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { val: 'cash', label: 'ক্যাশ (COD)' },
-            { val: 'bkash', label: 'বিকাশ' },
-            { val: 'card', label: 'কার্ড' },
-          ].map((m) => (
-            <button
-              key={m.val}
-              type="button"
-              onClick={() => form.setValue('paymentMethod', m.val as 'cash' | 'bkash' | 'card')}
-              className={`rounded-lg border-2 p-2 text-xs text-center transition-all ${form.watch('paymentMethod') === m.val ? 'border-current font-semibold' : 'border-gray-200'}`}
-              style={form.watch('paymentMethod') === m.val ? { borderColor: primaryColor, backgroundColor: primaryColor + '10' } : {}}
-            >
-              {m.label}
-            </button>
-          ))}
+        <div
+          className="flex items-center gap-2.5 rounded-lg border-2 px-4 py-3"
+          style={{ borderColor: primaryColor, backgroundColor: primaryColor + '10' }}
+        >
+          <span className="text-lg">💵</span>
+          <div>
+            <p className="text-sm font-bold" style={{ color: primaryColor }}>ক্যাশ অন ডেলিভারি</p>
+            <p className="text-xs text-gray-500">পণ্য পেয়ে টাকা দিন</p>
+          </div>
         </div>
       </div>
 

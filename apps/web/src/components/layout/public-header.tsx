@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart, Menu, X, Leaf } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/stores/cart.store';
 import { cn } from '@/lib/utils';
 
@@ -22,12 +23,8 @@ export function PublicHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-white/95 shadow-header backdrop-blur-sm">
       <div className="container-page flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-primary">
-          <Leaf className="h-6 w-6" />
-          <span className="text-lg leading-tight">
-            চলন বিল<br />
-            <span className="text-xs font-normal text-muted-foreground">অর্গানিক</span>
-          </span>
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.png" alt="Cholon Bil Organic" width={140} height={44} className="object-contain" priority />
         </Link>
 
         {/* Desktop nav */}
