@@ -288,6 +288,26 @@ const updateOrderSchema = z.object({
   discount: z.number().min(0).optional(),
   notes: z.string().optional(),
   statusNote: z.string().optional(),
+  customerSnapshot: z
+    .object({
+      name: z.string().min(1).optional(),
+      phone: z.string().min(1).optional(),
+      address: z.string().min(1).optional(),
+      city: z.string().optional(),
+      area: z.string().optional(),
+    })
+    .optional(),
+  deliveryLocation: z.enum(['inside_dhaka', 'outside_dhaka']).optional(),
+  items: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        variantId: z.string().min(1),
+        quantity: z.number().int().min(1),
+      }),
+    )
+    .min(1)
+    .optional(),
 });
 
 router.patch('/:id', requirePermission('orders.edit'), async (req, res, next) => {
@@ -350,6 +370,33 @@ router.patch('/:id', requirePermission('orders.edit'), async (req, res, next) =>
       order.total = order.subtotal + order.deliveryCharge - data.discount;
     }
     if (data.notes !== undefined) order.notes = data.notes;
+
+    if (data.customerSnapshot) {
+      const snap = data.customerSnapshot;
+      if (snap.name !== undefined) order.customerSnapshot.name = snap.name;
+      if (snap.phone !== undefined) order.customerSnapshot.phone = snap.phone;
+      if (snap.address !== undefined) order.customerSnapshot.address = snap.address;
+      if (snap.city !== undefined) order.customerSnapshot.city = snap.city;
+      if (snap.area !== undefined) order.customerSnapshot.area = snap.area;
+      order.markModified('customerSnapshot');
+    }
+
+    if (data.items) {
+      const orderItems = await buildOrderItems(data.items);
+      order.items = orderItems as typeof order.items;
+      order.subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
+      order.markModified('items');
+    }
+
+    if (data.deliveryLocation !== undefined) {
+      order.deliveryLocation = data.deliveryLocation;
+    }
+
+    if (data.items !== undefined || data.deliveryLocation !== undefined) {
+      const totalWeight = order.items.reduce((s, i) => s + i.weight * i.quantity, 0);
+      order.deliveryCharge = await calcDelivery(order.deliveryLocation, totalWeight);
+      order.total = order.subtotal + order.deliveryCharge - order.discount;
+    }
 
     await order.save();
     sendSuccess(res, order);

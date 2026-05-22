@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -42,6 +43,16 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [convertPhone, setConvertPhone] = useState('');
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const phone = searchParams.get('phone');
+    if (phone) {
+      setConvertPhone(phone);
+      setShowCreateModal(true);
+    }
+  }, [searchParams]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-orders', { page, search, statusFilter, paymentFilter }],
@@ -227,9 +238,11 @@ export default function OrdersPage() {
       {/* Manual create modal */}
       {showCreateModal && (
         <ManualOrderModal
-          onClose={() => setShowCreateModal(false)}
+          initialPhone={convertPhone || undefined}
+          onClose={() => { setShowCreateModal(false); setConvertPhone(''); }}
           onSuccess={() => {
             setShowCreateModal(false);
+            setConvertPhone('');
             void queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
           }}
         />

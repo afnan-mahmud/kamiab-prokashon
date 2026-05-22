@@ -14,6 +14,7 @@ import {
   Shield,
   UserCog,
   MessageSquare,
+  ShoppingCart,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag, permission: 'orders.view' },
+  { label: 'Abandoned Orders', href: '/admin/abandoned-orders', icon: ShoppingCart, permission: 'orders.view' },
   { label: 'Customers', href: '/admin/customers', icon: Users, permission: 'customers.view' },
   { label: 'Accounts', href: '/admin/accounts', icon: Wallet, permission: 'accounts.view' },
   { label: 'Products', href: '/admin/products', icon: Package, permission: 'products.view' },

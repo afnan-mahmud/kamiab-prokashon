@@ -8,17 +8,31 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
   ArrowLeft, Truck, RefreshCw, Loader2, User, MapPin, Package,
-  CreditCard, Clock,
+  CreditCard, Clock, Pencil, X, Check, Plus, Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Can } from '@/components/can';
 import { ordersApi } from '@/features/orders/orders.api';
+import { productsApi } from '@/features/products/products.api';
 import { ProcessReturnModal } from '@/features/stock/process-return-modal';
 import { cn } from '@/lib/utils';
 import type { OrderStatus } from '@cholonbil/types';
+import type { UpdateOrderInput } from '@/features/orders/orders.api';
+
+interface ItemDraft {
+  productId: string;
+  variantId: string;
+  productName: string;
+  variantLabel: string;
+  price: number;
+  quantity: number;
+}
 
 const ORDER_STATUSES: OrderStatus[] = [
   'Pending', 'Confirmed', 'Cancelled', 'Call not received', 'Fake order', 'Hand over to Courier', 'Returned',
@@ -39,10 +53,34 @@ export default function OrderDetailPage() {
   const queryClient = useQueryClient();
   const [returnOpen, setReturnOpen] = useState(false);
 
+  // Customer edit state
+  const [editCustomer, setEditCustomer] = useState(false);
+  const [customerDraft, setCustomerDraft] = useState({ name: '', phone: '' });
+
+  // Address edit state
+  const [editAddress, setEditAddress] = useState(false);
+  const [addressDraft, setAddressDraft] = useState({
+    address: '', city: '', area: '',
+    deliveryLocation: 'inside_dhaka' as 'inside_dhaka' | 'outside_dhaka',
+  });
+
+  // Items edit state
+  const [editItems, setEditItems] = useState(false);
+  const [itemsDraft, setItemsDraft] = useState<ItemDraft[]>([]);
+  const [newProductId, setNewProductId] = useState('');
+  const [newVariantId, setNewVariantId] = useState('');
+  const [newQty, setNewQty] = useState(1);
+
   const { data: order, isLoading } = useQuery({
     queryKey: ['admin-order', id],
     queryFn: () => ordersApi.get(id),
     enabled: !!id,
+  });
+
+  const { data: productsData } = useQuery({
+    queryKey: ['admin-products-order-edit'],
+    queryFn: () => productsApi.list({ limit: 200, isActive: true }),
+    enabled: editItems,
   });
 
   const updateMutation = useMutation({
@@ -51,6 +89,19 @@ export default function OrderDetailPage() {
       toast.success('Status updated');
       void queryClient.invalidateQueries({ queryKey: ['admin-order', id] });
       void queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const editMutation = useMutation({
+    mutationFn: (data: UpdateOrderInput) => ordersApi.update(id, data),
+    onSuccess: () => {
+      toast.success('Order updated');
+      void queryClient.invalidateQueries({ queryKey: ['admin-order', id] });
+      void queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      setEditCustomer(false);
+      setEditAddress(false);
+      setEditItems(false);
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -72,6 +123,71 @@ export default function OrderDetailPage() {
     },
     onError: (err: Error) => toast.error(err.message),
   });
+
+  function startEditCustomer() {
+    if (!order) return;
+    setCustomerDraft({ name: order.customerSnapshot.name, phone: order.customerSnapshot.phone });
+    setEditCustomer(true);
+  }
+
+  function startEditAddress() {
+    if (!order) return;
+    setAddressDraft({
+      address: order.customerSnapshot.address,
+      city: order.customerSnapshot.city,
+      area: order.customerSnapshot.area ?? '',
+      deliveryLocation: order.deliveryLocation,
+    });
+    setEditAddress(true);
+  }
+
+  function startEditItems() {
+    if (!order) return;
+    setItemsDraft(order.items.map(item => ({
+      productId: item.product,
+      variantId: item.variantId,
+      productName: item.productName,
+      variantLabel: item.variantLabel,
+      price: item.price,
+      quantity: item.quantity,
+    })));
+    setNewProductId('');
+    setNewVariantId('');
+    setNewQty(1);
+    setEditItems(true);
+  }
+
+  function addNewItem() {
+    if (!newProductId || !newVariantId || newQty < 1 || !productsData) return;
+    const product = productsData.data.find(p => p._id === newProductId);
+    if (!product) return;
+    const variant = product.variants.find(v => v._id === newVariantId);
+    if (!variant) return;
+
+    const existingIdx = itemsDraft.findIndex(
+      i => i.productId === newProductId && i.variantId === newVariantId,
+    );
+    if (existingIdx >= 0) {
+      setItemsDraft(prev => prev.map((item, idx) =>
+        idx === existingIdx ? { ...item, quantity: item.quantity + newQty } : item,
+      ));
+    } else {
+      setItemsDraft(prev => [...prev, {
+        productId: newProductId,
+        variantId: newVariantId,
+        productName: product.name,
+        variantLabel: variant.label,
+        price: variant.price,
+        quantity: newQty,
+      }]);
+    }
+    setNewProductId('');
+    setNewVariantId('');
+    setNewQty(1);
+  }
+
+  const selectedProduct = productsData?.data.find(p => p._id === newProductId);
+  const draftSubtotal = itemsDraft.reduce((s, i) => s + i.price * i.quantity, 0);
 
   if (isLoading) {
     return (
@@ -110,7 +226,6 @@ export default function OrderDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Status selector */}
           <Can permission="orders.edit">
             <Select
               value={order.status}
@@ -128,7 +243,6 @@ export default function OrderDetailPage() {
             </Select>
           </Can>
 
-          {/* Send to courier */}
           {order.status === 'Confirmed' && !order.courier?.consignmentId && (
             <Can permission="orders.send_to_courier">
               <Button
@@ -146,7 +260,6 @@ export default function OrderDetailPage() {
             </Can>
           )}
 
-          {/* Sync courier */}
           {order.courier?.consignmentId && (
             <Button
               size="sm"
@@ -159,7 +272,6 @@ export default function OrderDetailPage() {
             </Button>
           )}
 
-          {/* Process Return */}
           {order.status === 'Hand over to Courier' && (
             <Can permission="orders.edit">
               <Button
@@ -180,10 +292,20 @@ export default function OrderDetailPage() {
         <div className="space-y-5 lg:col-span-2">
           {/* Items */}
           <div className="rounded-xl border border-border bg-white shadow-sm">
-            <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-              <Package className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-semibold">Order Items</h2>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-muted-foreground" />
+                <h2 className="font-semibold">Order Items</h2>
+              </div>
+              {!editItems && (
+                <Can permission="orders.edit">
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={startEditItems}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                </Can>
+              )}
             </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -192,37 +314,169 @@ export default function OrderDetailPage() {
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead className="text-right">Qty</TableHead>
                   <TableHead className="text-right">Subtotal</TableHead>
+                  {editItems && <TableHead className="w-10" />}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.items.map((item, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-sm font-medium">{item.productName}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{item.variantLabel}</TableCell>
-                    <TableCell className="text-right text-sm">৳{item.price.toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-sm">{item.quantity}</TableCell>
-                    <TableCell className="text-right text-sm font-medium">৳{item.subtotal.toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
+                {editItems ? (
+                  itemsDraft.map((item, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="text-sm font-medium">{item.productName}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.variantLabel}</TableCell>
+                      <TableCell className="text-right text-sm">৳{item.price.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-sm">
+                        <Input
+                          type="number"
+                          min={1}
+                          value={item.quantity}
+                          onChange={e => setItemsDraft(prev => prev.map((d, idx) =>
+                            idx === i ? { ...d, quantity: Math.max(1, Number(e.target.value)) } : d,
+                          ))}
+                          className="h-7 w-16 text-right text-xs ml-auto"
+                        />
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-medium">
+                        ৳{(item.price * item.quantity).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => setItemsDraft(prev => prev.filter((_, idx) => idx !== i))}
+                          disabled={itemsDraft.length === 1}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  order.items.map((item, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="text-sm font-medium">{item.productName}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.variantLabel}</TableCell>
+                      <TableCell className="text-right text-sm">৳{item.price.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-sm">{item.quantity}</TableCell>
+                      <TableCell className="text-right text-sm font-medium">৳{item.subtotal.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
+
+            {/* Add product row (edit mode only) */}
+            {editItems && (
+              <div className="border-t border-border p-4">
+                <p className="mb-3 text-xs font-medium text-muted-foreground">Add Product</p>
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="flex-1 min-w-[160px]">
+                    <Select
+                      value={newProductId}
+                      onValueChange={v => { setNewProductId(v); setNewVariantId(''); }}
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="Select product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productsData?.data.map(p => (
+                          <SelectItem key={p._id} value={p._id} className="text-xs">{p.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-1 min-w-[130px]">
+                    <Select
+                      value={newVariantId}
+                      onValueChange={setNewVariantId}
+                      disabled={!selectedProduct}
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="Variant" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedProduct?.variants.map(v => (
+                          <SelectItem key={v._id} value={v._id} className="text-xs">
+                            {v.label} — ৳{v.price.toLocaleString()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={newQty}
+                    onChange={e => setNewQty(Math.max(1, Number(e.target.value)))}
+                    className="h-8 w-20 text-sm"
+                    placeholder="Qty"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={addNewItem}
+                    disabled={!newProductId || !newVariantId}
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Totals */}
             <div className="space-y-1.5 border-t border-border p-4 text-sm">
               <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal</span><span>৳{order.subtotal.toLocaleString()}</span>
+                <span>Subtotal</span>
+                <span>৳{(editItems ? draftSubtotal : order.subtotal).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Delivery ({order.deliveryLocation === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'})</span>
-                <span>৳{order.deliveryCharge.toLocaleString()}</span>
+                {editItems ? (
+                  <span className="text-xs italic">recalculated on save</span>
+                ) : (
+                  <span>৳{order.deliveryCharge.toLocaleString()}</span>
+                )}
               </div>
               {order.discount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span><span>−৳{order.discount.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
-                <span>Total</span><span className="text-primary">৳{order.total.toLocaleString()}</span>
-              </div>
+              {!editItems && (
+                <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
+                  <span>Total</span><span className="text-primary">৳{order.total.toLocaleString()}</span>
+                </div>
+              )}
             </div>
+
+            {/* Items edit actions */}
+            {editItems && (
+              <div className="flex gap-2 border-t border-border px-4 py-3">
+                <Button
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  onClick={() => editMutation.mutate({
+                    items: itemsDraft.map(i => ({ productId: i.productId, variantId: i.variantId, quantity: i.quantity })),
+                  })}
+                  disabled={editMutation.isPending || itemsDraft.length === 0}
+                >
+                  {editMutation.isPending
+                    ? <Loader2 className="h-3 w-3 animate-spin" />
+                    : <Check className="h-3 w-3" />}
+                  Save Items
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs gap-1"
+                  onClick={() => setEditItems(false)}
+                  disabled={editMutation.isPending}
+                >
+                  <X className="h-3 w-3" /> Cancel
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Status History */}
@@ -264,36 +518,176 @@ export default function OrderDetailPage() {
         <div className="space-y-5">
           {/* Customer */}
           <div className="rounded-xl border border-border bg-white shadow-sm">
-            <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-semibold">Customer</h2>
-            </div>
-            <div className="p-4 space-y-2 text-sm">
-              <p className="font-medium">{order.customerSnapshot.name}</p>
-              <p className="text-muted-foreground">{order.customerSnapshot.phone}</p>
-              {order.notes && (
-                <p className="mt-2 rounded-md bg-muted/40 p-2 text-xs italic text-muted-foreground">
-                  {order.notes}
-                </p>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <h2 className="font-semibold">Customer</h2>
+              </div>
+              {!editCustomer && (
+                <Can permission="orders.edit">
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={startEditCustomer}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                </Can>
               )}
             </div>
+            {editCustomer ? (
+              <div className="p-4 space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Name</Label>
+                  <Input
+                    value={customerDraft.name}
+                    onChange={e => setCustomerDraft(d => ({ ...d, name: e.target.value }))}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Phone</Label>
+                  <Input
+                    value={customerDraft.phone}
+                    onChange={e => setCustomerDraft(d => ({ ...d, phone: e.target.value }))}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => editMutation.mutate({ customerSnapshot: customerDraft })}
+                    disabled={editMutation.isPending || !customerDraft.name || !customerDraft.phone}
+                  >
+                    {editMutation.isPending
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <Check className="h-3 w-3" />}
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => setEditCustomer(false)}
+                    disabled={editMutation.isPending}
+                  >
+                    <X className="h-3 w-3" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 space-y-2 text-sm">
+                <p className="font-medium">{order.customerSnapshot.name}</p>
+                <p className="text-muted-foreground">{order.customerSnapshot.phone}</p>
+                {order.notes && (
+                  <p className="mt-2 rounded-md bg-muted/40 p-2 text-xs italic text-muted-foreground">
+                    {order.notes}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Delivery address */}
+          {/* Delivery Address */}
           <div className="rounded-xl border border-border bg-white shadow-sm">
-            <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-semibold">Delivery Address</h2>
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <h2 className="font-semibold">Delivery Address</h2>
+              </div>
+              {!editAddress && (
+                <Can permission="orders.edit">
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={startEditAddress}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                </Can>
+              )}
             </div>
-            <div className="p-4 text-sm space-y-1">
-              <p>{order.customerSnapshot.address}</p>
-              <p className="text-muted-foreground">
-                {order.customerSnapshot.area}, {order.customerSnapshot.city}
-              </p>
-              <Badge variant="outline" className="mt-2 text-xs">
-                {order.deliveryLocation === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}
-              </Badge>
-            </div>
+            {editAddress ? (
+              <div className="p-4 space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Address</Label>
+                  <Input
+                    value={addressDraft.address}
+                    onChange={e => setAddressDraft(d => ({ ...d, address: e.target.value }))}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Area</Label>
+                    <Input
+                      value={addressDraft.area}
+                      onChange={e => setAddressDraft(d => ({ ...d, area: e.target.value }))}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">City</Label>
+                    <Input
+                      value={addressDraft.city}
+                      onChange={e => setAddressDraft(d => ({ ...d, city: e.target.value }))}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Delivery Location</Label>
+                  <RadioGroup
+                    value={addressDraft.deliveryLocation}
+                    onValueChange={v => setAddressDraft(d => ({
+                      ...d, deliveryLocation: v as 'inside_dhaka' | 'outside_dhaka',
+                    }))}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <RadioGroupItem value="inside_dhaka" id="inside" className="h-3.5 w-3.5" />
+                      <Label htmlFor="inside" className="text-xs cursor-pointer">Inside Dhaka</Label>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <RadioGroupItem value="outside_dhaka" id="outside" className="h-3.5 w-3.5" />
+                      <Label htmlFor="outside" className="text-xs cursor-pointer">Outside Dhaka</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => editMutation.mutate({
+                      customerSnapshot: {
+                        address: addressDraft.address,
+                        city: addressDraft.city,
+                        area: addressDraft.area,
+                      },
+                      deliveryLocation: addressDraft.deliveryLocation,
+                    })}
+                    disabled={editMutation.isPending || !addressDraft.address || !addressDraft.city}
+                  >
+                    {editMutation.isPending
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <Check className="h-3 w-3" />}
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => setEditAddress(false)}
+                    disabled={editMutation.isPending}
+                  >
+                    <X className="h-3 w-3" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 text-sm space-y-1">
+                <p>{order.customerSnapshot.address}</p>
+                <p className="text-muted-foreground">
+                  {order.customerSnapshot.area}, {order.customerSnapshot.city}
+                </p>
+                <Badge variant="outline" className="mt-2 text-xs">
+                  {order.deliveryLocation === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}
+                </Badge>
+              </div>
+            )}
           </div>
 
           {/* Payment */}

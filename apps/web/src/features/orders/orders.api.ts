@@ -40,6 +40,15 @@ export interface UpdateOrderInput {
   paymentMethod?: string;
   discount?: number;
   notes?: string;
+  customerSnapshot?: {
+    name?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    area?: string;
+  };
+  deliveryLocation?: 'inside_dhaka' | 'outside_dhaka';
+  items?: ManualOrderItem[];
 }
 
 export const ordersApi = {

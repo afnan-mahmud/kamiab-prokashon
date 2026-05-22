@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCartStore } from '@/stores/cart.store';
 import { shopApi, type DeliveryCharges } from '@/features/shop/shop.api';
+import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
 import { formatPrice } from '@/lib/format';
 import { fireEvent } from '@/lib/pixel';
 
@@ -56,6 +57,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
+  const capturedPhone = useRef('');
 
   const { data: charges } = useQuery({
     queryKey: ['delivery-charges'],
@@ -106,6 +108,8 @@ export default function CheckoutPage() {
   // Phone lookup on blur
   const handlePhoneBlur = async (phone: string) => {
     if (!phone || phone.length < 11) return;
+    capturedPhone.current = phone;
+    void abandonedOrdersApi.upsert({ phone, source: 'checkout' });
     setLookupLoading(true);
     try {
       const customer = await shopApi.lookup(phone);
@@ -119,6 +123,16 @@ export default function CheckoutPage() {
     } finally {
       setLookupLoading(false);
     }
+  };
+
+  const handleNameBlur = (name: string) => {
+    if (!capturedPhone.current || !name.trim()) return;
+    void abandonedOrdersApi.upsert({ phone: capturedPhone.current, name: name.trim(), source: 'checkout' });
+  };
+
+  const handleAddressBlur = (address: string) => {
+    if (!capturedPhone.current || !address.trim()) return;
+    void abandonedOrdersApi.upsert({ phone: capturedPhone.current, address: address.trim(), source: 'checkout' });
   };
 
   const onSubmit = async (values: CheckoutForm) => {
@@ -140,6 +154,7 @@ export default function CheckoutPage() {
         })),
       });
       setOrderNumber(result.orderNumber);
+      void abandonedOrdersApi.remove(values.customerPhone);
       fireEvent(
         'Purchase',
         {
@@ -246,6 +261,7 @@ export default function CheckoutPage() {
                       id="customerName"
                       {...register('customerName')}
                       placeholder="পূর্ণ নাম লিখুন"
+                      onBlur={(e) => handleNameBlur(e.target.value)}
                     />
                     {errors.customerName && (
                       <p className="text-xs text-destructive">{errors.customerName.message}</p>
@@ -265,6 +281,7 @@ export default function CheckoutPage() {
                       {...register('address')}
                       rows={3}
                       placeholder="বাড়ি/ফ্ল্যাট নম্বর, রাস্তা, মহল্লা..."
+                      onBlur={(e) => handleAddressBlur(e.target.value)}
                     />
                     {errors.address && (
                       <p className="text-xs text-destructive">{errors.address.message}</p>

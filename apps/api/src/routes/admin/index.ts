@@ -13,6 +13,7 @@ import landingPagesRouter from './landing-pages.routes.js';
 import deliverySettingsRouter from './delivery-settings.routes.js';
 import smsSettingsRouter from './sms-settings.routes.js';
 import stockRouter from './stock.routes.js';
+import abandonedOrdersRouter from './abandoned-orders.routes.js';
 
 const router: Router = Router();
 
@@ -30,5 +31,6 @@ router.use('/landing-pages', landingPagesRouter);
 router.use('/delivery-settings', deliverySettingsRouter);
 router.use('/sms-settings', smsSettingsRouter);
 router.use('/stock', stockRouter);
+router.use('/abandoned-orders', abandonedOrdersRouter);
 
 export default router;

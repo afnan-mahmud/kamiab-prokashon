@@ -35,6 +35,7 @@ interface CartEntry {
 interface ModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  initialPhone?: string;
 }
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
@@ -72,7 +73,7 @@ function StepIndicator({ current }: { current: number }) {
 
 // ── Main modal ────────────────────────────────────────────────────────────────
 
-export function ManualOrderModal({ onClose, onSuccess }: ModalProps) {
+export function ManualOrderModal({ onClose, onSuccess, initialPhone }: ModalProps) {
   const [step, setStep] = useState(0);
   const [customerData, setCustomerData] = useState<z.infer<typeof customerSchema> | null>(null);
   const [cartItems, setCartItems] = useState<CartEntry[]>([]);
@@ -133,7 +134,7 @@ export function ManualOrderModal({ onClose, onSuccess }: ModalProps) {
 
         {step === 0 && (
           <CustomerStep
-            initial={customerData}
+            initial={customerData ?? (initialPhone ? { customerPhone: initialPhone, customerName: '', address: '', city: '', area: '' } : null)}
             lookupLoading={lookupLoading}
             setLookupLoading={setLookupLoading}
             onNext={(data) => { setCustomerData(data); setStep(1); }}

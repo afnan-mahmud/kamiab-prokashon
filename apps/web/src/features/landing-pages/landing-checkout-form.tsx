@@ -8,6 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react';
 import { landingPagesApi } from './landing-pages.api';
 import { shopApi } from '@/features/shop/shop.api';
+import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
 import type { Product } from '@cholonbil/types';
 import { fireEvent } from '@/lib/pixel';
 
@@ -36,6 +37,7 @@ interface Props {
 export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText = 'অর্ডার করুন', primaryColor = '#4a7c2e', accentColor = '#d97706' }: Props) {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const hasFiredCheckout = useRef(false);
+  const capturedPhone = useRef('');
 
   const { data: charges } = useQuery({
     queryKey: ['delivery-charges'],
@@ -75,6 +77,22 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
   const deliveryCharge = calcDeliveryCharge(deliveryLocation, totalWeightKg);
   const total = subtotal + deliveryCharge;
 
+  const handlePhoneBlur = (phone: string) => {
+    if (!/^01[3-9]\d{8}$/.test(phone)) return;
+    capturedPhone.current = phone;
+    void abandonedOrdersApi.upsert({ phone, source: 'landing_page', landingPageSlug: slug });
+  };
+
+  const handleNameBlur = (name: string) => {
+    if (!capturedPhone.current || !name.trim()) return;
+    void abandonedOrdersApi.upsert({ phone: capturedPhone.current, name: name.trim(), source: 'landing_page', landingPageSlug: slug });
+  };
+
+  const handleAddressBlur = (address: string) => {
+    if (!capturedPhone.current || !address.trim()) return;
+    void abandonedOrdersApi.upsert({ phone: capturedPhone.current, address: address.trim(), source: 'landing_page', landingPageSlug: slug });
+  };
+
   const handleFormFocus = () => {
     if (hasFiredCheckout.current) return;
     hasFiredCheckout.current = true;
@@ -95,6 +113,7 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
         quantity: Number(data.quantity),
       }),
     onSuccess: (res, data) => {
+      void abandonedOrdersApi.remove(data.phone);
       const variant = variants.find(
         (v) => String((v as { _id: string })._id ?? '') === data.variantId,
       );
@@ -181,21 +200,21 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       {/* Phone */}
       <div>
         <label className="block text-sm font-medium mb-1.5">মোবাইল নম্বর *</label>
-        <input type="tel" placeholder="01XXXXXXXXX" {...form.register('phone')} className={inputCls} />
+        <input type="tel" placeholder="01XXXXXXXXX" {...form.register('phone')} onBlur={(e) => handlePhoneBlur(e.target.value)} className={inputCls} />
         {form.formState.errors.phone && <p className={errorCls}>{form.formState.errors.phone.message}</p>}
       </div>
 
       {/* Name */}
       <div>
         <label className="block text-sm font-medium mb-1.5">নাম *</label>
-        <input type="text" placeholder="আপনার নাম" {...form.register('name')} className={inputCls} />
+        <input type="text" placeholder="আপনার নাম" {...form.register('name')} onBlur={(e) => handleNameBlur(e.target.value)} className={inputCls} />
         {form.formState.errors.name && <p className={errorCls}>{form.formState.errors.name.message}</p>}
       </div>
 
       {/* Address */}
       <div>
         <label className="block text-sm font-medium mb-1.5">ঠিকানা *</label>
-        <input type="text" placeholder="বাড়ি/রাস্তা/গ্রাম" {...form.register('address')} className={inputCls} />
+        <input type="text" placeholder="বাড়ি/রাস্তা/গ্রাম" {...form.register('address')} onBlur={(e) => handleAddressBlur(e.target.value)} className={inputCls} />
         {form.formState.errors.address && <p className={errorCls}>{form.formState.errors.address.message}</p>}
       </div>
 
