@@ -2,6 +2,7 @@
 
 import { Star, ShieldCheck, Truck, PhoneCall } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
+import { StickyOrderButton } from '../sticky-order-button';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@cholonbil/types';
 
@@ -323,29 +324,7 @@ export default function Template1({ page, product }: Props) {
         </div>
       </div>
 
-      {/* Sticky mobile CTA */}
-      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden p-3">
-        <a
-          href="#order"
-          className="flex items-center justify-center gap-2 w-full rounded-2xl py-4 text-base font-bold text-white shadow-2xl"
-          style={{ backgroundColor: accent }}
-        >
-          {content.ctaText}
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-            />
-          </svg>
-        </a>
-      </div>
+      <StickyOrderButton ctaText={content.ctaText} accentColor={accent} />
     </div>
   );
 }
