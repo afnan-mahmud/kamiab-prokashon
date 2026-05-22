@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
 import { User } from '../models/User.js';
 import { Role } from '../models/Role.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
@@ -14,17 +15,25 @@ const REFRESH_COOKIE = 'refresh_token';
 const COOKIE_OPTS = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: 'strict' as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
   ...(env.NODE_ENV === 'production' ? { domain: env.COOKIE_DOMAIN } : {}),
 };
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: { message: 'Too many login attempts, try again later', code: 'RATE_LIMITED' } },
+});
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
@@ -144,7 +153,7 @@ router.post('/logout', (_req, res) => {
   res.clearCookie(REFRESH_COOKIE, {
     httpOnly: true,
     secure: env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: 'strict',
     ...(env.NODE_ENV === 'production' ? { domain: env.COOKIE_DOMAIN } : {}),
   });
   sendSuccess(res, { message: 'Logged out' });

@@ -39,21 +39,12 @@ async function getCredentials(): Promise<{ baseUrl: string; apiKey: string; secr
     throw new SteadfastError('Steadfast is not active. Configure it in Delivery Settings.');
   }
 
-  let apiKey = '';
-  let secretKey = '';
-
-  try {
-    apiKey = settings.steadfast.apiKey ? decrypt(settings.steadfast.apiKey) : '';
-    secretKey = settings.steadfast.secretKey ? decrypt(settings.steadfast.secretKey) : '';
-  } catch {
-    logger.warn('Failed to decrypt Steadfast credentials — keys may not be encrypted yet');
-    apiKey = settings.steadfast.apiKey;
-    secretKey = settings.steadfast.secretKey;
-  }
-
-  if (!apiKey || !secretKey) {
+  if (!settings.steadfast.apiKey || !settings.steadfast.secretKey) {
     throw new SteadfastError('Steadfast API key and secret are not configured.');
   }
+
+  const apiKey = decrypt(settings.steadfast.apiKey);
+  const secretKey = decrypt(settings.steadfast.secretKey);
 
   return {
     baseUrl: settings.steadfast.baseUrl || env.STEADFAST_BASE_URL,

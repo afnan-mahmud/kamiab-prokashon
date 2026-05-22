@@ -8,6 +8,7 @@ import { Order } from '../../models/Order.js';
 import { DeliverySettings } from '../../models/DeliverySettings.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
 import { createSaleMovements, StockError } from '../../services/stock.service.js';
+import { nextOrderNumber } from '../../models/Counter.js';
 
 const router: Router = Router();
 
@@ -134,10 +135,7 @@ router.post('/', orderLimiter, async (req, res, next) => {
       { upsert: true, new: true },
     );
 
-    // Generate unique order number: CBO-YYYY-NNNN
-    const year = new Date().getFullYear();
-    const count = await Order.countDocuments({ orderNumber: new RegExp(`^CBO-${year}-`) });
-    const orderNumber = `CBO-${year}-${String(count + 1).padStart(4, '0')}`;
+    const orderNumber = await nextOrderNumber(new Date().getFullYear());
 
     // Create order
     const order = await Order.create({

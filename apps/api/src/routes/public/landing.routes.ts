@@ -4,10 +4,11 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import { LandingPage } from '../../models/LandingPage.js';
 import { Order } from '../../models/Order.js';
-import { Product } from '../../models/Product.js';
 import { Customer } from '../../models/Customer.js';
 import { DeliverySettings } from '../../models/DeliverySettings.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
+import { createSaleMovements, StockError } from '../../services/stock.service.js';
+import { nextOrderNumber } from '../../models/Counter.js';
 
 const router: Router = Router();
 
@@ -108,10 +109,7 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
       { upsert: true, new: true },
     );
 
-    // Order number
-    const year = new Date().getFullYear();
-    const count = await Order.countDocuments();
-    const orderNumber = `CBO-${year}-${String(count + 1).padStart(4, '0')}`;
+    const orderNumber = await nextOrderNumber(new Date().getFullYear());
 
     const order = await Order.create({
       orderNumber,
@@ -149,11 +147,30 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
       statusHistory: [{ status: 'Pending', changedBy: null, changedAt: new Date() }],
     });
 
-    // Decrement stock
-    await Product.findOneAndUpdate(
-      { _id: product._id, 'variants._id': variant._id },
-      { $inc: { 'variants.$.stock': -data.quantity } },
-    );
+    try {
+      await createSaleMovements([
+        {
+          productId: String(product._id),
+          variantId: String(variant._id),
+          qty: data.quantity,
+          productName: product.name,
+          variantLabel: variant.label,
+          orderId: String(order._id),
+          orderNumber: order.orderNumber,
+        },
+      ]);
+    } catch (stockErr) {
+      try {
+        await Order.deleteOne({ _id: order._id });
+      } catch (delErr) {
+        console.error(`Failed to delete orphaned order ${String(order._id)}:`, delErr);
+      }
+      if (stockErr instanceof StockError && stockErr.code === 'INSUFFICIENT_STOCK') {
+        sendError(res, (stockErr as StockError).message, 409, 'INSUFFICIENT_STOCK');
+        return;
+      }
+      throw stockErr;
+    }
 
     // Increment conversions (fire and forget)
     void LandingPage.findByIdAndUpdate(lp._id, { $inc: { conversions: 1 } });

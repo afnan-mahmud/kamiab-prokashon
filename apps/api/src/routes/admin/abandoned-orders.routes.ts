@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { AbandonedOrder } from '../../models/AbandonedOrder.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
+import { requirePermission } from '../../middleware/require-permission.js';
 
 const router: Router = Router();
 
 // GET /api/admin/abandoned-orders
-router.get('/', async (req, res, next) => {
+router.get('/', requirePermission('orders.view'), async (req, res, next) => {
   try {
     const page = Math.max(1, Number(req.query['page']) || 1);
     const limit = 20;
@@ -29,7 +30,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // PATCH /api/admin/abandoned-orders/:id/fake — toggle fake status
-router.patch('/:id/fake', async (req, res, next) => {
+router.patch('/:id/fake', requirePermission('orders.edit'), async (req, res, next) => {
   try {
     const record = await AbandonedOrder.findById(req.params['id']);
     if (!record) {
@@ -45,7 +46,7 @@ router.patch('/:id/fake', async (req, res, next) => {
 });
 
 // DELETE /api/admin/abandoned-orders/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requirePermission('orders.delete'), async (req, res, next) => {
   try {
     const deleted = await AbandonedOrder.findByIdAndDelete(req.params['id']);
     if (!deleted) {

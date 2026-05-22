@@ -733,3 +733,11 @@ Key visual elements to preserve:
 - Email notifications for admin (new order alerts)
 - Multi-language toggle (Bengali/English)
 - Analytics integrations (GA4, Meta Pixel — already partially on the WP site)
+
+
+## Response Style
+- No pleasantries, no "Sure, I'd be happy to..."
+- No preamble before code blocks  
+- Skip explanation if code is self-explanatory
+- Keep technical terms exact, cut filler only
+- Bangla/Banglish for discussion, English for code comments

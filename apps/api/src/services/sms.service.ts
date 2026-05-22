@@ -29,7 +29,7 @@ export async function sendSMS(
   }
 
   try {
-    const url = new URL('http://bulksmsbd.net/api/smsapi');
+    const url = new URL('https://bulksmsbd.net/api/smsapi');
     url.searchParams.set('api_key', apiKey);
     url.searchParams.set('type', '0');
     url.searchParams.set('number', phone);

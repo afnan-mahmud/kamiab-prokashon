@@ -11,21 +11,41 @@ import { sendSuccess, sendError, sendPaginated } from '../../utils/api-response.
 import { createSteadfastOrder, getSteadfastStatus, SteadfastError } from '../../services/steadfast.service.js';
 import { sendSMS, getSmsTemplate } from '../../services/sms.service.js';
 import { createSaleMovements, createMovement, StockError } from '../../services/stock.service.js';
+import { nextOrderNumber } from '../../models/Counter.js';
 import type { OrderStatus } from '@cholonbil/types';
 
 const router: Router = Router();
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+const VALID_STATUSES = ['Pending', 'Confirmed', 'Cancelled', 'Call not received', 'Fake order', 'Hand over to Courier', 'Returned'];
+const VALID_PAYMENT_METHODS = ['cash', 'bkash', 'card', 'steadfast'];
+const VALID_PAYMENT_STATUSES = ['pending', 'paid', 'failed'];
+const VALID_SOURCES = ['website', 'landing_page', 'manual'];
+const SORT_MAP: Record<string, string> = {
+  newest: '-createdAt',
+  oldest: 'createdAt',
+  total_desc: '-total',
+  total_asc: 'total',
+};
+
 function buildOrderFilter(query: Record<string, unknown>) {
   const filter: Record<string, unknown> = {};
-  if (query['status']) filter['status'] = query['status'];
-  if (query['paymentMethod']) filter['paymentMethod'] = query['paymentMethod'];
-  if (query['paymentStatus']) filter['paymentStatus'] = query['paymentStatus'];
-  if (query['source']) filter['source'] = query['source'];
+
+  const status = String(query['status'] ?? '');
+  if (status && VALID_STATUSES.includes(status)) filter['status'] = status;
+
+  const paymentMethod = String(query['paymentMethod'] ?? '');
+  if (paymentMethod && VALID_PAYMENT_METHODS.includes(paymentMethod)) filter['paymentMethod'] = paymentMethod;
+
+  const paymentStatus = String(query['paymentStatus'] ?? '');
+  if (paymentStatus && VALID_PAYMENT_STATUSES.includes(paymentStatus)) filter['paymentStatus'] = paymentStatus;
+
+  const source = String(query['source'] ?? '');
+  if (source && VALID_SOURCES.includes(source)) filter['source'] = source;
 
   if (query['search']) {
-    const s = String(query['search']);
+    const s = String(query['search']).slice(0, 100).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter['$or'] = [
       { orderNumber: { $regex: s, $options: 'i' } },
       { 'customerSnapshot.phone': { $regex: s, $options: 'i' } },
@@ -104,7 +124,7 @@ router.get('/', requirePermission('orders.view'), async (req, res, next) => {
     const limit = Math.min(100, Math.max(1, Number(req.query['limit'] ?? 20)));
     const skip = (page - 1) * limit;
     const filter = buildOrderFilter(req.query as Record<string, unknown>);
-    const sort = (req.query['sort'] as string) ?? '-createdAt';
+    const sort = SORT_MAP[String(req.query['sort'] ?? '')] ?? '-createdAt';
 
     const [orders, total] = await Promise.all([
       Order.find(filter).sort(sort).skip(skip).limit(limit).lean(),
@@ -211,9 +231,7 @@ router.post('/', requirePermission('orders.create'), async (req, res, next) => {
       { upsert: true, new: true },
     );
 
-    const year = new Date().getFullYear();
-    const count = await Order.countDocuments({ orderNumber: new RegExp(`^CBO-${year}-`) });
-    const orderNumber = `CBO-${year}-${String(count + 1).padStart(4, '0')}`;
+    const orderNumber = await nextOrderNumber(new Date().getFullYear());
 
     const order = await Order.create({
       orderNumber,
