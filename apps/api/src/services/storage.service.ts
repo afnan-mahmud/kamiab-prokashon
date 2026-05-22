@@ -33,14 +33,18 @@ function extFor(mimetype: string, originalName?: string): string {
 }
 
 function buildAbsoluteUrl(req: Request | undefined, relativePath: string): string {
+  // Prefer explicit PUBLIC_API_URL — reliable behind Nginx/proxies where
+  // req.protocol is always 'http' unless X-Forwarded-Proto is configured.
+  const configuredBase = process.env['PUBLIC_API_URL'];
+  if (configuredBase) {
+    return `${configuredBase.replace(/\/$/, '')}${relativePath}`;
+  }
   if (req) {
     const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol;
     const host = req.get('host');
     return `${proto}://${host}${relativePath}`;
   }
-  // Fallback for non-request contexts
-  const base = process.env['PUBLIC_API_URL'] ?? `http://localhost:${process.env['PORT'] ?? 4000}`;
-  return `${base.replace(/\/$/, '')}${relativePath}`;
+  return `http://localhost:${process.env['PORT'] ?? 4000}${relativePath}`;
 }
 
 export async function uploadImage(
