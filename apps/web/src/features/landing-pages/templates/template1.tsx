@@ -167,6 +167,7 @@ export default function Template1({ page, product }: Props) {
   const primary = content.colors?.primary ?? '#4a7c2e';
   const accent = content.colors?.accent ?? '#d97706';
   const bg = content.colors?.background ?? '#fefcf7';
+  const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
 
   return (
     <div
@@ -188,6 +189,14 @@ export default function Template1({ page, product }: Props) {
             src={fixImageUrl(content.heroImage.url)}
             alt="Hero"
             className="absolute inset-0 h-full w-full object-cover opacity-20"
+          />
+        )}
+        {/* Hero background (faded) */}
+        {content.heroImage?.url && (
+          <img
+            src={fixImageUrl(content.heroImage.url)}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-15"
           />
         )}
         {/* Decorative blobs */}
@@ -253,8 +262,8 @@ export default function Template1({ page, product }: Props) {
               </a>
             </div>
 
-            {/* Right: product image */}
-            {product.images?.[0] && (
+            {/* Right: hero/product image */}
+            {heroDisplayImage && (
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
                   <div
@@ -262,7 +271,7 @@ export default function Template1({ page, product }: Props) {
                     style={{ backgroundColor: accent }}
                   />
                   <img
-                    src={fixImageUrl(product.images[0].url)}
+                    src={fixImageUrl(heroDisplayImage)}
                     alt={product.name}
                     className="relative w-60 sm:w-72 lg:w-80 rounded-3xl shadow-2xl object-cover aspect-square"
                   />

@@ -166,6 +166,7 @@ export default function Template2({ page, product }: Props) {
   const primary = content.colors?.primary ?? '#1f2937';
   const accent = content.colors?.accent ?? '#d97706';
   const bg = content.colors?.background ?? '#ffffff';
+  const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
 
   return (
     <div
@@ -182,15 +183,15 @@ export default function Template2({ page, product }: Props) {
       {/* Split hero */}
       <div className="mx-auto max-w-5xl px-4 py-10 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-2 items-center">
-          {/* Product image */}
-          {product.images?.[0] && (
+          {/* Hero/product image */}
+          {heroDisplayImage && (
             <div className="relative">
               <div
                 className="absolute -inset-4 rounded-3xl opacity-10 blur-xl"
                 style={{ backgroundColor: accent }}
               />
               <img
-                src={fixImageUrl(product.images[0].url)}
+                src={fixImageUrl(heroDisplayImage)}
                 alt={product.name}
                 className="relative w-full rounded-2xl object-cover aspect-square shadow-xl"
               />

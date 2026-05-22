@@ -34,6 +34,8 @@ export default function Template3({ page, product }: Props) {
       (s): s is Extract<ContentSection, { type: 'why_product' }> => s.type === 'why_product',
     )
     .flatMap((s) => s.items);
+  const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
+
   const whyUsItems = content.sections
     .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
     .flatMap((s) => s.items);
@@ -74,13 +76,13 @@ export default function Template3({ page, product }: Props) {
             🏆 সেরা মানের অর্গানিক পণ্য
           </span>
 
-          {/* Circular product image in hero */}
-          {product.images?.[0] && (
+          {/* Circular hero/product image */}
+          {heroDisplayImage && (
             <div className="flex justify-center py-2">
               <div className="relative inline-block">
                 <div className="absolute inset-0 rounded-full blur-2xl bg-white opacity-25 scale-125" />
                 <img
-                  src={fixImageUrl(product.images[0].url)}
+                  src={fixImageUrl(heroDisplayImage)}
                   alt={product.name}
                   className="relative w-32 sm:w-44 h-32 sm:h-44 rounded-full object-cover border-4 border-white/30 shadow-2xl"
                 />

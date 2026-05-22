@@ -38,12 +38,18 @@ export default function Template4({ page, product }: Props) {
     .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
     .flatMap((s) => s.items);
 
-  const allImages = [
-    ...product.images.slice(0, 4).map((img) => ({ url: img.url, alt: img.alt ?? product.name })),
-    ...extraImages
-      .slice(0, Math.max(0, 4 - product.images.length))
-      .map((img) => ({ url: img.url, alt: img.alt })),
-  ];
+  const productImgs = product.images.slice(0, 4).map((img) => ({
+    url: img.url,
+    alt: img.alt ?? product.name,
+  }));
+  const sectionImgs = extraImages
+    .slice(0, Math.max(0, 4 - productImgs.length))
+    .map((img) => ({ url: img.url, alt: img.alt }));
+  const heroFallback =
+    productImgs.length === 0 && content.heroImage?.url
+      ? [{ url: content.heroImage.url, alt: product.name }]
+      : [];
+  const allImages = [...heroFallback, ...productImgs, ...sectionImgs];
 
   return (
     <div
@@ -75,13 +81,6 @@ export default function Template4({ page, product }: Props) {
                 }`}
               />
             ))}
-            {allImages.length === 0 && product.images[0] && (
-              <img
-                src={fixImageUrl(product.images[0].url)}
-                alt={product.name}
-                className="col-span-2 w-full rounded-2xl object-cover aspect-video shadow-sm"
-              />
-            )}
           </div>
 
           {/* Right: info + form */}
