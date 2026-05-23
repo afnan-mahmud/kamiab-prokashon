@@ -321,7 +321,7 @@ function ProductsStep({
           />
         </div>
         {products.length > 0 && !selectedProduct && (
-          <div className="rounded-md border border-border bg-white shadow-md">
+          <div className="rounded-md border border-border bg-white shadow-md max-h-48 overflow-y-auto">
             {products.map((p) => (
               <button
                 key={p._id}

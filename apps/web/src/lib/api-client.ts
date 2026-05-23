@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/auth.store';
+import { queryClient } from './query-client';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -7,7 +8,15 @@ interface RequestOptions extends RequestInit {
 }
 
 function getToken(): string | null {
-  return useAuthStore.getState().accessToken;
+  // Zustand store is the fast path (already set after first load)
+  const storeToken = useAuthStore.getState().accessToken;
+  if (storeToken) return storeToken;
+
+  // On new-tab load, the refresh query resolves before useEffect sets the Zustand store.
+  // Children's queries fire before the parent's useEffect, so we read the token
+  // directly from the query cache as a fallback to avoid the race condition.
+  const cached = queryClient.getQueryData<{ accessToken: string; user: unknown }>(['auth', 'session']);
+  return cached?.accessToken ?? null;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {

@@ -43,7 +43,10 @@ const productSchema = z.object({
 
 function buildFilter(query: Record<string, unknown>) {
   const filter: Record<string, unknown> = { deletedAt: null };
-  if (query['search']) filter['$text'] = { $search: query['search'] };
+  if (query['search']) {
+    const escaped = String(query['search']).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    filter['name'] = { $regex: escaped, $options: 'i' };
+  }
   if (query['category']) filter['category'] = query['category'];
   if (query['isActive'] !== undefined) filter['isActive'] = query['isActive'] === 'true';
   return filter;
