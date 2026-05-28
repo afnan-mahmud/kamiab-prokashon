@@ -152,9 +152,10 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
         {
           productId: String(product._id),
           variantId: String(variant._id),
+          variantLabel: variant.label,
+          variantWeight: variant.weight,
           qty: data.quantity,
           productName: product.name,
-          variantLabel: variant.label,
           orderId: String(order._id),
           orderNumber: order.orderNumber,
         },

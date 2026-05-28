@@ -79,14 +79,22 @@ router.post('/', orderLimiter, async (req, res, next) => {
       });
     }
 
-    // Pre-check stock — fast read before any writes
+    // Pre-check stock — group by productId, check poolStock vs total kg needed
+    const kgNeededByProduct = new Map<string, number>();
     for (const item of data.items) {
       const product = productMap.get(item.productId);
       const variant = product?.variants.find((v) => String(v._id) === item.variantId);
-      if (variant && variant.stock < item.quantity) {
+      if (variant) {
+        const current = kgNeededByProduct.get(item.productId) ?? 0;
+        kgNeededByProduct.set(item.productId, current + variant.weight * item.quantity);
+      }
+    }
+    for (const [productId, totalKg] of kgNeededByProduct) {
+      const product = productMap.get(productId);
+      if (product && product.poolStock < totalKg) {
         sendError(
           res,
-          `স্টক শেষ — ${variant.label} (${variant.stock} টি আছে)`,
+          `স্টক শেষ — ${product.name} (${product.poolStock} কেজি আছে)`,
           409,
           'INSUFFICIENT_STOCK',
         );
@@ -172,9 +180,10 @@ router.post('/', orderLimiter, async (req, res, next) => {
         orderItems.map((item) => ({
           productId: String(item.product),
           variantId: String(item.variantId),
+          variantLabel: item.variantLabel,
+          variantWeight: item.weight,
           qty: item.quantity,
           productName: item.productName,
-          variantLabel: item.variantLabel,
           orderId: String(order._id),
           orderNumber: order.orderNumber,
         })),
