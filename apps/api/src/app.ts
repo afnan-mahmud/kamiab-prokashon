@@ -30,13 +30,33 @@ if (env.NODE_ENV !== 'test') {
   app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
-const limiter = rateLimit({
+// Public routes: moderate limit (customers browsing)
+const publicLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Admin routes: high limit (staff with multiple tabs)
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 2000,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Auth refresh: enough for many tabs refreshing simultaneously
+const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use('/api', limiter);
+
+app.use('/api/auth/refresh', refreshLimiter);
+app.use('/api/admin', adminLimiter);
+app.use('/api', publicLimiter);
 
 // Serve uploaded images from local disk
 app.use(
