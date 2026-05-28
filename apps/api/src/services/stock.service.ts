@@ -13,13 +13,16 @@ export class StockError extends Error {
 }
 
 export interface CreateMovementInput {
-  type: 'purchase' | 'adjustment';
+  type: 'purchase' | 'adjustment' | 'return_resalable' | 'return_damaged';
   productId: string;
+  variantId?: string; // required for return types (audit trail + weight lookup)
   qty: number;
   unitCost?: number;
   supplier?: string;
   purchaseDate?: Date;
   reference?: string;
+  orderId?: string;
+  orderNumber?: string;
   note?: string;
   createdBy?: string;
 }
@@ -32,7 +35,7 @@ export async function createMovement(input: CreateMovementInput): Promise<IStock
 
     const product = await Product.findOne(
       { _id: new mongoose.Types.ObjectId(input.productId), deletedAt: null },
-      { name: 1, poolStock: 1 },
+      { name: 1, poolStock: 1, variants: 1 },
     )
       .session(session)
       .lean();
@@ -41,29 +44,63 @@ export async function createMovement(input: CreateMovementInput): Promise<IStock
       throw new StockError('PRODUCT_NOT_FOUND', 'Product not found');
     }
 
-    const delta = input.type === 'adjustment' ? input.qty : Math.abs(input.qty);
+    let delta = 0;
+    let variantLabel = '';
+    let variantObjectId: import('mongoose').Types.ObjectId | null = null;
 
-    await Product.updateOne(
-      { _id: new mongoose.Types.ObjectId(input.productId) },
-      { $inc: { poolStock: delta } },
-      { session },
-    );
+    if (input.type === 'purchase') {
+      delta = Math.abs(input.qty);
+    } else if (input.type === 'adjustment') {
+      delta = input.qty;
+    } else if (input.type === 'return_resalable') {
+      const variant = input.variantId
+        ? product.variants.find((v) => String(v._id) === input.variantId)
+        : null;
+      const weight = variant?.weight ?? 0;
+      delta = Math.abs(input.qty) * weight;
+      variantLabel = variant?.label ?? '';
+      variantObjectId = input.variantId ? new mongoose.Types.ObjectId(input.variantId) : null;
+    } else {
+      // return_damaged — no poolStock change, just log
+      const variant = input.variantId
+        ? product.variants.find((v) => String(v._id) === input.variantId)
+        : null;
+      variantLabel = variant?.label ?? '';
+      variantObjectId = input.variantId ? new mongoose.Types.ObjectId(input.variantId) : null;
+    }
+
+    if (delta !== 0) {
+      await Product.updateOne(
+        { _id: new mongoose.Types.ObjectId(input.productId) },
+        { $inc: { poolStock: delta } },
+        { session },
+      );
+    }
+
+    const storedQty =
+      input.type === 'return_resalable'
+        ? delta
+        : input.type === 'return_damaged'
+          ? 0
+          : input.type === 'adjustment'
+            ? input.qty
+            : Math.abs(input.qty);
 
     const movements = await StockMovement.create(
       [
         {
           type: input.type,
           product: new mongoose.Types.ObjectId(input.productId),
-          variant: null,
-          qty: delta,
+          variant: variantObjectId,
+          qty: storedQty,
           productName: product.name,
-          variantLabel: '',
+          variantLabel,
           unitCost: input.unitCost ?? null,
           supplier: input.supplier ?? null,
           purchaseDate: input.purchaseDate ?? null,
           reference: input.reference ?? null,
-          orderId: null,
-          orderNumber: null,
+          orderId: input.orderId ? new mongoose.Types.ObjectId(input.orderId) : null,
+          orderNumber: input.orderNumber ?? null,
           note: input.note ?? '',
           createdBy: input.createdBy ? new mongoose.Types.ObjectId(input.createdBy) : null,
         },
