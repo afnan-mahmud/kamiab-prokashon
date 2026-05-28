@@ -58,7 +58,19 @@ const landingOrderSchema = z.object({
 router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
   try {
     const lp = await LandingPage.findOne({ slug: req.params['slug'], isActive: true })
-      .populate<{ product: { _id: mongoose.Types.ObjectId; name: string; variants: Array<{ _id: mongoose.Types.ObjectId; label: string; price: number; stock: number; weight: number }> } }>('product', 'name variants')
+      .populate<{
+        product: {
+          _id: mongoose.Types.ObjectId;
+          name: string;
+          poolStock: number;
+          variants: Array<{
+            _id: mongoose.Types.ObjectId;
+            label: string;
+            price: number;
+            weight: number;
+          }>;
+        };
+      }>('product', 'name poolStock variants')
       .lean();
 
     if (!lp) {
@@ -75,8 +87,8 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
       return;
     }
 
-    if (variant.stock < data.quantity) {
-      sendError(res, 'Insufficient stock', 400, 'OUT_OF_STOCK');
+    if (product.poolStock < variant.weight * data.quantity) {
+      sendError(res, 'স্টক শেষ', 409, 'INSUFFICIENT_STOCK');
       return;
     }
 
