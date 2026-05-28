@@ -60,6 +60,7 @@ export function AdjustStockModal({ open, onClose }: Props) {
       toast.success('Stock adjusted successfully');
       void queryClient.invalidateQueries({ queryKey: ['stock-summary'] });
       void queryClient.invalidateQueries({ queryKey: ['stock-movements'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       void queryClient.invalidateQueries({ queryKey: ['admin-products-all'] });
       form.reset();
       onClose();

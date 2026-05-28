@@ -204,7 +204,7 @@ function ProductStep({
                 </div>
                 <div className="text-right">
                   <p className="font-semibold">৳{v.price.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Stock: {v.stock}</p>
+                  <p className="text-xs text-muted-foreground">Weight: {v.weight} kg</p>
                 </div>
               </button>
             ))}

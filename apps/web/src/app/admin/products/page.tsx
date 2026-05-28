@@ -64,8 +64,6 @@ export default function ProductsPage() {
     return def ? `৳${def.price.toLocaleString()}` : '—';
   };
 
-  const totalStock = (p: Product) => p.variants.reduce((s, v) => s + v.stock, 0);
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -151,7 +149,6 @@ export default function ProductsPage() {
               key={product._id}
               product={product}
               defaultPrice={defaultPrice(product)}
-              totalStock={totalStock(product)}
               onDelete={() => setDeleteTarget(product)}
             />
           ))}
@@ -217,11 +214,10 @@ export default function ProductsPage() {
 interface ProductCardProps {
   product: Product;
   defaultPrice: string;
-  totalStock: number;
   onDelete: () => void;
 }
 
-function ProductCard({ product, defaultPrice, totalStock, onDelete }: ProductCardProps) {
+function ProductCard({ product, defaultPrice, onDelete }: ProductCardProps) {
   const mainImage = product.images[0];
 
   return (
@@ -276,7 +272,7 @@ function ProductCard({ product, defaultPrice, totalStock, onDelete }: ProductCar
         <div className="mt-2 flex items-center justify-between">
           <span className="text-sm font-semibold text-primary">{defaultPrice}</span>
           <span className="text-xs text-muted-foreground">
-            {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} · {totalStock} in stock
+            {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} · {product.poolStock} kg
           </span>
         </div>
       </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -47,10 +48,16 @@ export function AddStockModal({ open, onClose, prefillProductId }: Props) {
     resolver: zodResolver(schema),
     defaultValues: {
       productId: prefillProductId ?? '',
-      qty: 0,
+      qty: 1,
       note: '',
     },
   });
+
+  useEffect(() => {
+    if (open && prefillProductId) {
+      form.setValue('productId', prefillProductId);
+    }
+  }, [open, prefillProductId, form]);
 
   const mutation = useMutation({
     mutationFn: (values: FormValues) =>

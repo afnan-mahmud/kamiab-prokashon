@@ -221,7 +221,14 @@ export default function ProductDetailPage() {
                   </button>
                   <span className="w-8 text-center text-sm font-medium">{qty}</span>
                   <button
-                    onClick={() => setQty((q) => q + 1)}
+                    onClick={() =>
+                      setQty((q) => {
+                        const next = q + 1;
+                        return product && selectedVariant && product.poolStock >= selectedVariant.weight * next
+                          ? next
+                          : q;
+                      })
+                    }
                     className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted"
                   >
                     <Plus className="h-4 w-4" />
