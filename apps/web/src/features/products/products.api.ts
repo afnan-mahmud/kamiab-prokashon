@@ -14,7 +14,6 @@ export interface VariantInput {
   _id?: string;
   label: string;
   price: number;
-  stock: number;
   sku: string;
   weight: number;
   isDefault: boolean;
@@ -27,6 +26,8 @@ export interface ProductInput {
   category: string;
   images: ProductImage[];
   variants: VariantInput[];
+  poolStock?: number;
+  reorderPoint?: number;
   isActive: boolean;
 }
 
