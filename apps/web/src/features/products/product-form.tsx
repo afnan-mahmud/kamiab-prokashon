@@ -22,11 +22,9 @@ const variantSchema = z.object({
   _id: z.string().optional(),
   label: z.string().min(1, 'Label required'),
   price: z.coerce.number().min(0, 'Price must be ≥ 0'),
-  stock: z.coerce.number().int().min(0, 'Stock must be ≥ 0'),
   sku: z.string().default(''),
   weight: z.coerce.number().min(0, 'Weight must be ≥ 0'),
   isDefault: z.boolean(),
-  reorderPoint: z.coerce.number().int().min(0).default(0),
 });
 
 const productFormSchema = z.object({
@@ -43,6 +41,8 @@ const productFormSchema = z.object({
     .refine((vs) => vs.filter((v) => v.isDefault).length === 1, {
       message: 'Exactly one variant must be marked as default',
     }),
+  poolStock: z.coerce.number().min(0).default(0),
+  reorderPoint: z.coerce.number().min(0).default(0),
   isActive: z.boolean(),
 });
 
@@ -60,7 +60,7 @@ function toSlug(name: string): string {
 }
 
 function defaultVariant() {
-  return { label: '', price: 0, stock: 0, sku: '', weight: 0, isDefault: false, reorderPoint: 0 };
+  return { label: '', price: 0, sku: '', weight: 0, isDefault: false };
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -98,12 +98,12 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
             _id: v._id,
             label: v.label,
             price: v.price,
-            stock: v.stock,
             sku: v.sku,
             weight: v.weight,
             isDefault: v.isDefault,
-            reorderPoint: v.reorderPoint ?? 0,
           })),
+          poolStock: product.poolStock ?? 0,
+          reorderPoint: product.reorderPoint ?? 0,
           isActive: product.isActive,
         }
       : {
@@ -113,6 +113,8 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           category: '',
           images: [],
           variants: [{ ...defaultVariant(), isDefault: true }],
+          poolStock: 0,
+          reorderPoint: 0,
           isActive: true,
         },
   });
@@ -327,14 +329,6 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                       </p>
                     )}
                   </div>
-                  {product && (
-                    <div className="space-y-1.5">
-                      <Label className="text-xs">Current Stock</Label>
-                      <div className="flex h-8 items-center rounded-md border border-border bg-muted/40 px-3 text-sm text-muted-foreground">
-                        {variants[idx]?.stock ?? 0} units
-                      </div>
-                    </div>
-                  )}
                   <div className="space-y-1.5">
                     <Label className="text-xs">Weight (kg) *</Label>
                     <Input
@@ -359,21 +353,39 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                       className="h-8 text-sm"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Low Stock Alert</Label>
-                    <Input
-                      {...register(`variants.${idx}.reorderPoint`)}
-                      type="number"
-                      min={0}
-                      placeholder="0"
-                      className="h-8 text-sm"
-                      title="Low stock alert threshold. 0 = no alert."
-                    />
-                  </div>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label>Pool Stock (kg)</Label>
+            <Input
+              type="number"
+              min={0}
+              step="0.1"
+              {...register('poolStock')}
+            />
+            <p className="text-xs text-muted-foreground">Total kg available across all variants</p>
+            {errors.poolStock && (
+              <p className="text-xs text-destructive">{errors.poolStock.message}</p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label>Reorder Point (kg)</Label>
+            <Input
+              type="number"
+              min={0}
+              step="0.1"
+              {...register('reorderPoint')}
+            />
+            <p className="text-xs text-muted-foreground">Alert when stock falls below this</p>
+            {errors.reorderPoint && (
+              <p className="text-xs text-destructive">{errors.reorderPoint.message}</p>
+            )}
+          </div>
         </div>
       </section>
 
