@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,10 +17,8 @@ import { productsApi } from '@/features/products/products.api';
 
 const schema = z.object({
   productId: z.string().min(1, 'Select a product'),
-  variantId: z.string().min(1, 'Select a variant'),
   qty: z.coerce
     .number()
-    .int()
     .refine((n) => n !== 0, { message: 'Qty cannot be zero' }),
   note: z.string().min(1, 'Note is required'),
 });
@@ -35,7 +32,6 @@ interface Props {
 
 export function AdjustStockModal({ open, onClose }: Props) {
   const queryClient = useQueryClient();
-  const [selectedProductId, setSelectedProductId] = useState('');
 
   const { data: productsData } = useQuery({
     queryKey: ['admin-products-all'],
@@ -44,21 +40,19 @@ export function AdjustStockModal({ open, onClose }: Props) {
   });
 
   const products = productsData?.data ?? [];
-  const selectedProduct = products.find((p) => p._id === selectedProductId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { productId: '', variantId: '', qty: 0, note: '' },
+    defaultValues: { productId: '', qty: 0, note: '' },
   });
 
-  const watchedVariantId = form.watch('variantId');
-  const currentVariant = selectedProduct?.variants.find((v) => v._id === watchedVariantId);
+  const watchedProductId = form.watch('productId');
+  const currentProduct = products.find((p) => p._id === watchedProductId);
 
   const mutation = useMutation({
     mutationFn: (values: FormValues) =>
       stockApi.adjust({
         productId: values.productId,
-        variantId: values.variantId,
         qty: values.qty,
         note: values.note,
       }),
@@ -68,7 +62,6 @@ export function AdjustStockModal({ open, onClose }: Props) {
       void queryClient.invalidateQueries({ queryKey: ['stock-movements'] });
       void queryClient.invalidateQueries({ queryKey: ['admin-products-all'] });
       form.reset();
-      setSelectedProductId('');
       onClose();
     },
     onError: (err: Error) => toast.error(err.message),
@@ -88,11 +81,7 @@ export function AdjustStockModal({ open, onClose }: Props) {
             <Label>Product *</Label>
             <Select
               value={form.watch('productId')}
-              onValueChange={(v) => {
-                setSelectedProductId(v);
-                form.setValue('productId', v);
-                form.setValue('variantId', '');
-              }}
+              onValueChange={(v) => form.setValue('productId', v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a product" />
@@ -108,44 +97,21 @@ export function AdjustStockModal({ open, onClose }: Props) {
             )}
           </div>
 
-          {selectedProduct && (
-            <div className="space-y-1.5">
-              <Label>Variant *</Label>
-              <Select
-                value={form.watch('variantId')}
-                onValueChange={(v) => form.setValue('variantId', v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a variant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedProduct.variants.map((v) => (
-                    <SelectItem key={v._id} value={v._id}>
-                      {v.label} — Current Stock: {v.stock}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.formState.errors.variantId && (
-                <p className="text-xs text-destructive">{form.formState.errors.variantId.message}</p>
-              )}
-            </div>
-          )}
-
-          {currentVariant && (
+          {currentProduct && (
             <div className="rounded-lg bg-muted/40 px-3 py-2 text-sm">
-              Current stock:{' '}
-              <span className="font-bold">{currentVariant.stock} units</span>
+              Current pool stock:{' '}
+              <span className="font-bold">{currentProduct.poolStock} kg</span>
             </div>
           )}
 
           <div className="space-y-1.5">
             <Label>
-              Quantity Change *{' '}
+              Quantity Change (kg) *{' '}
               <span className="text-xs text-muted-foreground">(positive = add, negative = remove)</span>
             </Label>
             <Input
               type="number"
+              step="0.1"
               placeholder="+5 or -3"
               {...form.register('qty')}
             />

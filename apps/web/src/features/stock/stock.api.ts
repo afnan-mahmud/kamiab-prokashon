@@ -10,7 +10,6 @@ import type {
 export interface StockMovementFilters
   extends Record<string, string | number | boolean | undefined> {
   productId?: string;
-  variantId?: string;
   type?: string;
   from?: string;
   to?: string;

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,8 +16,7 @@ import { productsApi } from '@/features/products/products.api';
 
 const schema = z.object({
   productId: z.string().min(1, 'Select a product'),
-  variantId: z.string().min(1, 'Select a variant'),
-  qty: z.coerce.number().int().min(1, 'Qty must be at least 1'),
+  qty: z.coerce.number().min(0.001, 'Qty must be greater than 0'),
   unitCost: z.coerce.number().min(0).optional().or(z.literal('')).transform((v) => v === '' ? undefined : Number(v)),
   supplier: z.string().trim().optional(),
   purchaseDate: z.string().optional(),
@@ -32,12 +30,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   prefillProductId?: string;
-  prefillVariantId?: string;
 }
 
-export function AddStockModal({ open, onClose, prefillProductId, prefillVariantId }: Props) {
+export function AddStockModal({ open, onClose, prefillProductId }: Props) {
   const queryClient = useQueryClient();
-  const [selectedProductId, setSelectedProductId] = useState(prefillProductId ?? '');
 
   const { data: productsData } = useQuery({
     queryKey: ['admin-products-all'],
@@ -46,14 +42,12 @@ export function AddStockModal({ open, onClose, prefillProductId, prefillVariantI
   });
 
   const products = productsData?.data ?? [];
-  const selectedProduct = products.find((p) => p._id === selectedProductId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       productId: prefillProductId ?? '',
-      variantId: prefillVariantId ?? '',
-      qty: 1,
+      qty: 0,
       note: '',
     },
   });
@@ -62,7 +56,6 @@ export function AddStockModal({ open, onClose, prefillProductId, prefillVariantI
     mutationFn: (values: FormValues) =>
       stockApi.addStock({
         productId: values.productId,
-        variantId: values.variantId,
         qty: values.qty,
         unitCost: values.unitCost as number | undefined,
         supplier: values.supplier,
@@ -96,18 +89,16 @@ export function AddStockModal({ open, onClose, prefillProductId, prefillVariantI
             <Label>Product *</Label>
             <Select
               value={form.watch('productId')}
-              onValueChange={(v) => {
-                setSelectedProductId(v);
-                form.setValue('productId', v);
-                form.setValue('variantId', '');
-              }}
+              onValueChange={(v) => form.setValue('productId', v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a product" />
               </SelectTrigger>
               <SelectContent>
                 {products.map((p) => (
-                  <SelectItem key={p._id} value={p._id}>{p.name}</SelectItem>
+                  <SelectItem key={p._id} value={p._id}>
+                    {p.name} — {p.poolStock} kg in stock
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -116,34 +107,10 @@ export function AddStockModal({ open, onClose, prefillProductId, prefillVariantI
             )}
           </div>
 
-          {selectedProduct && (
-            <div className="space-y-1.5">
-              <Label>Variant *</Label>
-              <Select
-                value={form.watch('variantId')}
-                onValueChange={(v) => form.setValue('variantId', v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a variant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedProduct.variants.map((v) => (
-                    <SelectItem key={v._id} value={v._id}>
-                      {v.label} — Stock: {v.stock}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.formState.errors.variantId && (
-                <p className="text-xs text-destructive">{form.formState.errors.variantId.message}</p>
-              )}
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Quantity *</Label>
-              <Input type="number" min={1} {...form.register('qty')} />
+              <Label>Quantity (kg) *</Label>
+              <Input type="number" min={0.001} step="0.1" {...form.register('qty')} />
               {form.formState.errors.qty && (
                 <p className="text-xs text-destructive">{form.formState.errors.qty.message}</p>
               )}

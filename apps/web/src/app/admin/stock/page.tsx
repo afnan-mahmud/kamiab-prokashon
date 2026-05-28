@@ -37,7 +37,6 @@ export default function StockPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [prefillProductId, setPrefillProductId] = useState<string | undefined>();
-  const [prefillVariantId, setPrefillVariantId] = useState<string | undefined>();
   const [filters, setFilters] = useState<StockMovementFilters>({ page: 1, limit: 20 });
 
   const { data: summary } = useQuery({
@@ -55,9 +54,8 @@ export default function StockPage() {
   const movements = movementsData?.data ?? [];
   const pagination = movementsData?.pagination;
 
-  const handleAddFromLowStock = (productId: string, variantId: string) => {
+  const handleAddFromLowStock = (productId: string) => {
     setPrefillProductId(productId);
-    setPrefillVariantId(variantId);
     setAddOpen(true);
   };
 
@@ -69,9 +67,9 @@ export default function StockPage() {
           {summary && (
             <p className="text-sm text-muted-foreground">
               Today&apos;s movements: {summary.todayMovementCount}
-              {summary.lowStockVariants.length > 0 && (
+              {summary.lowStockProducts.length > 0 && (
                 <span className="ml-2 text-orange-600 font-medium">
-                  · {summary.lowStockVariants.length} low stock
+                  · {summary.lowStockProducts.length} low stock
                 </span>
               )}
             </p>
@@ -87,7 +85,6 @@ export default function StockPage() {
               size="sm"
               onClick={() => {
                 setPrefillProductId(undefined);
-                setPrefillVariantId(undefined);
                 setAddOpen(true);
               }}
             >
@@ -103,9 +100,9 @@ export default function StockPage() {
           <TabsTrigger value="low-stock" className="gap-1.5">
             <AlertTriangle className="h-3.5 w-3.5" />
             Low Stock
-            {(summary?.lowStockVariants.length ?? 0) > 0 && (
+            {(summary?.lowStockProducts.length ?? 0) > 0 && (
               <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[10px]">
-                {summary?.lowStockVariants.length}
+                {summary?.lowStockProducts.length}
               </Badge>
             )}
           </TabsTrigger>
@@ -114,7 +111,7 @@ export default function StockPage() {
 
         {/* Tab 1: Low Stock */}
         <TabsContent value="low-stock" className="mt-4">
-          {!summary?.lowStockVariants.length ? (
+          {!summary?.lowStockProducts.length ? (
             <div className="rounded-xl border border-border bg-white p-12 text-center shadow-sm">
               <p className="text-muted-foreground">All stock levels are healthy ✓</p>
             </div>
@@ -124,8 +121,7 @@ export default function StockPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Product</TableHead>
-                    <TableHead>Variant</TableHead>
-                    <TableHead className="text-right">Current Stock</TableHead>
+                    <TableHead className="text-right">Pool Stock</TableHead>
                     <TableHead className="text-right">Reorder Point</TableHead>
                     <Can permission="stock.edit">
                       <TableHead />
@@ -133,23 +129,22 @@ export default function StockPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {summary.lowStockVariants.map((v) => (
-                    <TableRow key={`${v.productId}-${v.variantId}`}>
-                      <TableCell className="font-medium">{v.productName}</TableCell>
-                      <TableCell className="text-muted-foreground">{v.variantLabel}</TableCell>
+                  {summary.lowStockProducts.map((p) => (
+                    <TableRow key={p.productId}>
+                      <TableCell className="font-medium">{p.productName}</TableCell>
                       <TableCell className="text-right">
-                        <span className={cn('font-bold', v.stock === 0 ? 'text-destructive' : 'text-orange-600')}>
-                          {v.stock}
+                        <span className={cn('font-bold', p.poolStock === 0 ? 'text-destructive' : 'text-orange-600')}>
+                          {p.poolStock} kg
                         </span>
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">{v.reorderPoint}</TableCell>
+                      <TableCell className="text-right text-muted-foreground">{p.reorderPoint} kg</TableCell>
                       <Can permission="stock.edit">
                         <TableCell className="text-right">
                           <Button
                             size="sm"
                             variant="outline"
                             className="h-7 text-xs"
-                            onClick={() => handleAddFromLowStock(v.productId, v.variantId)}
+                            onClick={() => handleAddFromLowStock(p.productId)}
                           >
                             <Plus className="mr-1 h-3 w-3" />
                             Add Stock
@@ -291,10 +286,8 @@ export default function StockPage() {
         onClose={() => {
           setAddOpen(false);
           setPrefillProductId(undefined);
-          setPrefillVariantId(undefined);
         }}
         prefillProductId={prefillProductId}
-        prefillVariantId={prefillVariantId}
       />
       <AdjustStockModal open={adjustOpen} onClose={() => setAdjustOpen(false)} />
     </div>
