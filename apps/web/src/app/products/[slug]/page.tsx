@@ -101,7 +101,9 @@ export default function ProductDetailPage() {
   }
 
   const activeImage = product.images[activeImageIdx];
-  const inStock = (selectedVariant?.stock ?? 0) > 0;
+  const inStock =
+    selectedVariant !== undefined &&
+    (product?.poolStock ?? 0) >= selectedVariant.weight * qty;
 
   return (
     <PublicLayout>
@@ -191,22 +193,16 @@ export default function ProductDetailPage() {
                         'rounded-full border px-4 py-2 text-sm font-medium transition-colors',
                         (selectedVariant?._id === v._id)
                           ? 'border-primary bg-primary text-white'
-                          : v.stock === 0
-                          ? 'border-border text-muted-foreground opacity-50 cursor-not-allowed'
                           : 'border-border hover:border-primary',
                       )}
-                      disabled={v.stock === 0}
                     >
                       {v.label}
-                      {v.stock === 0 && (
-                        <span className="ml-1 text-[10px]">(শেষ)</span>
-                      )}
                     </button>
                   ))}
                 </div>
                 {selectedVariant && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    স্টকে আছে: {selectedVariant.stock} টি
+                    ওজন: {selectedVariant.weight} কেজি
                   </p>
                 )}
               </div>
@@ -225,11 +221,7 @@ export default function ProductDetailPage() {
                   </button>
                   <span className="w-8 text-center text-sm font-medium">{qty}</span>
                   <button
-                    onClick={() =>
-                      setQty((q) =>
-                        Math.min(q + 1, selectedVariant?.stock ?? 99),
-                      )
-                    }
+                    onClick={() => setQty((q) => q + 1)}
                     className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted"
                   >
                     <Plus className="h-4 w-4" />
