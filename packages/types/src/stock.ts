@@ -9,7 +9,7 @@ export interface StockMovement {
   _id: string;
   type: StockMovementType;
   product: string;
-  variant: string;
+  variant: string | null;
   qty: number;
   productName: string;
   variantLabel: string;
@@ -25,12 +25,10 @@ export interface StockMovement {
 }
 
 export interface StockSummary {
-  lowStockVariants: Array<{
+  lowStockProducts: Array<{
     productId: string;
     productName: string;
-    variantId: string;
-    variantLabel: string;
-    stock: number;
+    poolStock: number;
     reorderPoint: number;
   }>;
   todayMovementCount: number;
@@ -38,7 +36,6 @@ export interface StockSummary {
 
 export interface AddStockInput {
   productId: string;
-  variantId: string;
   qty: number;
   unitCost?: number;
   supplier?: string;
@@ -49,7 +46,6 @@ export interface AddStockInput {
 
 export interface AdjustStockInput {
   productId: string;
-  variantId: string;
   qty: number;
   note: string;
 }

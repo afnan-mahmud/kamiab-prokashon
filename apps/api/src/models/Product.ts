@@ -9,11 +9,9 @@ export interface IProductImage {
 export interface IProductVariant {
   label: string;
   price: number;
-  stock: number;
   sku: string;
   weight: number;
   isDefault: boolean;
-  reorderPoint: number;
 }
 
 export interface IProduct extends Document {
@@ -23,6 +21,8 @@ export interface IProduct extends Document {
   images: IProductImage[];
   category: string;
   variants: (IProductVariant & { _id: import('mongoose').Types.ObjectId })[];
+  poolStock: number;
+  reorderPoint: number;
   isActive: boolean;
   totalSold: number;
   deletedAt: Date | null;
@@ -43,11 +43,9 @@ const variantSchema = new Schema<IProductVariant>(
   {
     label: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
-    stock: { type: Number, required: true, min: 0, default: 0 },
     sku: { type: String, trim: true, default: '' },
     weight: { type: Number, required: true, min: 0 },
     isDefault: { type: Boolean, default: false },
-    reorderPoint: { type: Number, min: 0, default: 0 },
   },
   { _id: true },
 );
@@ -68,6 +66,8 @@ const productSchema = new Schema<IProduct>(
         message: 'Product must have at least one variant with exactly one default',
       },
     },
+    poolStock: { type: Number, required: true, min: 0, default: 0 },
+    reorderPoint: { type: Number, min: 0, default: 0 },
     isActive: { type: Boolean, default: true },
     totalSold: { type: Number, default: 0 },
     deletedAt: { type: Date, default: null },

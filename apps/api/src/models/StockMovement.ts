@@ -4,7 +4,7 @@ import type { StockMovementType } from '@cholonbil/types';
 export interface IStockMovement extends Document {
   type: StockMovementType;
   product: Types.ObjectId;
-  variant: Types.ObjectId;
+  variant: Types.ObjectId | null;
   qty: number;
   productName: string;
   variantLabel: string;
@@ -27,10 +27,10 @@ const stockMovementSchema = new Schema<IStockMovement>(
       required: true,
     },
     product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    variant: { type: Schema.Types.ObjectId, required: true },
+    variant: { type: Schema.Types.ObjectId, default: null },
     qty: { type: Number, required: true },
     productName: { type: String, required: true },
-    variantLabel: { type: String, required: true },
+    variantLabel: { type: String, default: '' },
     unitCost: { type: Number, default: null },
     supplier: { type: String, default: null },
     purchaseDate: { type: Date, default: null },
@@ -43,7 +43,7 @@ const stockMovementSchema = new Schema<IStockMovement>(
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 
-stockMovementSchema.index({ product: 1, variant: 1, createdAt: -1 });
+stockMovementSchema.index({ product: 1, createdAt: -1 });
 stockMovementSchema.index({ orderId: 1 });
 stockMovementSchema.index({ type: 1, createdAt: -1 });
 

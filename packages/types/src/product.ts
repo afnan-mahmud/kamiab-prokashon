@@ -8,11 +8,9 @@ export interface ProductVariant {
   _id: string;
   label: string;
   price: number;
-  stock: number;
   sku: string;
   weight: number;
   isDefault: boolean;
-  reorderPoint: number;
 }
 
 export interface Product {
@@ -23,6 +21,8 @@ export interface Product {
   images: ProductImage[];
   category: string;
   variants: ProductVariant[];
+  poolStock: number;
+  reorderPoint: number;
   isActive: boolean;
   totalSold: number;
   deletedAt: string | null;
@@ -37,6 +37,8 @@ export interface CreateProductInput {
   images: ProductImage[];
   category: string;
   variants: Omit<ProductVariant, '_id'>[];
+  poolStock?: number;
+  reorderPoint?: number;
   isActive?: boolean;
 }
 
