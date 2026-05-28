@@ -13,21 +13,15 @@ const router: Router = Router();
 router.get('/summary', requirePermission('stock.view'), async (_req, res, next) => {
   try {
     const products = await Product.find({ deletedAt: null }).lean();
-    const lowStockVariants = [];
-    for (const product of products) {
-      for (const variant of product.variants) {
-        if (variant.reorderPoint > 0 && variant.stock <= variant.reorderPoint) {
-          lowStockVariants.push({
-            productId: String(product._id),
-            productName: product.name,
-            variantId: String(variant._id),
-            variantLabel: variant.label,
-            stock: variant.stock,
-            reorderPoint: variant.reorderPoint,
-          });
-        }
-      }
-    }
+
+    const lowStockProducts = products
+      .filter((p) => p.reorderPoint > 0 && p.poolStock <= p.reorderPoint)
+      .map((p) => ({
+        productId: String(p._id),
+        productName: p.name,
+        poolStock: p.poolStock,
+        reorderPoint: p.reorderPoint,
+      }));
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -35,7 +29,7 @@ router.get('/summary', requirePermission('stock.view'), async (_req, res, next) 
       createdAt: { $gte: today },
     });
 
-    sendSuccess(res, { lowStockVariants, todayMovementCount });
+    sendSuccess(res, { lowStockProducts, todayMovementCount });
   } catch (err) {
     next(err);
   }
@@ -44,7 +38,6 @@ router.get('/summary', requirePermission('stock.view'), async (_req, res, next) 
 // GET /api/admin/stock/movements
 const movementsQuerySchema = z.object({
   productId: z.string().optional(),
-  variantId: z.string().optional(),
   type: z.enum(['purchase', 'sale', 'return_resalable', 'return_damaged', 'adjustment']).optional(),
   from: z.string().optional(),
   to: z.string().optional(),
@@ -60,9 +53,6 @@ router.get('/movements', requirePermission('stock.view'), async (req, res, next)
     const filter: Record<string, unknown> = {};
     if (query.productId) {
       filter['product'] = new mongoose.Types.ObjectId(query.productId);
-    }
-    if (query.variantId) {
-      filter['variant'] = new mongoose.Types.ObjectId(query.variantId);
     }
     if (query.type) filter['type'] = query.type;
     if (query.from || query.to) {
@@ -98,11 +88,10 @@ router.get('/movements', requirePermission('stock.view'), async (req, res, next)
   }
 });
 
-// POST /api/admin/stock/movements — purchase receipt
+// POST /api/admin/stock/movements — purchase receipt (product-level, qty in kg)
 const addStockSchema = z.object({
   productId: z.string().min(1),
-  variantId: z.string().min(1),
-  qty: z.number().int().min(1, 'Qty must be at least 1'),
+  qty: z.number().min(0.001, 'Qty must be greater than 0'),
   unitCost: z.number().min(0).optional(),
   supplier: z.string().trim().optional(),
   purchaseDate: z
@@ -119,7 +108,6 @@ router.post('/movements', requirePermission('stock.edit'), async (req, res, next
     const movement = await createMovement({
       type: 'purchase',
       productId: data.productId,
-      variantId: data.variantId,
       qty: data.qty,
       unitCost: data.unitCost,
       supplier: data.supplier,
@@ -138,13 +126,11 @@ router.post('/movements', requirePermission('stock.edit'), async (req, res, next
   }
 });
 
-// POST /api/admin/stock/adjust — manual adjustment
+// POST /api/admin/stock/adjust — manual adjustment (product-level, qty in kg, can be negative)
 const adjustStockSchema = z.object({
   productId: z.string().min(1),
-  variantId: z.string().min(1),
   qty: z
     .number()
-    .int()
     .refine((n) => n !== 0, { message: 'Qty cannot be zero' }),
   note: z.string().min(1, 'Note is required for adjustments'),
 });
@@ -155,7 +141,6 @@ router.post('/adjust', requirePermission('stock.edit'), async (req, res, next) =
     const movement = await createMovement({
       type: 'adjustment',
       productId: data.productId,
-      variantId: data.variantId,
       qty: data.qty,
       note: data.note,
       createdBy: req.user?._id ? String(req.user._id) : undefined,
