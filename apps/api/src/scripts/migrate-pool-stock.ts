@@ -3,6 +3,12 @@ import mongoose from 'mongoose';
 import { env } from '../config/env.js';
 import { Product } from '../models/Product.js';
 
+type LegacyVariant = {
+  stock?: number;
+  reorderPoint?: number;
+  weight?: number;
+};
+
 async function migrate() {
   console.info('🔄 Connecting to MongoDB...');
   await mongoose.connect(env.MONGODB_URI);
@@ -15,24 +21,26 @@ async function migrate() {
   console.info(`\n📦 Found ${products.length} products (including deleted). Migrating...\n`);
 
   for (const product of products) {
+    const legacyVariants = product.variants as unknown as LegacyVariant[];
+
     // poolStock = sum of (variant.stock × variant.weight) across all variants
     // This converts existing per-variant unit counts into kg
     // Round to 3 decimal places (gram precision) to avoid floating-point accumulation errors
     const poolStockKg = Math.round(
-      product.variants.reduce((sum, v) => sum + (v.stock ?? 0) * (v.weight ?? 0), 0) * 1000,
+      legacyVariants.reduce((sum, v) => sum + (v.stock ?? 0) * (v.weight ?? 0), 0) * 1000,
     ) / 1000;
 
     // reorderPoint = max of (variant.reorderPoint × variant.weight) — most conservative
     // Round to 3 decimal places for consistency
     const reorderPoint = Math.round(
-      product.variants.reduce(
+      legacyVariants.reduce(
         (max, v) => Math.max(max, (v.reorderPoint ?? 0) * (v.weight ?? 0)),
         0,
       ) * 1000,
     ) / 1000;
 
     // Warn for zero-weight variants with stock > 0
-    const zeroWeightWithStock = product.variants.filter(
+    const zeroWeightWithStock = legacyVariants.filter(
       (v) => (v.weight ?? 0) === 0 && (v.stock ?? 0) > 0,
     );
     if (zeroWeightWithStock.length > 0) {

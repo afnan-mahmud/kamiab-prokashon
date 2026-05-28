@@ -67,7 +67,7 @@ const productSchema = new Schema<IProduct>(
       },
     },
     poolStock: { type: Number, required: true, min: 0, default: 0 },
-    reorderPoint: { type: Number, min: 0, default: 0 },
+    reorderPoint: { type: Number, required: true, min: 0, default: 0 },
     isActive: { type: Boolean, default: true },
     totalSold: { type: Number, default: 0 },
     deletedAt: { type: Date, default: null },
