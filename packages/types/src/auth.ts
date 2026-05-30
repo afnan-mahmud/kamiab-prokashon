@@ -5,6 +5,7 @@ export type Permission =
   | 'orders.edit'
   | 'orders.delete'
   | 'orders.send_to_courier'
+  | 'orders.fraud_check'
   | 'customers.view'
   | 'customers.edit'
   | 'customers.delete'

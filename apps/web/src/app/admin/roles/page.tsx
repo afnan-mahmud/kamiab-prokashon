@@ -37,7 +37,7 @@ const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] = [
   { label: 'Dashboard', permissions: ['dashboard.view'] },
   {
     label: 'Orders',
-    permissions: ['orders.view', 'orders.create', 'orders.edit', 'orders.delete', 'orders.send_to_courier'],
+    permissions: ['orders.view', 'orders.create', 'orders.edit', 'orders.delete', 'orders.send_to_courier', 'orders.fraud_check'],
   },
   { label: 'Customers', permissions: ['customers.view', 'customers.edit', 'customers.delete'] },
   {
@@ -55,7 +55,7 @@ const PERMISSION_GROUPS: { label: string; permissions: Permission[] }[] = [
 const PERMISSION_LABELS: Record<string, string> = {
   'dashboard.view': 'View',
   'orders.view': 'View', 'orders.create': 'Create', 'orders.edit': 'Edit',
-  'orders.delete': 'Delete', 'orders.send_to_courier': 'Send to Courier',
+  'orders.delete': 'Delete', 'orders.send_to_courier': 'Send to Courier', 'orders.fraud_check': 'Fraud Check',
   'customers.view': 'View', 'customers.edit': 'Edit', 'customers.delete': 'Delete',
   'accounts.view': 'View', 'accounts.income.view': 'Income', 'accounts.expense.view': 'Expense',
   'accounts.expense.create': 'Add Expense',

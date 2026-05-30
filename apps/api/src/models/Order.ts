@@ -34,6 +34,27 @@ export interface ICourierInfo {
   rawResponse?: Record<string, unknown>;
 }
 
+export interface IFraudCourierBreakdown {
+  name: string;
+  total: number;
+  delivered: number;
+  cancelled: number;
+  ratio: number;
+}
+
+export interface IFraudReport {
+  phone: string;
+  totalOrders: number;
+  delivered: number;
+  cancelled: number;
+  successRatio: number;
+  signal: 'green' | 'yellow' | 'red';
+  isNewCustomer: boolean;
+  couriers: IFraudCourierBreakdown[];
+  checkedAt: Date;
+  checkedBy: Types.ObjectId | null;
+}
+
 export interface IStatusHistory {
   status: OrderStatus;
   changedBy: Types.ObjectId | null;
@@ -57,6 +78,7 @@ export interface IOrder extends Document {
   source: OrderSource;
   landingPage?: Types.ObjectId;
   courier: ICourierInfo;
+  fraud?: IFraudReport;
   notes: string;
   createdBy: Types.ObjectId | null;
   statusHistory: IStatusHistory[];
@@ -96,6 +118,33 @@ const courierInfoSchema = new Schema<ICourierInfo>(
     status: String,
     lastSyncedAt: Date,
     rawResponse: { type: Schema.Types.Mixed },
+  },
+  { _id: false },
+);
+
+const fraudCourierBreakdownSchema = new Schema<IFraudCourierBreakdown>(
+  {
+    name: { type: String, required: true },
+    total: { type: Number, default: 0 },
+    delivered: { type: Number, default: 0 },
+    cancelled: { type: Number, default: 0 },
+    ratio: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
+const fraudReportSchema = new Schema<IFraudReport>(
+  {
+    phone: { type: String, required: true },
+    totalOrders: { type: Number, default: 0 },
+    delivered: { type: Number, default: 0 },
+    cancelled: { type: Number, default: 0 },
+    successRatio: { type: Number, default: 0 },
+    signal: { type: String, enum: ['green', 'yellow', 'red'], required: true },
+    isNewCustomer: { type: Boolean, default: false },
+    couriers: { type: [fraudCourierBreakdownSchema], default: [] },
+    checkedAt: { type: Date, default: Date.now },
+    checkedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
   },
   { _id: false },
 );
@@ -155,6 +204,7 @@ const orderSchema = new Schema<IOrder>(
     },
     landingPage: { type: Schema.Types.ObjectId, ref: 'LandingPage' },
     courier: { type: courierInfoSchema, default: () => ({}) },
+    fraud: { type: fraudReportSchema, default: undefined },
     notes: { type: String, default: '' },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     statusHistory: [statusHistorySchema],

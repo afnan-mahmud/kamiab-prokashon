@@ -9,6 +9,7 @@ import { Transaction } from '../../models/Transaction.js';
 import { requirePermission } from '../../middleware/require-permission.js';
 import { sendSuccess, sendError, sendPaginated } from '../../utils/api-response.js';
 import { createSteadfastOrder, getSteadfastStatus, SteadfastError } from '../../services/steadfast.service.js';
+import { checkFraud, FraudCheckError } from '../../services/fraud.service.js';
 import { sendSMS, getSmsTemplate } from '../../services/sms.service.js';
 import { createSaleMovements, createMovement, StockError } from '../../services/stock.service.js';
 import { nextOrderNumber } from '../../models/Counter.js';
@@ -594,6 +595,39 @@ router.post('/:id/return', requirePermission('orders.edit'), async (req, res, ne
 
     sendSuccess(res, order);
   } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/admin/orders/:id/fraud-check — check customer courier history
+router.post('/:id/fraud-check', requirePermission('orders.fraud_check'), async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params['id']);
+    if (!order) {
+      sendError(res, 'Order not found', 404, 'NOT_FOUND');
+      return;
+    }
+
+    const phone = order.customerSnapshot?.phone;
+    if (!phone) {
+      sendError(res, 'Order has no customer phone to check', 400, 'BAD_REQUEST');
+      return;
+    }
+
+    const report = await checkFraud(phone);
+    order.fraud = {
+      ...report,
+      checkedAt: new Date(report.checkedAt),
+      checkedBy: req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null,
+    };
+    await order.save();
+
+    sendSuccess(res, order.fraud);
+  } catch (err) {
+    if (err instanceof FraudCheckError) {
+      sendError(res, err.message, 502, 'FRAUD_CHECK_ERROR');
+      return;
+    }
     next(err);
   }
 });

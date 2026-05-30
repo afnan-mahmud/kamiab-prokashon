@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
   ArrowLeft, Truck, RefreshCw, Loader2, User, MapPin, Package,
-  CreditCard, Clock, Pencil, X, Check, Plus, Trash2,
+  CreditCard, Clock, Pencil, X, Check, Plus, Trash2, ShieldCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +37,12 @@ interface ItemDraft {
 const ORDER_STATUSES: OrderStatus[] = [
   'Pending', 'Confirmed', 'Cancelled', 'Call not received', 'Fake order', 'Hand over to Courier', 'Returned',
 ];
+
+const FRAUD_SIGNAL_CONFIG: Record<string, { label: string; badge: string; bar: string; dot: string }> = {
+  green: { label: 'Low Risk', badge: 'bg-green-100 text-green-800', bar: 'bg-green-500', dot: 'bg-green-500' },
+  yellow: { label: 'Medium Risk', badge: 'bg-yellow-100 text-yellow-800', bar: 'bg-yellow-500', dot: 'bg-yellow-500' },
+  red: { label: 'High Risk', badge: 'bg-red-100 text-red-700', bar: 'bg-red-500', dot: 'bg-red-500' },
+};
 
 const STATUS_COLORS: Record<string, string> = {
   'Pending': 'bg-yellow-100 text-yellow-800',
@@ -119,6 +125,15 @@ export default function OrderDetailPage() {
     mutationFn: () => ordersApi.syncCourier(id),
     onSuccess: (data) => {
       toast.success(`Courier status: ${data.courierStatus}`);
+      void queryClient.invalidateQueries({ queryKey: ['admin-order', id] });
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const fraudMutation = useMutation({
+    mutationFn: () => ordersApi.fraudCheck(id),
+    onSuccess: () => {
+      toast.success('Fraud check complete');
       void queryClient.invalidateQueries({ queryKey: ['admin-order', id] });
     },
     onError: (err: Error) => toast.error(err.message),
@@ -584,6 +599,117 @@ export default function OrderDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Fraud Check */}
+          <Can permission="orders.fraud_check">
+            <div className="rounded-xl border border-border bg-white shadow-sm">
+              <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="font-semibold">Fraud Check</h2>
+                </div>
+                {order.fraud && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 text-xs"
+                    onClick={() => fraudMutation.mutate()}
+                    disabled={fraudMutation.isPending}
+                  >
+                    <RefreshCw className={cn('h-3.5 w-3.5', fraudMutation.isPending && 'animate-spin')} />
+                    Re-check
+                  </Button>
+                )}
+              </div>
+
+              {!order.fraud ? (
+                <div className="p-4">
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    Check this customer&apos;s courier delivery history across Steadfast, Pathao &amp; RedX.
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full gap-1.5"
+                    onClick={() => fraudMutation.mutate()}
+                    disabled={fraudMutation.isPending}
+                  >
+                    {fraudMutation.isPending
+                      ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      : <ShieldCheck className="h-3.5 w-3.5" />}
+                    Run Fraud Check
+                  </Button>
+                </div>
+              ) : (
+                <div className="p-4 space-y-3">
+                  {/* Signal + ratio */}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+                        FRAUD_SIGNAL_CONFIG[order.fraud.signal]?.badge,
+                      )}
+                    >
+                      <span className={cn('h-2 w-2 rounded-full', FRAUD_SIGNAL_CONFIG[order.fraud.signal]?.dot)} />
+                      {FRAUD_SIGNAL_CONFIG[order.fraud.signal]?.label ?? order.fraud.signal}
+                    </span>
+                    <span className="text-2xl font-bold tabular-nums">{order.fraud.successRatio}%</span>
+                  </div>
+
+                  {order.fraud.isNewCustomer ? (
+                    <p className="rounded-md bg-muted/40 p-2 text-xs italic text-muted-foreground">
+                      No courier history found — likely a new customer.
+                    </p>
+                  ) : (
+                    <>
+                      {/* Success bar */}
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                          className={cn('h-full rounded-full', FRAUD_SIGNAL_CONFIG[order.fraud.signal]?.bar)}
+                          style={{ width: `${order.fraud.successRatio}%` }}
+                        />
+                      </div>
+
+                      {/* Totals */}
+                      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div className="rounded-md bg-muted/40 py-1.5">
+                          <p className="font-semibold tabular-nums">{order.fraud.totalOrders}</p>
+                          <p className="text-muted-foreground">Total</p>
+                        </div>
+                        <div className="rounded-md bg-green-50 py-1.5">
+                          <p className="font-semibold tabular-nums text-green-700">{order.fraud.delivered}</p>
+                          <p className="text-muted-foreground">Delivered</p>
+                        </div>
+                        <div className="rounded-md bg-red-50 py-1.5">
+                          <p className="font-semibold tabular-nums text-red-700">{order.fraud.cancelled}</p>
+                          <p className="text-muted-foreground">Cancelled</p>
+                        </div>
+                      </div>
+
+                      {/* Per-courier breakdown */}
+                      {order.fraud.couriers.length > 0 && (
+                        <div className="space-y-1.5 border-t border-border pt-2">
+                          {order.fraud.couriers.map((c) => (
+                            <div key={c.name} className="flex items-center justify-between text-xs">
+                              <span className="capitalize text-muted-foreground">{c.name}</span>
+                              <span className="tabular-nums">
+                                <span className="font-medium">{c.ratio}%</span>
+                                <span className="text-muted-foreground"> · {c.delivered}/{c.total}</span>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  <p className="text-xs text-muted-foreground">
+                    Checked {format(new Date(order.fraud.checkedAt), 'dd MMM, hh:mm a')}
+                  </p>
+                </div>
+              )}
+            </div>
+          </Can>
 
           {/* Delivery Address */}
           <div className="rounded-xl border border-border bg-white shadow-sm">

@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Order, PaginatedResponse, ProcessReturnInput } from '@cholonbil/types';
+import type { Order, PaginatedResponse, ProcessReturnInput, FraudReport } from '@cholonbil/types';
 
 export interface OrderFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;
@@ -70,4 +70,7 @@ export const ordersApi = {
 
   processReturn: (id: string, data: ProcessReturnInput) =>
     apiClient.post<Order>(`/admin/orders/${id}/return`, data),
+
+  fraudCheck: (id: string) =>
+    apiClient.post<FraudReport>(`/admin/orders/${id}/fraud-check`, {}),
 };

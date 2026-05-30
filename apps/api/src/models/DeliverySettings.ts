@@ -14,9 +14,19 @@ export interface IDeliveryCharges {
   baseWeightKg: number;
 }
 
+export type FraudProvider = 'mock' | 'bdcourier' | 'fraudbd';
+
+export interface IFraudConfig {
+  provider: FraudProvider;
+  apiUrl: string;
+  apiToken: string; // encrypted at rest
+  isActive: boolean;
+}
+
 export interface IDeliverySettings extends Document {
   steadfast: ISteadfastConfig;
   charges: IDeliveryCharges;
+  fraud: IFraudConfig;
   updatedAt: Date;
 }
 
@@ -40,10 +50,21 @@ const chargesSchema = new Schema<IDeliveryCharges>(
   { _id: false },
 );
 
+const fraudSchema = new Schema<IFraudConfig>(
+  {
+    provider: { type: String, enum: ['mock', 'bdcourier', 'fraudbd'], default: 'mock' },
+    apiUrl: { type: String, default: '' },
+    apiToken: { type: String, default: '' },
+    isActive: { type: Boolean, default: false },
+  },
+  { _id: false },
+);
+
 const deliverySettingsSchema = new Schema<IDeliverySettings>(
   {
     steadfast: { type: steadfastSchema, default: () => ({}) },
     charges: { type: chargesSchema, default: () => ({}) },
+    fraud: { type: fraudSchema, default: () => ({}) },
   },
   { timestamps: { createdAt: false, updatedAt: true } },
 );

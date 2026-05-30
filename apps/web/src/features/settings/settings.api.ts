@@ -15,6 +15,13 @@ export interface DeliverySettingsResponse {
     extraPerKg: number;
     baseWeightKg: number;
   };
+  fraud: {
+    provider: 'mock' | 'bdcourier' | 'fraudbd';
+    apiUrl: string;
+    isActive: boolean;
+    hasApiToken: boolean;
+    apiTokenMasked: string;
+  };
 }
 
 export interface SmsSettingsResponse {
@@ -46,6 +53,12 @@ export const settingsApi = {
       outsideDhaka?: number;
       extraPerKg?: number;
       baseWeightKg?: number;
+    };
+    fraud?: {
+      provider?: 'mock' | 'bdcourier' | 'fraudbd';
+      apiUrl?: string;
+      apiToken?: string;
+      isActive?: boolean;
     };
   }) => apiClient.patch<{ saved: boolean }>('/admin/delivery-settings', data),
 

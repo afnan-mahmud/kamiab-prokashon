@@ -10,7 +10,7 @@ const router: Router = Router();
 
 const ALL_PERMISSIONS: Permission[] = [
   'dashboard.view',
-  'orders.view', 'orders.create', 'orders.edit', 'orders.delete', 'orders.send_to_courier',
+  'orders.view', 'orders.create', 'orders.edit', 'orders.delete', 'orders.send_to_courier', 'orders.fraud_check',
   'customers.view', 'customers.edit', 'customers.delete',
   'accounts.view', 'accounts.income.view', 'accounts.expense.view', 'accounts.expense.create',
   'products.view', 'products.create', 'products.edit', 'products.delete',

@@ -40,6 +40,13 @@ router.get('/', requirePermission('delivery.view'), async (_req, res, next) => {
         hasSecretKey: !!settings.steadfast.secretKey,
       },
       charges: settings.charges,
+      fraud: {
+        provider: settings.fraud?.provider ?? 'mock',
+        apiUrl: settings.fraud?.apiUrl ?? '',
+        isActive: settings.fraud?.isActive ?? false,
+        hasApiToken: !!settings.fraud?.apiToken,
+        apiTokenMasked: settings.fraud?.apiToken ? maskKey(safeDecrypt(settings.fraud.apiToken)) : '',
+      },
     });
   } catch (err) {
     next(err);
@@ -61,6 +68,14 @@ const updateSchema = z.object({
       outsideDhaka: z.number().min(0).optional(),
       extraPerKg: z.number().min(0).optional(),
       baseWeightKg: z.number().min(0).optional(),
+    })
+    .optional(),
+  fraud: z
+    .object({
+      provider: z.enum(['mock', 'bdcourier', 'fraudbd']).optional(),
+      apiUrl: z.string().url().or(z.literal('')).optional(),
+      apiToken: z.string().optional(),
+      isActive: z.boolean().optional(),
     })
     .optional(),
 });
@@ -97,6 +112,20 @@ router.patch('/', requirePermission('delivery.edit'), async (req, res, next) => 
       if (data.charges.outsideDhaka !== undefined) settings.charges.outsideDhaka = data.charges.outsideDhaka;
       if (data.charges.extraPerKg !== undefined) settings.charges.extraPerKg = data.charges.extraPerKg;
       if (data.charges.baseWeightKg !== undefined) settings.charges.baseWeightKg = data.charges.baseWeightKg;
+    }
+
+    if (data.fraud) {
+      if (data.fraud.provider !== undefined) settings.fraud.provider = data.fraud.provider;
+      if (data.fraud.apiUrl !== undefined) settings.fraud.apiUrl = data.fraud.apiUrl;
+      if (data.fraud.isActive !== undefined) settings.fraud.isActive = data.fraud.isActive;
+      // Only overwrite the token when a non-empty value is supplied (keep current otherwise).
+      if (data.fraud.apiToken) {
+        try {
+          settings.fraud.apiToken = encrypt(data.fraud.apiToken);
+        } catch {
+          settings.fraud.apiToken = data.fraud.apiToken;
+        }
+      }
     }
 
     await settings.save();

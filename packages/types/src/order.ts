@@ -39,6 +39,29 @@ export interface CourierInfo {
   rawResponse?: Record<string, unknown>;
 }
 
+export type FraudSignal = 'green' | 'yellow' | 'red';
+
+export interface FraudCourierBreakdown {
+  name: string; // 'steadfast' | 'pathao' | 'redx' | 'paperfly' | ...
+  total: number;
+  delivered: number;
+  cancelled: number;
+  ratio: number; // 0–100
+}
+
+export interface FraudReport {
+  phone: string;
+  totalOrders: number;
+  delivered: number;
+  cancelled: number;
+  successRatio: number; // 0–100
+  signal: FraudSignal;
+  isNewCustomer: boolean; // true when no courier history exists yet
+  couriers: FraudCourierBreakdown[];
+  checkedAt: string;
+  checkedBy?: string | null;
+}
+
 export interface StatusHistoryEntry {
   status: OrderStatus;
   changedBy: string | null;
@@ -63,6 +86,7 @@ export interface Order {
   source: OrderSource;
   landingPage?: string;
   courier: CourierInfo;
+  fraud?: FraudReport;
   notes: string;
   createdBy: string | null;
   statusHistory: StatusHistoryEntry[];
