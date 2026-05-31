@@ -6,12 +6,18 @@ export interface IProductImage {
   alt: string;
 }
 
+export interface ICustomDeliveryCharge {
+  insideDhaka: number;
+  outsideDhaka: number;
+}
+
 export interface IProductVariant {
   label: string;
   price: number;
   sku: string;
   weight: number;
   isDefault: boolean;
+  customDelivery?: ICustomDeliveryCharge;
 }
 
 export interface IProduct extends Document {
@@ -24,6 +30,7 @@ export interface IProduct extends Document {
   poolStock: number;
   reorderPoint: number;
   isActive: boolean;
+  customDeliveryEnabled: boolean;
   totalSold: number;
   deletedAt: Date | null;
   createdAt: Date;
@@ -39,6 +46,14 @@ const imageSchema = new Schema<IProductImage>(
   { _id: false },
 );
 
+const customDeliverySchema = new Schema<ICustomDeliveryCharge>(
+  {
+    insideDhaka: { type: Number, required: true, min: 0, default: 0 },
+    outsideDhaka: { type: Number, required: true, min: 0, default: 0 },
+  },
+  { _id: false },
+);
+
 const variantSchema = new Schema<IProductVariant>(
   {
     label: { type: String, required: true, trim: true },
@@ -46,6 +61,7 @@ const variantSchema = new Schema<IProductVariant>(
     sku: { type: String, trim: true, default: '' },
     weight: { type: Number, required: true, min: 0 },
     isDefault: { type: Boolean, default: false },
+    customDelivery: { type: customDeliverySchema, default: undefined },
   },
   { _id: true },
 );
@@ -69,6 +85,7 @@ const productSchema = new Schema<IProduct>(
     poolStock: { type: Number, required: true, min: 0, default: 0 },
     reorderPoint: { type: Number, required: true, min: 0, default: 0 },
     isActive: { type: Boolean, default: true },
+    customDeliveryEnabled: { type: Boolean, default: false },
     totalSold: { type: Number, default: 0 },
     deletedAt: { type: Date, default: null },
   },

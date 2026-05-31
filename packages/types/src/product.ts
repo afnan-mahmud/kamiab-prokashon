@@ -4,6 +4,11 @@ export interface ProductImage {
   alt: string;
 }
 
+export interface CustomDeliveryCharge {
+  insideDhaka: number;
+  outsideDhaka: number;
+}
+
 export interface ProductVariant {
   _id: string;
   label: string;
@@ -11,6 +16,7 @@ export interface ProductVariant {
   sku: string;
   weight: number;
   isDefault: boolean;
+  customDelivery?: CustomDeliveryCharge;
 }
 
 export interface Product {
@@ -24,6 +30,7 @@ export interface Product {
   poolStock: number;
   reorderPoint: number;
   isActive: boolean;
+  customDeliveryEnabled: boolean;
   totalSold: number;
   deletedAt: string | null;
   createdAt: string;
@@ -40,6 +47,7 @@ export interface CreateProductInput {
   poolStock?: number;
   reorderPoint?: number;
   isActive?: boolean;
+  customDeliveryEnabled?: boolean;
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>;

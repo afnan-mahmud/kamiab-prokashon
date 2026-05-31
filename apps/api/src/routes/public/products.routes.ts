@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { isValidObjectId } from 'mongoose';
 import { Product } from '../../models/Product.js';
 import { sendSuccess, sendError, sendPaginated } from '../../utils/api-response.js';
 
@@ -40,6 +41,29 @@ router.get('/categories', async (_req, res, next) => {
   try {
     const categories = await Product.distinct('category', { isActive: true, deletedAt: null });
     sendSuccess(res, categories);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/products/suggested — best-selling products (most ordered)
+router.get('/suggested', async (req, res, next) => {
+  try {
+    const limit = Math.min(10, Math.max(1, Number(req.query['limit'] ?? 5)));
+    const filter: Record<string, unknown> = { isActive: true, deletedAt: null };
+
+    // Exclude the current product (accepts id or slug)
+    const exclude = req.query['exclude'] as string | undefined;
+    if (exclude) {
+      filter[isValidObjectId(exclude) ? '_id' : 'slug'] = { $ne: exclude };
+    }
+
+    const products = await Product.find(filter)
+      .sort('-totalSold')
+      .limit(limit)
+      .lean();
+
+    sendSuccess(res, products);
   } catch (err) {
     next(err);
   }

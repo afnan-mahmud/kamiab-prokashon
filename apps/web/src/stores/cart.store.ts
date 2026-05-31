@@ -10,6 +10,10 @@ export interface CartItem {
   weight: number;
   quantity: number;
   image: string;
+  // Snapshot of the variant's custom delivery charge (only when the product's
+  // custom-delivery toggle is on and the variant has values). Drives checkout
+  // delivery calculation; null/undefined means standard weight-based charge.
+  customDelivery?: { insideDhaka: number; outsideDhaka: number } | null;
 }
 
 interface CartState {

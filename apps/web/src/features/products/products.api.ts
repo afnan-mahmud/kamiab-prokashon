@@ -17,6 +17,7 @@ export interface VariantInput {
   sku: string;
   weight: number;
   isDefault: boolean;
+  customDelivery?: { insideDhaka: number; outsideDhaka: number };
 }
 
 export interface ProductInput {
@@ -28,6 +29,7 @@ export interface ProductInput {
   variants: VariantInput[];
   poolStock?: number;
   reorderPoint?: number;
+  customDeliveryEnabled?: boolean;
   isActive: boolean;
 }
 

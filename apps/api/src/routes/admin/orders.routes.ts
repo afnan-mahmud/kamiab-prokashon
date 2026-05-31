@@ -12,6 +12,7 @@ import { createSteadfastOrder, getSteadfastStatus, SteadfastError } from '../../
 import { checkFraud, FraudCheckError } from '../../services/fraud.service.js';
 import { sendSMS, getSmsTemplate } from '../../services/sms.service.js';
 import { createSaleMovements, createMovement, StockError } from '../../services/stock.service.js';
+import { resolveDeliveryCharge, DEFAULT_CHARGES, type DeliveryItem } from '../../services/delivery.service.js';
 import { nextOrderNumber } from '../../models/Counter.js';
 import type { OrderStatus } from '@cholonbil/types';
 
@@ -98,22 +99,34 @@ async function buildOrderItems(
   return orderItems;
 }
 
+// Resolve delivery for a set of order items. Re-fetches products so per-variant
+// custom delivery charges apply (order.items don't persist the custom field).
 async function calcDelivery(
+  items: { product: unknown; variantId: unknown; weight: number; quantity: number }[],
   location: 'inside_dhaka' | 'outside_dhaka',
-  totalWeightKg: number,
 ): Promise<number> {
+  const productIds = [...new Set(items.map((i) => String(i.product)))];
+  const products = await Product.find({ _id: { $in: productIds } }).lean();
+  const productMap = new Map(products.map((p) => [String(p._id), p]));
+
+  const deliveryItems: DeliveryItem[] = items.map((i) => {
+    const product = productMap.get(String(i.product));
+    const variant = product?.variants.find((v) => String(v._id) === String(i.variantId));
+    return {
+      weight: i.weight,
+      quantity: i.quantity,
+      customDelivery:
+        product?.customDeliveryEnabled && variant?.customDelivery
+          ? {
+              insideDhaka: variant.customDelivery.insideDhaka,
+              outsideDhaka: variant.customDelivery.outsideDhaka,
+            }
+          : null,
+    };
+  });
+
   const settings = await DeliverySettings.findOne().lean();
-  const charges = settings?.charges ?? {
-    insideDhaka: 60,
-    outsideDhaka: 120,
-    extraPerKg: 20,
-    baseWeightKg: 1,
-  };
-  const extra = Math.max(0, totalWeightKg - charges.baseWeightKg);
-  return (
-    (location === 'inside_dhaka' ? charges.insideDhaka : charges.outsideDhaka) +
-    extra * charges.extraPerKg
-  );
+  return resolveDeliveryCharge(deliveryItems, location, settings?.charges ?? DEFAULT_CHARGES);
 }
 
 // ── Routes ───────────────────────────────────────────────────────────────────
@@ -212,8 +225,7 @@ router.post('/', requirePermission('orders.create'), async (req, res, next) => {
       }
     }
 
-    const totalWeight = orderItems.reduce((s, i) => s + i.weight * i.quantity, 0);
-    const deliveryCharge = await calcDelivery(data.deliveryLocation, totalWeight);
+    const deliveryCharge = await calcDelivery(orderItems, data.deliveryLocation);
     const subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
     const total = subtotal + deliveryCharge - data.discount;
     const now = new Date();
@@ -421,8 +433,7 @@ router.patch('/:id', requirePermission('orders.edit'), async (req, res, next) =>
     }
 
     if (data.items !== undefined || data.deliveryLocation !== undefined) {
-      const totalWeight = order.items.reduce((s, i) => s + i.weight * i.quantity, 0);
-      order.deliveryCharge = await calcDelivery(order.deliveryLocation, totalWeight);
+      order.deliveryCharge = await calcDelivery(order.items, order.deliveryLocation);
       order.total = order.subtotal + order.deliveryCharge - order.discount;
     }
 

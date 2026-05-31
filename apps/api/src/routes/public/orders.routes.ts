@@ -8,6 +8,7 @@ import { Order } from '../../models/Order.js';
 import { DeliverySettings } from '../../models/DeliverySettings.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
 import { createSaleMovements, StockError } from '../../services/stock.service.js';
+import { resolveDeliveryCharge, DEFAULT_CHARGES } from '../../services/delivery.service.js';
 import { nextOrderNumber } from '../../models/Counter.js';
 
 const router: Router = Router();
@@ -76,6 +77,13 @@ router.post('/', orderLimiter, async (req, res, next) => {
         quantity: item.quantity,
         weight: variant.weight,
         subtotal: variant.price * item.quantity,
+        customDelivery:
+          product.customDeliveryEnabled && variant.customDelivery
+            ? {
+                insideDhaka: variant.customDelivery.insideDhaka,
+                outsideDhaka: variant.customDelivery.outsideDhaka,
+              }
+            : null,
       });
     }
 
@@ -102,19 +110,10 @@ router.post('/', orderLimiter, async (req, res, next) => {
       }
     }
 
-    // Calculate delivery charge
+    // Calculate delivery charge (custom per-variant override wins, else weight-based)
     const settings = await DeliverySettings.findOne().lean();
-    const charges = settings?.charges ?? {
-      insideDhaka: 60,
-      outsideDhaka: 120,
-      extraPerKg: 20,
-      baseWeightKg: 1,
-    };
-    const totalWeight = orderItems.reduce((s, i) => s + i.weight * i.quantity, 0);
-    const extraWeight = Math.max(0, totalWeight - charges.baseWeightKg);
-    const deliveryCharge =
-      (data.deliveryLocation === 'inside_dhaka' ? charges.insideDhaka : charges.outsideDhaka) +
-      extraWeight * charges.extraPerKg;
+    const charges = settings?.charges ?? DEFAULT_CHARGES;
+    const deliveryCharge = resolveDeliveryCharge(orderItems, data.deliveryLocation, charges);
 
     const subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
     const total = subtotal + deliveryCharge;

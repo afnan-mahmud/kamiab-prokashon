@@ -12,6 +12,7 @@ import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders
 import type { Product } from '@cholonbil/types';
 import { fireEvent } from '@/lib/pixel';
 import { gtmBeginCheckout, gtmPurchase } from '@/lib/gtm';
+import { resolveDeliveryCharge } from '@/lib/delivery';
 
 const checkoutSchema = z.object({
   variantId: z.string().min(1, 'Please select a variant'),
@@ -68,14 +69,27 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
   const selectedVariant = variants.find((v) => String((v as { _id: string })._id ?? '') === selectedVariantId);
   const subtotal = (selectedVariant?.price ?? 0) * quantity;
 
-  function calcDeliveryCharge(location: 'inside_dhaka' | 'outside_dhaka', weightKg: number): number {
-    if (!charges) return location === 'inside_dhaka' ? 60 : 120;
-    const extra = Math.max(0, weightKg - charges.baseWeightKg);
-    return (location === 'inside_dhaka' ? charges.insideDhaka : charges.outsideDhaka) + extra * charges.extraPerKg;
-  }
+  const computeDelivery = (
+    variant: (typeof variants)[number] | undefined,
+    location: 'inside_dhaka' | 'outside_dhaka',
+    qty: number,
+  ): number => {
+    const customDelivery =
+      product.customDeliveryEnabled && variant?.customDelivery ? variant.customDelivery : null;
+    if (charges) {
+      return resolveDeliveryCharge(
+        [{ weight: variant?.weight ?? 0, quantity: qty, customDelivery }],
+        location,
+        charges,
+      );
+    }
+    if (customDelivery) {
+      return location === 'inside_dhaka' ? customDelivery.insideDhaka : customDelivery.outsideDhaka;
+    }
+    return location === 'inside_dhaka' ? 60 : 120;
+  };
 
-  const totalWeightKg = (selectedVariant?.weight ?? 0) * quantity;
-  const deliveryCharge = calcDeliveryCharge(deliveryLocation, totalWeightKg);
+  const deliveryCharge = computeDelivery(selectedVariant, deliveryLocation, quantity);
   const total = subtotal + deliveryCharge;
 
   const handlePhoneBlur = (phone: string) => {
@@ -129,7 +143,9 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       const variant = variants.find(
         (v) => String((v as { _id: string })._id ?? '') === data.variantId,
       );
-      const orderTotal = (variant?.price ?? 0) * Number(data.quantity) + calcDeliveryCharge(data.deliveryLocation, (variant?.weight ?? 0) * Number(data.quantity));
+      const orderTotal =
+        (variant?.price ?? 0) * Number(data.quantity) +
+        computeDelivery(variant, data.deliveryLocation, Number(data.quantity));
       fireEvent(
         'Purchase',
         {
@@ -145,10 +161,7 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       gtmPurchase({
         transactionId: res.orderNumber,
         value: orderTotal,
-        shipping: calcDeliveryCharge(
-          data.deliveryLocation,
-          (variant?.weight ?? 0) * Number(data.quantity),
-        ),
+        shipping: computeDelivery(variant, data.deliveryLocation, Number(data.quantity)),
         items: [
           {
             item_id: String((product as { _id: string })._id ?? ''),

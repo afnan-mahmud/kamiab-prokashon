@@ -15,7 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCartStore } from '@/stores/cart.store';
-import { shopApi, type DeliveryCharges } from '@/features/shop/shop.api';
+import { shopApi } from '@/features/shop/shop.api';
+import { resolveDeliveryCharge } from '@/lib/delivery';
 import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
 import { formatPrice } from '@/lib/format';
 import { fireEvent } from '@/lib/pixel';
@@ -39,18 +40,6 @@ const checkoutSchema = z.object({
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function calcDeliveryCharge(
-  charges: DeliveryCharges,
-  location: 'inside_dhaka' | 'outside_dhaka',
-  totalWeightKg: number,
-): number {
-  const extra = Math.max(0, totalWeightKg - charges.baseWeightKg);
-  return (location === 'inside_dhaka' ? charges.insideDhaka : charges.outsideDhaka) +
-    extra * charges.extraPerKg;
-}
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
@@ -59,6 +48,7 @@ export default function CheckoutPage() {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const capturedPhone = useRef('');
+  const beginCheckoutFired = useRef(false);
 
   const { data: charges } = useQuery({
     queryKey: ['delivery-charges'],
@@ -88,9 +78,12 @@ export default function CheckoutPage() {
   const deliveryLocation = watch('deliveryLocation');
   const cartSubtotal = subtotal();
 
-  // InitiateCheckout once cart is loaded
+  // InitiateCheckout / begin_checkout once cart is loaded.
+  // Guarded by a ref so it fires exactly once, even if the cart hydrates
+  // from localStorage a render after mount (full-page nav from "এখনই অর্ডার করুন").
   useEffect(() => {
-    if (items.length === 0) return;
+    if (beginCheckoutFired.current || items.length === 0) return;
+    beginCheckoutFired.current = true;
     fireEvent('InitiateCheckout', {
       value: cartSubtotal,
       currency: 'BDT',
@@ -106,12 +99,11 @@ export default function CheckoutPage() {
         quantity: i.quantity,
       })),
     );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [items, cartSubtotal]);
 
-  // Calculate total weight from cart
-  const totalWeight = items.reduce((s, i) => s + i.weight * i.quantity, 0);
+  // Delivery charge: custom per-variant override wins, else weight-based
   const deliveryCharge = charges
-    ? calcDeliveryCharge(charges, deliveryLocation, totalWeight)
+    ? resolveDeliveryCharge(items, deliveryLocation, charges)
     : null;
   const total = cartSubtotal + (deliveryCharge ?? 0);
 

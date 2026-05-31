@@ -48,6 +48,11 @@ export const shopApi = {
 
   product: (slug: string) => apiClient.get<Product>(`/products/${slug}`),
 
+  suggested: (exclude?: string, limit = 5) =>
+    apiClient.get<Product[]>('/products/suggested', {
+      params: { exclude, limit },
+    }),
+
   categories: () => apiClient.get<string[]>('/products/categories'),
 
   lookup: (phone: string) =>

@@ -12,11 +12,15 @@ const variantSchema = z.object({
   _id: z.string().optional(),
   label: z.string().min(1).trim(),
   price: z.number().min(0),
-  stock: z.number().int().min(0),
-  reorderPoint: z.number().int().min(0).default(0),
   sku: z.string().trim().default(''),
   weight: z.number().min(0),
   isDefault: z.boolean(),
+  customDelivery: z
+    .object({
+      insideDhaka: z.number().min(0),
+      outsideDhaka: z.number().min(0),
+    })
+    .optional(),
 });
 
 const imageSchema = z.object({
@@ -38,6 +42,9 @@ const productSchema = z.object({
       (variants) => variants.filter((v) => v.isDefault).length === 1,
       'Exactly one variant must be marked as default',
     ),
+  poolStock: z.number().min(0).default(0),
+  reorderPoint: z.number().min(0).default(0),
+  customDeliveryEnabled: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
 

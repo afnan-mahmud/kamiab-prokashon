@@ -29,6 +29,10 @@ export function ProductCard({ product }: ProductCardProps) {
       weight: defaultVariant.weight,
       quantity: 1,
       image: mainImage?.url ?? '',
+      customDelivery:
+        product.customDeliveryEnabled && defaultVariant.customDelivery
+          ? defaultVariant.customDelivery
+          : null,
     });
     gtmAddToCart({
       item_id: product._id,

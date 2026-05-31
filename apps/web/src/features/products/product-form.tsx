@@ -1,22 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Truck } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { productsApi } from './products.api';
 import type { Product } from '@cholonbil/types';
 
 // ── Schema ──────────────────────────────────────────────────────────────────
+
+// Inner fields default to 0 so an empty/partial object coming back from the API
+// (e.g. `{}` or a half-filled charge) coerces cleanly instead of producing NaN
+// and silently blocking the whole form submit.
+const customDeliverySchema = z.object({
+  insideDhaka: z.coerce.number().min(0, 'Must be ≥ 0').default(0),
+  outsideDhaka: z.coerce.number().min(0, 'Must be ≥ 0').default(0),
+});
 
 const variantSchema = z.object({
   _id: z.string().optional(),
@@ -25,6 +41,7 @@ const variantSchema = z.object({
   sku: z.string().default(''),
   weight: z.coerce.number().min(0, 'Weight must be ≥ 0'),
   isDefault: z.boolean(),
+  customDelivery: customDeliverySchema.optional(),
 });
 
 const productFormSchema = z.object({
@@ -43,6 +60,7 @@ const productFormSchema = z.object({
     }),
   poolStock: z.coerce.number().min(0).default(0),
   reorderPoint: z.coerce.number().min(0).default(0),
+  customDeliveryEnabled: z.boolean().default(false),
   isActive: z.boolean(),
 });
 
@@ -61,6 +79,22 @@ function toSlug(name: string): string {
 
 function defaultVariant() {
   return { label: '', price: 0, sku: '', weight: 0, isDefault: false };
+}
+
+// Walks the react-hook-form errors tree (which is nested for arrays/objects)
+// and returns the first human-readable message, so a failed submit always
+// surfaces a reason instead of the button appearing to do nothing.
+function firstErrorMessage(errors: unknown): string | undefined {
+  if (!errors || typeof errors !== 'object') return undefined;
+  const record = errors as Record<string, unknown>;
+  if (typeof record['message'] === 'string' && record['message']) {
+    return record['message'];
+  }
+  for (const value of Object.values(record)) {
+    const nested = firstErrorMessage(value);
+    if (nested) return nested;
+  }
+  return undefined;
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -101,9 +135,11 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
             sku: v.sku,
             weight: v.weight,
             isDefault: v.isDefault,
+            customDelivery: v.customDelivery,
           })),
           poolStock: product.poolStock ?? 0,
           reorderPoint: product.reorderPoint ?? 0,
+          customDeliveryEnabled: product.customDeliveryEnabled ?? false,
           isActive: product.isActive,
         }
       : {
@@ -115,15 +151,36 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           variants: [{ ...defaultVariant(), isDefault: true }],
           poolStock: 0,
           reorderPoint: 0,
+          customDeliveryEnabled: false,
           isActive: true,
         },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: 'variants' });
 
+  const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
+
   const name = watch('name');
   const slug = watch('slug');
   const variants = watch('variants');
+  const customDeliveryEnabled = watch('customDeliveryEnabled');
+
+  // Toggle custom delivery: turning on initialises charges for every variant
+  // (keeping any existing values) and opens the editor. Turning off keeps the
+  // entered values in form state so they persist on save.
+  const handleCustomDeliveryToggle = (on: boolean) => {
+    setValue('customDeliveryEnabled', on);
+    if (on) {
+      fields.forEach((_, i) => {
+        const existing = variants[i]?.customDelivery;
+        setValue(`variants.${i}.customDelivery`, {
+          insideDhaka: existing?.insideDhaka ?? 0,
+          outsideDhaka: existing?.outsideDhaka ?? 0,
+        });
+      });
+      setDeliveryModalOpen(true);
+    }
+  };
 
   // Auto-generate slug from name when creating (not editing)
   useEffect(() => {
@@ -138,14 +195,30 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
     });
   };
 
-  const handleFormSubmit = handleSubmit(async (values) => {
-    try {
-      await onSubmit(values);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Save failed';
-      toast.error(msg);
-    }
-  });
+  const handleFormSubmit = handleSubmit(
+    async (values) => {
+      // Only persist per-variant custom charges when the feature is enabled,
+      // so disabled products don't carry stale {0,0} charges that would later
+      // override the standard weight-based delivery calculation.
+      const payload: ProductFormValues = {
+        ...values,
+        variants: values.variants.map((v) => ({
+          ...v,
+          customDelivery: values.customDeliveryEnabled ? v.customDelivery : undefined,
+        })),
+      };
+      try {
+        await onSubmit(payload);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Save failed';
+        toast.error(msg);
+      }
+    },
+    (formErrors) => {
+      // Validation failed — never let the submit button look like a no-op.
+      toast.error(firstErrorMessage(formErrors) ?? 'Please fix the highlighted fields before saving');
+    },
+  );
 
   return (
     <form onSubmit={handleFormSubmit} className="space-y-8">
@@ -388,6 +461,86 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           </div>
         </div>
       </section>
+
+      {/* Custom delivery charge */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between rounded-lg border border-border p-4">
+          <div className="flex items-start gap-3">
+            <Truck className="mt-0.5 h-5 w-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm font-semibold">Custom Delivery Charge</p>
+              <p className="text-xs text-muted-foreground">
+                Set a fixed inside/outside Dhaka delivery charge per variant for this
+                product (overrides the default weight-based charge).
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {customDeliveryEnabled && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setDeliveryModalOpen(true)}
+              >
+                Edit charges
+              </Button>
+            )}
+            <Switch
+              checked={customDeliveryEnabled}
+              onCheckedChange={handleCustomDeliveryToggle}
+            />
+          </div>
+        </div>
+      </section>
+
+      <Dialog open={deliveryModalOpen} onOpenChange={setDeliveryModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Custom Delivery Charges</DialogTitle>
+            <DialogDescription>
+              Per-variant flat delivery charge (৳). The highest matching charge in an
+              order wins; quantity and weight extras are not added.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="max-h-[55vh] space-y-3 overflow-y-auto py-1">
+            {fields.map((field, idx) => (
+              <div key={field.id} className="rounded-lg border border-border p-3">
+                <p className="mb-2 text-sm font-medium">
+                  {variants[idx]?.label?.trim() || `Variant ${idx + 1}`}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Inside Dhaka (৳)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      className="h-8 text-sm"
+                      {...register(`variants.${idx}.customDelivery.insideDhaka`)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Outside Dhaka (৳)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      className="h-8 text-sm"
+                      {...register(`variants.${idx}.customDelivery.outsideDhaka`)}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter>
+            <Button type="button" onClick={() => setDeliveryModalOpen(false)}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Stock instruction */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">

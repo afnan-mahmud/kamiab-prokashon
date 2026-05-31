@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { Button } from '@/components/ui/button';
+import { ProductCard } from '@/components/public/product-card';
 import { shopApi } from '@/features/shop/shop.api';
 import { useCartStore } from '@/stores/cart.store';
 import { formatPrice } from '@/lib/format';
@@ -31,6 +32,13 @@ export default function ProductDetailPage() {
     queryKey: ['product-detail', slug],
     queryFn: () => shopApi.product(slug),
     enabled: !!slug,
+  });
+
+  const { data: suggested = [] } = useQuery({
+    queryKey: ['suggested-products', product?._id],
+    queryFn: () => shopApi.suggested(product?._id, 5),
+    enabled: !!product?._id,
+    staleTime: 60_000,
   });
 
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
@@ -74,6 +82,10 @@ export default function ProductDetailPage() {
       weight: selectedVariant.weight,
       quantity: qty,
       image: product.images[0]?.url ?? '',
+      customDelivery:
+        product.customDeliveryEnabled && selectedVariant.customDelivery
+          ? selectedVariant.customDelivery
+          : null,
     });
     fireEvent('AddToCart', {
       content_ids: [product._id],
@@ -291,6 +303,18 @@ export default function ProductDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Suggested / best-selling products */}
+        {suggested.length > 0 && (
+          <section className="mt-12">
+            <h2 className="mb-4 text-xl font-bold">এই পণ্যগুলো জনপ্রিয়</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {suggested.slice(0, 5).map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </PublicLayout>
   );
