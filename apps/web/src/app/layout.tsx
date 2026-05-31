@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { Providers } from '@/components/providers';
 import { PixelScript } from '@/components/pixel-script';
 import { ClarityScript } from '@/components/clarity-script';
+import { GtmScript, GtmNoScript } from '@/components/gtm-script';
 import './globals.css';
 
 const hindSiliguri = Hind_Siliguri({
@@ -32,6 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="bn" className={hindSiliguri.variable}>
       <body>
+        <GtmNoScript />
+        <GtmScript />
         <PixelScript />
         <ClarityScript />
         <Providers>
