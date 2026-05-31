@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { landingPagesApi } from '@/features/landing-pages/landing-pages.api';
 import type { Product } from '@cholonbil/types';
 import { fireEvent } from '@/lib/pixel';
+import { gtmViewItem } from '@/lib/gtm';
 
 // Lazy-load templates to keep initial bundle small
 const Template1 = dynamic(() => import('@/features/landing-pages/templates/template1'));
@@ -37,6 +38,14 @@ export default function LandingPagePublicRenderer() {
       content_type: 'product',
       value: defaultVariant?.price ?? 0,
       currency: 'BDT',
+    });
+    gtmViewItem({
+      item_id: String((product as unknown as { _id: string })._id ?? ''),
+      item_name: product.name,
+      item_category: product.category,
+      item_variant: defaultVariant?.label,
+      price: defaultVariant?.price ?? 0,
+      quantity: 1,
     });
   }, [page?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 

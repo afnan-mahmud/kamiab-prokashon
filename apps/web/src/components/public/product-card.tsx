@@ -6,6 +6,7 @@ import { ShoppingCart, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/stores/cart.store';
 import { formatPrice } from '@/lib/format';
+import { gtmAddToCart } from '@/lib/gtm';
 import type { Product } from '@cholonbil/types';
 
 interface ProductCardProps {
@@ -28,6 +29,14 @@ export function ProductCard({ product }: ProductCardProps) {
       weight: defaultVariant.weight,
       quantity: 1,
       image: mainImage?.url ?? '',
+    });
+    gtmAddToCart({
+      item_id: product._id,
+      item_name: product.name,
+      item_category: product.category,
+      item_variant: defaultVariant.label,
+      price: defaultVariant.price,
+      quantity: 1,
     });
     toast.success('কার্টে যোগ হয়েছে');
   };

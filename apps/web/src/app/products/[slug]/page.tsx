@@ -21,6 +21,7 @@ import { useCartStore } from '@/stores/cart.store';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { fireEvent } from '@/lib/pixel';
+import { gtmViewItem, gtmAddToCart } from '@/lib/gtm';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -52,6 +53,14 @@ export default function ProductDetailPage() {
       value: defaultVariant?.price ?? 0,
       currency: 'BDT',
     });
+    gtmViewItem({
+      item_id: product._id,
+      item_name: product.name,
+      item_category: product.category,
+      item_variant: defaultVariant?.label,
+      price: defaultVariant?.price ?? 0,
+      quantity: 1,
+    });
   }, [product?._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddToCart = () => {
@@ -73,6 +82,14 @@ export default function ProductDetailPage() {
       value: selectedVariant.price * qty,
       currency: 'BDT',
       num_items: qty,
+    });
+    gtmAddToCart({
+      item_id: product._id,
+      item_name: product.name,
+      item_category: product.category,
+      item_variant: selectedVariant.label,
+      price: selectedVariant.price,
+      quantity: qty,
     });
     toast.success(`${qty} টি কার্টে যোগ হয়েছে`);
   };

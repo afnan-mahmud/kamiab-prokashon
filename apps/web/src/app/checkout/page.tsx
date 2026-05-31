@@ -19,6 +19,7 @@ import { shopApi, type DeliveryCharges } from '@/features/shop/shop.api';
 import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
 import { formatPrice } from '@/lib/format';
 import { fireEvent } from '@/lib/pixel';
+import { gtmBeginCheckout, gtmPurchase } from '@/lib/gtm';
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -96,6 +97,15 @@ export default function CheckoutPage() {
       num_items: items.reduce((s, i) => s + i.quantity, 0),
       content_ids: items.map((i) => i.productId),
     });
+    gtmBeginCheckout(
+      items.map((i) => ({
+        item_id: i.productId,
+        item_name: i.productName,
+        item_variant: i.variantLabel,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+    );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Calculate total weight from cart
@@ -166,6 +176,18 @@ export default function CheckoutPage() {
         },
         { phone: values.customerPhone },
       );
+      gtmPurchase({
+        transactionId: result.orderNumber,
+        value: orderTotal,
+        shipping: deliveryCharge ?? 0,
+        items: items.map((i) => ({
+          item_id: i.productId,
+          item_name: i.productName,
+          item_variant: i.variantLabel,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+      });
       clearCart();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'অর্ডার সম্পন্ন হয়নি';

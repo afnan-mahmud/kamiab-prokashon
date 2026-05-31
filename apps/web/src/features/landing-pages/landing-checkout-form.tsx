@@ -11,6 +11,7 @@ import { shopApi } from '@/features/shop/shop.api';
 import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
 import type { Product } from '@cholonbil/types';
 import { fireEvent } from '@/lib/pixel';
+import { gtmBeginCheckout, gtmPurchase } from '@/lib/gtm';
 
 const checkoutSchema = z.object({
   variantId: z.string().min(1, 'Please select a variant'),
@@ -103,6 +104,17 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       content_name: product.name,
       content_type: 'product',
     });
+    const checkoutVariant = selectedVariant ?? variants[0];
+    gtmBeginCheckout([
+      {
+        item_id: String((product as { _id: string })._id ?? ''),
+        item_name: product.name,
+        item_category: product.category,
+        item_variant: checkoutVariant?.label,
+        price: checkoutVariant?.price ?? 0,
+        quantity,
+      },
+    ]);
   };
 
   const mutation = useMutation({
@@ -130,6 +142,24 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
         },
         { phone: data.phone },
       );
+      gtmPurchase({
+        transactionId: res.orderNumber,
+        value: orderTotal,
+        shipping: calcDeliveryCharge(
+          data.deliveryLocation,
+          (variant?.weight ?? 0) * Number(data.quantity),
+        ),
+        items: [
+          {
+            item_id: String((product as { _id: string })._id ?? ''),
+            item_name: product.name,
+            item_category: product.category,
+            item_variant: variant?.label,
+            price: variant?.price ?? 0,
+            quantity: Number(data.quantity),
+          },
+        ],
+      });
       setOrderNumber(res.orderNumber);
     },
   });
