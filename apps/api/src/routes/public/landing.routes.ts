@@ -9,6 +9,7 @@ import { DeliverySettings } from '../../models/DeliverySettings.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
 import { createSaleMovements, StockError } from '../../services/stock.service.js';
 import { nextOrderNumber } from '../../models/Counter.js';
+import { resolveDeliveryCharge, DEFAULT_CHARGES } from '../../services/delivery.service.js';
 
 const router: Router = Router();
 
@@ -22,7 +23,7 @@ const orderRateLimit = rateLimit({
 router.get('/:slug', async (req, res, next) => {
   try {
     const lp = await LandingPage.findOne({ slug: req.params['slug'], isActive: true })
-      .populate('product', 'name images variants isActive')
+      .populate('product', 'name images variants isActive customDeliveryEnabled')
       .lean();
 
     if (!lp) {
@@ -68,9 +69,11 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
             label: string;
             price: number;
             weight: number;
+            customDelivery?: { insideDhaka: number; outsideDhaka: number };
           }>;
+          customDeliveryEnabled: boolean;
         };
-      }>('product', 'name poolStock variants')
+      }>('product', 'name poolStock variants customDeliveryEnabled')
       .lean();
 
     if (!lp) {
@@ -92,20 +95,27 @@ router.post('/:slug/order', orderRateLimit, async (req, res, next) => {
       return;
     }
 
-    // Calculate delivery charge
+    // Calculate delivery charge (custom per-variant override wins, else weight-based)
     const settings = await DeliverySettings.findOne().lean();
-    const charges = settings?.charges ?? {
-      insideDhaka: 60,
-      outsideDhaka: 120,
-      extraPerKg: 10,
-      baseWeightKg: 1,
-    };
+    const charges = settings?.charges ?? DEFAULT_CHARGES;
 
-    const totalWeight = variant.weight * data.quantity;
-    const extraWeight = Math.max(0, totalWeight - charges.baseWeightKg);
-    const baseCharge =
-      data.deliveryLocation === 'inside_dhaka' ? charges.insideDhaka : charges.outsideDhaka;
-    const deliveryCharge = baseCharge + extraWeight * charges.extraPerKg;
+    const deliveryCharge = resolveDeliveryCharge(
+      [
+        {
+          weight: variant.weight,
+          quantity: data.quantity,
+          customDelivery:
+            product.customDeliveryEnabled && variant.customDelivery
+              ? {
+                  insideDhaka: variant.customDelivery.insideDhaka,
+                  outsideDhaka: variant.customDelivery.outsideDhaka,
+                }
+              : null,
+        },
+      ],
+      data.deliveryLocation,
+      charges,
+    );
 
     const subtotal = variant.price * data.quantity;
     const total = subtotal + deliveryCharge;
