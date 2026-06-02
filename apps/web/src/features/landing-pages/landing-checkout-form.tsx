@@ -267,8 +267,8 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
         <label className="block text-sm font-medium mb-1.5">ডেলিভারি এলাকা</label>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { val: 'inside_dhaka', label: 'ঢাকার ভেতরে', charge: charges?.insideDhaka ?? 60 },
-            { val: 'outside_dhaka', label: 'ঢাকার বাইরে', charge: charges?.outsideDhaka ?? 120 },
+            { val: 'inside_dhaka' as const, label: 'ঢাকার ভেতরে', charge: computeDelivery(selectedVariant, 'inside_dhaka', quantity) },
+            { val: 'outside_dhaka' as const, label: 'ঢাকার বাইরে', charge: computeDelivery(selectedVariant, 'outside_dhaka', quantity) },
           ].map((o) => (
             <button
               key={o.val}

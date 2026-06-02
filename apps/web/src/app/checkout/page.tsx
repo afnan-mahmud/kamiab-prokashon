@@ -107,6 +107,9 @@ export default function CheckoutPage() {
     : null;
   const total = cartSubtotal + (deliveryCharge ?? 0);
 
+  const insideDhakaCharge = charges ? resolveDeliveryCharge(items, 'inside_dhaka', charges) : undefined;
+  const outsideDhakaCharge = charges ? resolveDeliveryCharge(items, 'outside_dhaka', charges) : undefined;
+
   // Phone lookup on blur
   const handlePhoneBlur = async (phone: string) => {
     if (!phone || phone.length < 11) return;
@@ -341,12 +344,12 @@ export default function CheckoutPage() {
                         {
                           value: 'inside_dhaka',
                           label: 'ঢাকার ভেতরে',
-                          charge: charges?.insideDhaka,
+                          charge: insideDhakaCharge,
                         },
                         {
                           value: 'outside_dhaka',
                           label: 'ঢাকার বাইরে',
-                          charge: charges?.outsideDhaka,
+                          charge: outsideDhakaCharge,
                         },
                       ].map((opt) => (
                         <label

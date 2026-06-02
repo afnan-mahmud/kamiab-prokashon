@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +26,7 @@ import { gtmViewItem, gtmAddToCart } from '@/lib/gtm';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
 
   const { data: product, isLoading, error } = useQuery({
@@ -284,7 +285,7 @@ export default function ProductDetailPage() {
                   className="flex-1"
                   onClick={() => {
                     handleAddToCart();
-                    window.location.href = '/checkout';
+                    router.push('/checkout');
                   }}
                 >
                   এখনই অর্ডার করুন
