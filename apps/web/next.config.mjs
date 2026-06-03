@@ -4,6 +4,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'sodaikini.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.sodaikini.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
       {
