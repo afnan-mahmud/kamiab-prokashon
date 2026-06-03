@@ -16,8 +16,9 @@ module.exports = {
   apps: [
     {
       name: 'sodaikini-api',
-      script: './apps/api/dist/index.js',
-      cwd: root,
+      // cwd = apps/api so `dotenv/config` finds apps/api/.env and uploads/ resolves correctly
+      script: './dist/index.js',
+      cwd: path.join(root, 'apps/api'),
       instances: 1,
       exec_mode: 'fork',
       env: {
@@ -38,8 +39,10 @@ module.exports = {
     },
     {
       name: 'sodaikini-web',
-      script: 'node_modules/.bin/next',
+      // Point at Next's real JS CLI (not the .bin/ shell shim — PM2 runs scripts via node)
+      script: 'node_modules/next/dist/bin/next',
       args: 'start',
+      interpreter: 'node',
       cwd: path.join(root, 'apps/web'),
       instances: 1,
       exec_mode: 'fork',
