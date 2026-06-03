@@ -5,7 +5,9 @@
 
 set -euo pipefail
 
-APP_DIR="/var/www/sodaikini"
+# Run from the repo root regardless of where this script is invoked from
+# (works for the CloudPanel site path, e.g. /home/<site-user>/htdocs/sodaikini.com).
+cd "$(dirname "$(readlink -f "$0")")"
 PNPM="pnpm"
 
 echo "▶ Pulling latest code..."

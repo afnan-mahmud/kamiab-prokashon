@@ -23,5 +23,12 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script_stop: true
           script: |
-            cd /var/www/sodaikini
+            cd ${{ secrets.VPS_APP_DIR }}
             bash deploy.sh
+
+# Secrets needed (repo → Settings → Secrets and variables → Actions):
+#   VPS_HOST     -> VPS IP
+#   VPS_USER     -> CloudPanel site user (NOT root — the user that owns htdocs)
+#   VPS_SSH_KEY  -> private key whose public key is in the site user's authorized_keys
+#   VPS_PORT     -> 22
+#   VPS_APP_DIR  -> /home/<site-user>/htdocs/sodaikini.com

@@ -1,4 +1,9 @@
-# Deployment Guide — Sodai Kini
+# Deployment Guide — Sodai Kini (Legacy: raw Nginx + PM2)
+
+> ⚠️ **Ei guide ta Hostinger KVM2 + raw Nginx + PM2 (root, dedicated server)-er jonno.**
+> Tomar current server **CloudPanel + shared VPS** — sei khetre **`deployment-cloudpanel.md`
+> follow koro** (ports 3010/3011, same-origin `/api` routing). Ei file-er manual nginx vhost,
+> `rm default`, `certbot --nginx` step-gula CloudPanel-e chalale onno site bhenge jete pare.
 
 **Stack:** Next.js 14 + Express.js (pnpm monorepo)  
 **Server:** Hostinger KVM2 VPS — Ubuntu 24 LTS  

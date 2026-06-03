@@ -1,55 +1,57 @@
-// PM2 ecosystem file — production process manager config
-// Usage: pm2 start ecosystem.config.cjs
-// Deploy: pm2 start ecosystem.config.cjs --env production
+// PM2 ecosystem file — production process manager config (CloudPanel / shared VPS)
+// Usage:  pm2 start ecosystem.config.cjs --env production
+// Reload: pm2 reload ecosystem.config.cjs --env production
+//
+// Ports (this VPS hosts other sites too — these are Sodai Kini's dedicated ports):
+//   web (Next.js)  -> 3010   (CloudPanel reverse-proxies sodaikini.com -> 3010)
+//   api (Express)  -> 3011   (exposed at sodaikini.com/api via CloudPanel Vhost)
+//
+// cwd is derived from this file's location (__dirname), so it works no matter
+// where the repo is cloned (e.g. /home/<site-user>/htdocs/sodaikini.com).
+
+const path = require('path');
+const root = __dirname;
 
 module.exports = {
   apps: [
     {
       name: 'sodaikini-api',
       script: './apps/api/dist/index.js',
-      cwd: '/var/www/sodaikini',
-      instances: 2,
-      exec_mode: 'cluster',
+      cwd: root,
+      instances: 1,
+      exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 4000,
+        PORT: 3011,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 4000,
+        PORT: 3011,
       },
-      // Auto-restart on crash
       restart_delay: 3000,
       max_restarts: 10,
-      // Memory limit — restart if API leaks above 500MB
-      max_memory_restart: '500M',
-      // Logs
-      out_file: '/var/log/pm2/sodaikini-api-out.log',
-      error_file: '/var/log/pm2/sodaikini-api-err.log',
+      max_memory_restart: '400M',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
-      // Zero-downtime reload
-      wait_ready: true,
-      listen_timeout: 10000,
-      kill_timeout: 5000,
+      // Logs default to ~/.pm2/logs (writable by the CloudPanel site user).
+      // View with: pm2 logs sodaikini-api
     },
     {
       name: 'sodaikini-web',
       script: 'node_modules/.bin/next',
       args: 'start',
-      cwd: '/var/www/sodaikini/apps/web',
+      cwd: path.join(root, 'apps/web'),
       instances: 1,
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3000,
+        PORT: 3010,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 3010,
       },
-      out_file: '/var/log/pm2/sodaikini-web-out.log',
-      error_file: '/var/log/pm2/sodaikini-web-err.log',
+      max_memory_restart: '600M',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
     },
