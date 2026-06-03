@@ -1,4 +1,4 @@
-# Cholon Bil Organic — Design System
+# Sodai Kini — Design System
 
 > Extracted from live site screenshots (desktop homepage, landing/product page, mobile homepage, mobile product page).  
 > Use this as the single source of truth when building components.
@@ -270,7 +270,7 @@ Same styling as input, custom chevron icon in `--text-secondary`
 
 ### 6.7 Landing Page Layout
 
-Observed in `screencapture-cholonbilorganic-step-muri` screenshot:
+Observed in `screencapture-sodaikini-step-muri` screenshot:
 
 **Sections in order:**
 1. **Hero** — Two column: left (headline + desc + CTA button), right (product image)

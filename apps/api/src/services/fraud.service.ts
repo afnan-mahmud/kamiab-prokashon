@@ -1,4 +1,4 @@
-import type { FraudReport, FraudSignal, FraudCourierBreakdown } from '@cholonbil/types';
+import type { FraudReport, FraudSignal, FraudCourierBreakdown } from '@sodaikini/types';
 import { DeliverySettings } from '../models/DeliverySettings.js';
 import { decrypt } from '../utils/encryption.js';
 import { logger } from '../utils/logger.js';

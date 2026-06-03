@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
-import type { AdminUser, Role } from '@cholonbil/types';
-import type { PaginatedResponse } from '@cholonbil/types';
+import type { AdminUser, Role } from '@sodaikini/types';
+import type { PaginatedResponse } from '@sodaikini/types';
 
 export interface CreateUserInput {
   name: string;

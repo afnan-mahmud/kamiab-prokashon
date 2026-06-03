@@ -23,5 +23,5 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script_stop: true
           script: |
-            cd /var/www/cholonbil
+            cd /var/www/sodaikini
             bash deploy.sh

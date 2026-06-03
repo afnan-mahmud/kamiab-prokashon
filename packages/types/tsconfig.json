@@ -1,5 +1,5 @@
 {
-  "extends": "@cholonbil/config/tsconfig/base",
+  "extends": "@sodaikini/config/tsconfig/base",
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

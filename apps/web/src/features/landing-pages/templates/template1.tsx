@@ -4,7 +4,7 @@ import { Star, ShieldCheck, Truck, PhoneCall } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { fixImageUrl } from '@/lib/image-url';
-import type { LandingPage, Product, ContentSection } from '@cholonbil/types';
+import type { LandingPage, Product, ContentSection } from '@sodaikini/types';
 
 interface Props {
   page: LandingPage;

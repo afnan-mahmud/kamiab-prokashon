@@ -7,7 +7,7 @@
  *
  * Safety guarantees:
  * - Does NOT affect stock (no stock movements created)
- * - Uses WP-{id} order numbers (no collision with CBO-YYYY-NNNN)
+ * - Uses WP-{id} order numbers (no collision with SK-YYYY-NNNN)
  * - Idempotent: can run multiple times safely (skips existing orders)
  * - Does not modify existing data
  *
@@ -476,7 +476,7 @@ async function migrate() {
   console.log('');
   console.log('⚠️  গুরুত্বপূর্ণ তথ্য:');
   console.log('   - WP orders-এর orderNumber: WP-{id} (e.g., WP-250, WP-46975)');
-  console.log('   - নতুন orders: CBO-YYYY-NNNN format-এ continue হবে');
+  console.log('   - নতুন orders: SK-YYYY-NNNN format-এ continue হবে');
   console.log('   - Stock affect হয়নি — কোনো stock movement তৈরি হয়নি');
   console.log('   - Product reference: placeholder ID ব্যবহার করা হয়েছে');
   console.log('');

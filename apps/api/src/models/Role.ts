@@ -1,5 +1,5 @@
 import { Schema, model, type Document } from 'mongoose';
-import type { Permission } from '@cholonbil/types';
+import type { Permission } from '@sodaikini/types';
 
 export interface IRole extends Document {
   name: string;

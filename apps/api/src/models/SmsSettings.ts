@@ -32,16 +32,16 @@ const templatesSchema = new Schema<ISmsTemplates>(
     orderConfirmed: {
       type: String,
       default:
-        'আপনার অর্ডার নিশ্চিত হয়েছে। অর্ডার নম্বর: {orderNumber}। ধন্যবাদ - Cholon Bil Organic',
+        'আপনার অর্ডার নিশ্চিত হয়েছে। অর্ডার নম্বর: {orderNumber}। ধন্যবাদ - Sodai Kini',
     },
     orderShipped: {
       type: String,
       default:
-        'আপনার অর্ডার কুরিয়ারে পাঠানো হয়েছে। ট্র্যাকিং কোড: {trackingCode}। - Cholon Bil Organic',
+        'আপনার অর্ডার কুরিয়ারে পাঠানো হয়েছে। ট্র্যাকিং কোড: {trackingCode}। - Sodai Kini',
     },
     orderCancelled: {
       type: String,
-      default: 'আপনার অর্ডার ({orderNumber}) বাতিল করা হয়েছে। - Cholon Bil Organic',
+      default: 'আপনার অর্ডার ({orderNumber}) বাতিল করা হয়েছে। - Sodai Kini',
     },
   },
   { _id: false },

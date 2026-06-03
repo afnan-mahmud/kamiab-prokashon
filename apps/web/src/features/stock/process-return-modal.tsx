@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ordersApi } from '@/features/orders/orders.api';
-import type { Order } from '@cholonbil/types';
+import type { Order } from '@sodaikini/types';
 
 const schema = z.object({
   items: z.array(

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Cholon Bil Organic — production deployment script
+# Sodai Kini — production deployment script
 # Usage: bash deploy.sh
 # Run from the repo root on the VPS.
 
 set -euo pipefail
 
-APP_DIR="/var/www/cholonbil"
+APP_DIR="/var/www/sodaikini"
 PNPM="pnpm"
 
 echo "▶ Pulling latest code..."
@@ -15,14 +15,14 @@ echo "▶ Installing dependencies..."
 $PNPM install --frozen-lockfile
 
 echo "▶ Building shared packages..."
-$PNPM --filter @cholonbil/types build 2>/dev/null || true
-$PNPM --filter @cholonbil/config build 2>/dev/null || true
+$PNPM --filter @sodaikini/types build 2>/dev/null || true
+$PNPM --filter @sodaikini/config build 2>/dev/null || true
 
 echo "▶ Building API..."
-$PNPM --filter @cholonbil/api build
+$PNPM --filter @sodaikini/api build
 
 echo "▶ Building web..."
-$PNPM --filter @cholonbil/web build
+$PNPM --filter @sodaikini/web build
 
 echo "▶ Reloading PM2 (zero-downtime)..."
 pm2 reload ecosystem.config.cjs --env production

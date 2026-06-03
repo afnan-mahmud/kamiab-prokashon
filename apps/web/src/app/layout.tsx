@@ -16,14 +16,14 @@ const hindSiliguri = Hind_Siliguri({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Cholon Bil Organic | অর্গানিক খাদ্যপণ্য',
-    template: '%s | Cholon Bil Organic',
+    default: 'Sodai Kini | অর্গানিক খাদ্যপণ্য',
+    template: '%s | Sodai Kini',
   },
   description:
     'বাংলাদেশের সেরা অর্গানিক খাদ্যপণ্য — চাল, মধু, মশলা, মিষ্টি এবং আরও অনেক কিছু।',
   keywords: ['organic', 'বাংলাদেশ', 'চাল', 'মধু', 'মশলা', 'অর্গানিক খাদ্য'],
   openGraph: {
-    siteName: 'Cholon Bil Organic',
+    siteName: 'Sodai Kini',
     locale: 'bn_BD',
     type: 'website',
   },

@@ -24,7 +24,7 @@ export function PublicHeader() {
       <div className="container-page flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="Cholon Bil Organic" width={140} height={44} className="object-contain" priority />
+          <Image src="/logo.png" alt="Sodai Kini" width={140} height={44} className="object-contain" priority />
         </Link>
 
         {/* Desktop nav */}

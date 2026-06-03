@@ -29,7 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Can } from '@/components/can';
-import type { Role, Permission } from '@cholonbil/types';
+import type { Role, Permission } from '@sodaikini/types';
 import { ApiError } from '@/lib/api-client';
 
 // Permission groups for the checkbox UI

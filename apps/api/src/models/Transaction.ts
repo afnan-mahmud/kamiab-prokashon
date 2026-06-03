@@ -3,7 +3,7 @@ import type {
   TransactionType,
   TransactionCategory,
   TransactionPaymentMethod,
-} from '@cholonbil/types';
+} from '@sodaikini/types';
 
 export interface ITransactionReference {
   type: 'order' | 'manual' | 'steadfast';

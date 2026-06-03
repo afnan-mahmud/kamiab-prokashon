@@ -15,7 +15,7 @@ import { stockApi, type StockMovementFilters } from '@/features/stock/stock.api'
 import { AddStockModal } from '@/features/stock/add-stock-modal';
 import { AdjustStockModal } from '@/features/stock/adjust-stock-modal';
 import { cn } from '@/lib/utils';
-import type { StockMovementType } from '@cholonbil/types';
+import type { StockMovementType } from '@sodaikini/types';
 
 const TYPE_LABELS: Record<StockMovementType, string> = {
   purchase: 'Purchase',

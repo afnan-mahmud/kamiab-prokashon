@@ -1,8 +1,8 @@
-# Deployment Guide — Cholon Bil Organic
+# Deployment Guide — Sodai Kini
 
 **Stack:** Next.js 14 + Express.js (pnpm monorepo)  
 **Server:** Hostinger KVM2 VPS — Ubuntu 24 LTS  
-**Repo:** https://github.com/afnan-mahmud/cholonbil-organic  
+**Repo:** https://github.com/afnan-mahmud/sodaikini-organic  
 **CI/CD:** GitHub Actions → SSH deploy on push to `main`
 
 ---
@@ -24,7 +24,7 @@
 Project folder-এ যাও এবং Git setup করো:
 
 ```bash
-cd /path/to/cholonbil-organic
+cd /path/to/sodaikini-organic
 
 # Git initialize করো (যদি না থাকে)
 git init
@@ -49,7 +49,7 @@ packages/*/dist/
 ### Step 1.2 — Remote repository যোগ করো
 
 ```bash
-git remote add origin https://github.com/afnan-mahmud/cholonbil-organic.git
+git remote add origin https://github.com/afnan-mahmud/sodaikini-organic.git
 
 # verify করো
 git remote -v
@@ -135,8 +135,8 @@ cd /var/www
 
 # Private repo হওয়ায় deploy key দরকার (Step 3.1-এ বানাবো)
 # এখন আপাতত Personal Access Token দিয়েও করা যাবে:
-git clone https://YOUR_GITHUB_TOKEN@github.com/afnan-mahmud/cholonbil-organic.git cholonbil
-cd cholonbil
+git clone https://YOUR_GITHUB_TOKEN@github.com/afnan-mahmud/sodaikini-organic.git sodaikini
+cd sodaikini
 ```
 
 ### Step 2.9 — Environment variables সেট করো
@@ -151,7 +151,7 @@ nano apps/api/.env
 ```env
 NODE_ENV=production
 PORT=4000
-MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/cholonbil
+MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/sodaikini
 JWT_ACCESS_SECRET=your_32_char_random_secret_here
 JWT_REFRESH_SECRET=your_32_char_random_secret_here
 ENCRYPTION_KEY=your_64_char_hex_key_here
@@ -159,8 +159,8 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 STEADFAST_BASE_URL=https://portal.packzy.com/api/v1
-COOKIE_DOMAIN=.cholonbilorganic.com
-CORS_ORIGIN=https://cholonbilorganic.com
+COOKIE_DOMAIN=.sodaikini.com
+CORS_ORIGIN=https://sodaikini.com
 ```
 
 ```bash
@@ -170,23 +170,23 @@ nano apps/web/.env.local
 ```
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.cholonbilorganic.com
-NEXT_PUBLIC_SITE_URL=https://cholonbilorganic.com
+NEXT_PUBLIC_API_URL=https://api.sodaikini.com
+NEXT_PUBLIC_SITE_URL=https://sodaikini.com
 NEXT_PUBLIC_META_PIXEL_ID=your_pixel_id_here
 ```
 
 ### Step 2.10 — প্রথমবার Build ও Start করো
 
 ```bash
-cd /var/www/cholonbil
+cd /var/www/sodaikini
 
 # Dependencies install
 pnpm install --frozen-lockfile
 
 # Build করো
-pnpm --filter @cholonbil/types build 2>/dev/null || true
-pnpm --filter @cholonbil/api build
-pnpm --filter @cholonbil/web build
+pnpm --filter @sodaikini/types build 2>/dev/null || true
+pnpm --filter @sodaikini/api build
+pnpm --filter @sodaikini/web build
 
 # PM2 দিয়ে start করো
 pm2 start ecosystem.config.cjs --env production
@@ -201,10 +201,10 @@ pm2 startup
 
 ```bash
 # Nginx config copy করো
-cp /var/www/cholonbil/nginx.conf /etc/nginx/sites-available/cholonbilorganic.com
+cp /var/www/sodaikini/nginx.conf /etc/nginx/sites-available/sodaikini.com
 
 # Enable করো
-ln -s /etc/nginx/sites-available/cholonbilorganic.com /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/sodaikini.com /etc/nginx/sites-enabled/
 
 # Default config disable করো
 rm -f /etc/nginx/sites-enabled/default
@@ -220,17 +220,17 @@ systemctl enable nginx
 ### Step 2.12 — SSL Certificate (HTTPS) নাও
 
 **আগে** Hostinger DNS-এ A record set করো:
-- `cholonbilorganic.com` → VPS IP
-- `www.cholonbilorganic.com` → VPS IP
-- `api.cholonbilorganic.com` → VPS IP
+- `sodaikini.com` → VPS IP
+- `www.sodaikini.com` → VPS IP
+- `api.sodaikini.com` → VPS IP
 
 DNS propagate হওয়ার পর (5-15 মিনিট):
 
 ```bash
 certbot --nginx \
-  -d cholonbilorganic.com \
-  -d www.cholonbilorganic.com \
-  -d api.cholonbilorganic.com \
+  -d sodaikini.com \
+  -d www.sodaikini.com \
+  -d api.sodaikini.com \
   --email afnanmahmud.afif@gmail.com \
   --agree-tos \
   --non-interactive
@@ -319,7 +319,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script_stop: true
           script: |
-            cd /var/www/cholonbil
+            cd /var/www/sodaikini
             bash deploy.sh
 ```
 
@@ -358,7 +358,7 @@ Live site update!
 ### Actions tab-এ deploy status check করো
 
 ```
-https://github.com/afnan-mahmud/cholonbil-organic/actions
+https://github.com/afnan-mahmud/sodaikini-organic/actions
 ```
 
 Green checkmark = সফল deploy  
@@ -373,8 +373,8 @@ ssh root@YOUR_VPS_IP
 pm2 status
 
 # Logs দেখো
-pm2 logs cholonbil-api --lines 50
-pm2 logs cholonbil-web --lines 50
+pm2 logs sodaikini-api --lines 50
+pm2 logs sodaikini-web --lines 50
 
 # Nginx status
 systemctl status nginx
@@ -392,8 +392,8 @@ Actions tab → failed job → step-এ click করলে full error দেখ�
 
 ```bash
 ssh root@YOUR_VPS_IP
-pm2 logs cholonbil-api --err --lines 100
-pm2 restart cholonbil-api
+pm2 logs sodaikini-api --err --lines 100
+pm2 restart sodaikini-api
 ```
 
 ### Nginx 502 Bad Gateway
@@ -415,7 +415,7 @@ VPS-এ RAM কম থাকলে Next.js build-এ memory issue হতে প�
 
 ```bash
 # deploy.sh-এ web build line টা এভাবে change করো:
-NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @cholonbil/web build
+NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @sodaikini/web build
 ```
 
 ### SSH Permission denied
@@ -446,9 +446,9 @@ systemctl reload nginx
 |------|---------|
 | VPS-এ SSH | `ssh root@YOUR_VPS_IP` |
 | PM2 status | `pm2 status` |
-| API logs | `pm2 logs cholonbil-api` |
-| Web logs | `pm2 logs cholonbil-web` |
-| Manual deploy | `cd /var/www/cholonbil && bash deploy.sh` |
+| API logs | `pm2 logs sodaikini-api` |
+| Web logs | `pm2 logs sodaikini-web` |
+| Manual deploy | `cd /var/www/sodaikini && bash deploy.sh` |
 | Nginx reload | `systemctl reload nginx` |
 | Nginx test | `nginx -t` |
-| Deploy status | https://github.com/afnan-mahmud/cholonbil-organic/actions |
+| Deploy status | https://github.com/afnan-mahmud/sodaikini-organic/actions |

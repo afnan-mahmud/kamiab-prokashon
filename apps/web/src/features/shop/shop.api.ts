@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Product, PaginatedResponse } from '@cholonbil/types';
+import type { Product, PaginatedResponse } from '@sodaikini/types';
 
 export interface PublicProductFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;

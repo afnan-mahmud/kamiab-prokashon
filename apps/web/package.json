@@ -1,5 +1,5 @@
 {
-  "name": "@cholonbil/web",
+  "name": "@sodaikini/web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cholonbil/types": "workspace:*",
+    "@sodaikini/types": "workspace:*",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
@@ -47,7 +47,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@cholonbil/config": "workspace:*",
+    "@sodaikini/config": "workspace:*",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

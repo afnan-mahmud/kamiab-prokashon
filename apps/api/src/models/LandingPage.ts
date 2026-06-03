@@ -1,5 +1,5 @@
 import { Schema, model, type Document, type Types } from 'mongoose';
-import type { LandingPageTemplate, ContentSection } from '@cholonbil/types';
+import type { LandingPageTemplate, ContentSection } from '@sodaikini/types';
 
 export interface ILandingPageContent {
   heroImage: { url: string; publicId: string };

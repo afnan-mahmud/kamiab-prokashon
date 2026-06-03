@@ -5,7 +5,7 @@ import type {
   AddStockInput,
   AdjustStockInput,
   PaginatedResponse,
-} from '@cholonbil/types';
+} from '@sodaikini/types';
 
 export interface StockMovementFilters
   extends Record<string, string | number | boolean | undefined> {

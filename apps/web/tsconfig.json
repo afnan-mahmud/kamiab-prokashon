@@ -1,5 +1,5 @@
 {
-  "extends": "@cholonbil/config/tsconfig/nextjs",
+  "extends": "@sodaikini/config/tsconfig/nextjs",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

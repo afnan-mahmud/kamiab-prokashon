@@ -9,7 +9,7 @@ import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react';
 import { landingPagesApi } from './landing-pages.api';
 import { shopApi } from '@/features/shop/shop.api';
 import { abandonedOrdersApi } from '@/features/abandoned-orders/abandoned-orders.api';
-import type { Product } from '@cholonbil/types';
+import type { Product } from '@sodaikini/types';
 import { fireEvent } from '@/lib/pixel';
 import { gtmBeginCheckout, gtmPurchase } from '@/lib/gtm';
 import { resolveDeliveryCharge } from '@/lib/delivery';

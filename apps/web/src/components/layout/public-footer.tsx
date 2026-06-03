@@ -10,7 +10,7 @@ export function PublicFooter() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <Image src="/logo-white.png" alt="Cholon Bil Organic" width={160} height={48} className="object-contain" />
+              <Image src="/logo-white.png" alt="Sodai Kini" width={160} height={48} className="object-contain" />
             </div>
             <p className="text-sm leading-relaxed text-gray-400">
               The finest natural and organic food products straight from the heart of Bangladesh.
@@ -43,15 +43,15 @@ export function PublicFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>01339371251</span>
+                <span>880 1346-990556</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>info@cholonbilorganic.com</span>
+                <span>contact@sodaikini.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>Cholan Bil, Natore, Bangladesh</span>
+                <span>House 37, Road 07, Sector 03, Uttara, Dhaka</span>
               </li>
             </ul>
           </div>
@@ -60,7 +60,7 @@ export function PublicFooter() {
           <div>
             <h3 className="mb-4 font-semibold text-white">Follow Us</h3>
             <a
-              href="https://web.facebook.com/cholonbilorganic"
+              href="https://web.facebook.com/sodaikini"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm hover:text-primary-light transition-colors"
@@ -79,7 +79,7 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-8 border-t border-gray-800 pt-6 flex flex-col items-center gap-1.5 text-center text-xs text-gray-500">
-          <span>© {new Date().getFullYear()} Cholon Bil Organic — All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Sodai Kini — All rights reserved.</span>
           <span>
             Developed by{' '}
             <a

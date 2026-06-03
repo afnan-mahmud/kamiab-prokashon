@@ -37,7 +37,7 @@ export default function HomePage() {
               🌿 প্রকৃতির সেরা উপহার
             </span>
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              চলন বিলের<br />
+              সদাই কিনির<br />
               <span className="text-yellow-300">অর্গানিক</span> পণ্য
             </h1>
             <p className="mt-4 text-lg text-white/80">

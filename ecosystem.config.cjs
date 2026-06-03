@@ -5,9 +5,9 @@
 module.exports = {
   apps: [
     {
-      name: 'cholonbil-api',
+      name: 'sodaikini-api',
       script: './apps/api/dist/index.js',
-      cwd: '/var/www/cholonbil',
+      cwd: '/var/www/sodaikini',
       instances: 2,
       exec_mode: 'cluster',
       env: {
@@ -24,8 +24,8 @@ module.exports = {
       // Memory limit — restart if API leaks above 500MB
       max_memory_restart: '500M',
       // Logs
-      out_file: '/var/log/pm2/cholonbil-api-out.log',
-      error_file: '/var/log/pm2/cholonbil-api-err.log',
+      out_file: '/var/log/pm2/sodaikini-api-out.log',
+      error_file: '/var/log/pm2/sodaikini-api-err.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       // Zero-downtime reload
@@ -34,10 +34,10 @@ module.exports = {
       kill_timeout: 5000,
     },
     {
-      name: 'cholonbil-web',
+      name: 'sodaikini-web',
       script: 'node_modules/.bin/next',
       args: 'start',
-      cwd: '/var/www/cholonbil/apps/web',
+      cwd: '/var/www/sodaikini/apps/web',
       instances: 1,
       exec_mode: 'fork',
       env: {
@@ -48,8 +48,8 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000,
       },
-      out_file: '/var/log/pm2/cholonbil-web-out.log',
-      error_file: '/var/log/pm2/cholonbil-web-err.log',
+      out_file: '/var/log/pm2/sodaikini-web-out.log',
+      error_file: '/var/log/pm2/sodaikini-web-err.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
     },

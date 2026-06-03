@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { DashboardData } from '@cholonbil/types';
+import type { DashboardData } from '@sodaikini/types';
 
 export const dashboardApi = {
   get: (from?: string, to?: string) =>

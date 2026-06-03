@@ -1,6 +1,6 @@
 # Stock Management — Design Spec
 **Date:** 2026-05-19  
-**Project:** Cholon Bil Organic  
+**Project:** Sodai Kini  
 **Pattern:** Inventory Ledger (Option A)
 
 ---

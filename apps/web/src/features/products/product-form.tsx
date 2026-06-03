@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { productsApi } from './products.api';
-import type { Product } from '@cholonbil/types';
+import type { Product } from '@sodaikini/types';
 
 // ── Schema ──────────────────────────────────────────────────────────────────
 

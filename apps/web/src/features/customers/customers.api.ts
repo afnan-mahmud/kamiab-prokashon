@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Customer, Order, PaginatedResponse } from '@cholonbil/types';
+import type { Customer, Order, PaginatedResponse } from '@sodaikini/types';
 
 export interface CustomerFilters extends Record<string, string | number | undefined> {
   page?: number;

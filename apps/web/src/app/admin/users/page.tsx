@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Can } from '@/components/can';
-import type { AdminUser } from '@cholonbil/types';
+import type { AdminUser } from '@sodaikini/types';
 import { ApiError } from '@/lib/api-client';
 import { format } from 'date-fns';
 

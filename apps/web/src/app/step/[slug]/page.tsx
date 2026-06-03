@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { landingPagesApi } from '@/features/landing-pages/landing-pages.api';
-import type { Product } from '@cholonbil/types';
+import type { Product } from '@sodaikini/types';
 import { fireEvent } from '@/lib/pixel';
 import { gtmViewItem } from '@/lib/gtm';
 
