@@ -17,19 +17,19 @@ Ei app-e **duto** process chole, duto **alada port**-e (onno site-er sathe confl
 
 | Process | Port | Public URL |
 |---------|------|------------|
-| Web (Next.js) | **3010** | `https://shukhilife.com/` |
-| API (Express) | **3011** | `https://shukhilife.com/api/...` |
+| Web (Next.js) | **3030** | `https://shukhilife.com/` |
+| API (Express) | **3031** | `https://shukhilife.com/api/...` |
 
-CloudPanel-er Node.js site already `shukhilife.com → 3010` proxy korche. Amra Vhost-e ekta
-location rule add korbo jate **`/api/` → 3011** (Express) jay.
+CloudPanel-er Node.js site already `shukhilife.com → 3030` proxy korche. Amra Vhost-e ekta
+location rule add korbo jate **`/api/` → 3031** (Express) jay.
 
 **Ekta exception:** Next.js-er nijer ekta route ase — `/api/capi` (Meta Conversions API,
 token hide kore). Tai routing eta:
 
 ```
-/api/capi   → 3010  (Next.js — exact match, sob theke specific)
-/api/...    → 3011  (Express API)
-/ (baki sob) → 3010  (Next.js — CloudPanel default)
+/api/capi   → 3030  (Next.js — exact match, sob theke specific)
+/api/...    → 3031  (Express API)
+/ (baki sob) → 3030  (Next.js — CloudPanel default)
 ```
 
 `NEXT_PUBLIC_API_URL=https://shukhilife.com` (same-origin) — tai cookie/CORS-e kono cross-site
@@ -41,7 +41,7 @@ jhamela nei, admin login cleanly kaj korbe.
 
 1. CloudPanel → **Sites → Add Site → Create a Node.js Site**
    - Domain: `shukhilife.com`
-   - App Port: **3010**
+   - App Port: **3030**
    - Node.js version: **20** (ba 22)
    - (Eta CloudPanel ekta **site user** banabe, jemon `shukhilife-XXXX`, ar htdocs path
      `/home/<site-user>/htdocs/shukhilife.com`)
@@ -65,7 +65,7 @@ cd /home/<SITE_USER>/htdocs/shukhilife.com
 rm -f index.html
 
 # Private repo — Personal Access Token (PAT) diye clone (repo scope)
-git clone https://<GITHUB_TOKEN>@github.com/afnan-mahmud/sodai-kini.git .
+git clone https://<GITHUB_TOKEN>@github.com/afnan-mahmud/shukhi-life.git .
 # (sesher '.' = current dir-e clone, notun folder banabe na)
 ```
 
@@ -96,7 +96,7 @@ Fill koro (`.env.example`-e production values already ase):
 
 ```env
 NODE_ENV=production
-PORT=3011
+PORT=3031
 MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/shukhilife?appName=Cluster0
 JWT_ACCESS_SECRET=<32+ char random>
 JWT_REFRESH_SECRET=<32+ char random>
@@ -162,8 +162,8 @@ Check:
 
 ```bash
 pm2 status                      # shukhilife-api + shukhilife-web -> online thakbe
-curl -I http://127.0.0.1:3010   # web (200)
-curl  http://127.0.0.1:3011/api/health   # api (200 JSON)
+curl -I http://127.0.0.1:3030   # web (200)
+curl  http://127.0.0.1:3031/api/health   # api (200 JSON)
 ```
 
 > Memory build-e kom porle (Next.js OOM): `NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @shukhilife/web build`
@@ -173,12 +173,12 @@ curl  http://127.0.0.1:3011/api/health   # api (200 JSON)
 ## 6. CloudPanel Vhost — `/api` routing add koro
 
 CloudPanel → **Sites → shukhilife.com → Vhost** tab. Default vhost-e `location / { proxy_pass
-http://127.0.0.1:3010; ... }` ase. Tar **upore** ei duto block add koro:
+http://127.0.0.1:3030; ... }` ase. Tar **upore** ei duto block add koro:
 
 ```nginx
 # Next.js-er nijer CAPI route — exact match, tai eta /api/ rule-er age priority pay
 location = /api/capi {
-    proxy_pass http://127.0.0.1:3010;
+    proxy_pass http://127.0.0.1:3030;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -188,7 +188,7 @@ location = /api/capi {
 
 # Express API — baki sob /api/...
 location /api/ {
-    proxy_pass http://127.0.0.1:3011;
+    proxy_pass http://127.0.0.1:3031;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -199,7 +199,7 @@ location /api/ {
 
 # Uploaded product images (Express serves apps/api/uploads at /uploads)
 location /uploads/ {
-    proxy_pass http://127.0.0.1:3011;
+    proxy_pass http://127.0.0.1:3031;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -267,8 +267,8 @@ Erpor `git push origin main` korlei VPS-e `deploy.sh` cholbe (pull → build →
 
 | Somossa | Fix |
 |---------|-----|
-| `502 Bad Gateway` | `pm2 status` — app down? `pm2 restart all`. Port thik? `ss -tlnp \| grep -E '3010\|3011'` |
-| Port 3011 already in use | Onno site use korche — ecosystem.config.cjs + apps/api/.env + Vhost-e notun free port dao (`ss -tlnp` diye free port khojo) |
+| `502 Bad Gateway` | `pm2 status` — app down? `pm2 restart all`. Port thik? `ss -tlnp \| grep -E '3030\|3031'` |
+| Port 3031 already in use | Onno site use korche — ecosystem.config.cjs + apps/api/.env + Vhost-e notun free port dao (`ss -tlnp` diye free port khojo) |
 | `/api/...` → Next 404 page | Vhost-e `/api/` block add hoy nai / `location /`-er niche chole geche. Block ta upore rakho, save koro |
 | Meta CAPI kaj korche na | `location = /api/capi` block missing — eta `/api/` block-er age thakte hobe |
 | Admin login cookie tikche na | `.env`-e `COOKIE_DOMAIN=shukhilife.com`, `CORS_ORIGIN=https://shukhilife.com`, SSL active ache check koro |
@@ -282,5 +282,5 @@ pm2 status
 pm2 logs shukhilife-api --lines 50
 pm2 logs shukhilife-web --lines 50
 pm2 reload ecosystem.config.cjs --env production
-ss -tlnp | grep -E '3010|3011'      # port check
+ss -tlnp | grep -E '3030|3031'      # port check
 ```

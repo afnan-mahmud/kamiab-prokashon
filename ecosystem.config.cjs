@@ -3,8 +3,8 @@
 // Reload: pm2 reload ecosystem.config.cjs --env production
 //
 // Ports (this VPS hosts other sites too — these are Shukhi Life's dedicated ports):
-//   web (Next.js)  -> 3010   (CloudPanel reverse-proxies shukhilife.com -> 3010)
-//   api (Express)  -> 3011   (exposed at shukhilife.com/api via CloudPanel Vhost)
+//   web (Next.js)  -> 3030   (CloudPanel reverse-proxies shukhilife.com -> 3030)
+//   api (Express)  -> 3031   (exposed at shukhilife.com/api via CloudPanel Vhost)
 //
 // cwd is derived from this file's location (__dirname), so it works no matter
 // where the repo is cloned (e.g. /home/<site-user>/htdocs/shukhilife.com).
@@ -23,11 +23,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3011,
+        PORT: 3031,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3011,
+        PORT: 3031,
       },
       restart_delay: 3000,
       max_restarts: 10,
@@ -48,11 +48,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3010,
+        PORT: 3030,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3010,
+        PORT: 3030,
       },
       max_memory_restart: '600M',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
