@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Can } from '@/components/can';
-import type { Permission } from '@sodaikini/types';
+import type { Permission } from '@shukhilife/types';
 
 interface NavItem {
   label: string;
@@ -78,7 +78,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <span className="text-sm font-bold text-white">CB</span>
             </div>
-            <span className="text-sm font-semibold text-sidebar-foreground">Sodai Kini</span>
+            <span className="text-sm font-semibold text-sidebar-foreground">Shukhi Life</span>
           </Link>
           <button
             onClick={onClose}
@@ -115,7 +115,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
 
         {/* Footer */}
         <div className="border-t border-sidebar-border px-5 py-3">
-          <p className="text-xs text-sidebar-foreground/40">Sodai Kini Admin</p>
+          <p className="text-xs text-sidebar-foreground/40">Shukhi Life Admin</p>
         </div>
       </aside>
     </>

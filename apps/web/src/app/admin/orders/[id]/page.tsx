@@ -22,7 +22,7 @@ import { ordersApi } from '@/features/orders/orders.api';
 import { productsApi } from '@/features/products/products.api';
 import { ProcessReturnModal } from '@/features/stock/process-return-modal';
 import { cn } from '@/lib/utils';
-import type { OrderStatus } from '@sodaikini/types';
+import type { OrderStatus } from '@shukhilife/types';
 import type { UpdateOrderInput } from '@/features/orders/orders.api';
 
 interface ItemDraft {

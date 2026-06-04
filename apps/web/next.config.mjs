@@ -4,11 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'sodaikini.com',
+        hostname: 'shukhilife.com',
       },
       {
         protocol: 'https',
-        hostname: 'www.sodaikini.com',
+        hostname: 'www.shukhilife.com',
       },
       {
         protocol: 'https',

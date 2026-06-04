@@ -14,7 +14,7 @@ import { sendSMS, getSmsTemplate } from '../../services/sms.service.js';
 import { createSaleMovements, createMovement, StockError } from '../../services/stock.service.js';
 import { resolveDeliveryCharge, DEFAULT_CHARGES, type DeliveryItem } from '../../services/delivery.service.js';
 import { nextOrderNumber } from '../../models/Counter.js';
-import type { OrderStatus } from '@sodaikini/types';
+import type { OrderStatus } from '@shukhilife/types';
 
 const router: Router = Router();
 

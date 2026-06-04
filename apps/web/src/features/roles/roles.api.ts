@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Role, Permission } from '@sodaikini/types';
+import type { Role, Permission } from '@shukhilife/types';
 
 export interface CreateRoleInput {
   name: string;

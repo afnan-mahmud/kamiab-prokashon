@@ -2,12 +2,12 @@
 // Usage:  pm2 start ecosystem.config.cjs --env production
 // Reload: pm2 reload ecosystem.config.cjs --env production
 //
-// Ports (this VPS hosts other sites too — these are Sodai Kini's dedicated ports):
-//   web (Next.js)  -> 3010   (CloudPanel reverse-proxies sodaikini.com -> 3010)
-//   api (Express)  -> 3011   (exposed at sodaikini.com/api via CloudPanel Vhost)
+// Ports (this VPS hosts other sites too — these are Shukhi Life's dedicated ports):
+//   web (Next.js)  -> 3010   (CloudPanel reverse-proxies shukhilife.com -> 3010)
+//   api (Express)  -> 3011   (exposed at shukhilife.com/api via CloudPanel Vhost)
 //
 // cwd is derived from this file's location (__dirname), so it works no matter
-// where the repo is cloned (e.g. /home/<site-user>/htdocs/sodaikini.com).
+// where the repo is cloned (e.g. /home/<site-user>/htdocs/shukhilife.com).
 
 const path = require('path');
 const root = __dirname;
@@ -15,7 +15,7 @@ const root = __dirname;
 module.exports = {
   apps: [
     {
-      name: 'sodaikini-api',
+      name: 'shukhilife-api',
       // cwd = apps/api so `dotenv/config` finds apps/api/.env and uploads/ resolves correctly
       script: './dist/index.js',
       cwd: path.join(root, 'apps/api'),
@@ -35,10 +35,10 @@ module.exports = {
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       // Logs default to ~/.pm2/logs (writable by the CloudPanel site user).
-      // View with: pm2 logs sodaikini-api
+      // View with: pm2 logs shukhilife-api
     },
     {
-      name: 'sodaikini-web',
+      name: 'shukhilife-web',
       // Point at Next's real JS CLI (not the .bin/ shell shim — PM2 runs scripts via node)
       script: 'node_modules/next/dist/bin/next',
       args: 'start',

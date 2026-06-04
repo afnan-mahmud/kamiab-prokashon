@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { landingPagesApi, type CreateLandingPageInput } from './landing-pages.api';
 import { productsApi } from '@/features/products/products.api';
-import type { LandingPage, ContentSection } from '@sodaikini/types';
+import type { LandingPage, ContentSection } from '@shukhilife/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

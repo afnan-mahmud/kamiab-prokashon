@@ -25,7 +25,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Can } from '@/components/can';
 import { accountsApi } from '@/features/accounts/accounts.api';
-import type { Transaction } from '@sodaikini/types';
+import type { Transaction } from '@shukhilife/types';
 
 const EXPENSE_CATEGORIES = ['rent', 'salary', 'marketing', 'inventory', 'delivery', 'utility', 'other'] as const;
 const PAYMENT_METHODS = ['cash', 'bkash', 'card', 'bank'] as const;

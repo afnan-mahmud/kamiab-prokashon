@@ -1,6 +1,6 @@
 # Stock Management — Design Spec
 **Date:** 2026-05-19  
-**Project:** Sodai Kini  
+**Project:** Shukhi Life  
 **Pattern:** Inventory Ledger (Option A)
 
 ---

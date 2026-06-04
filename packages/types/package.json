@@ -1,5 +1,5 @@
 {
-  "name": "@sodaikini/types",
+  "name": "@shukhilife/types",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@sodaikini/config": "workspace:*",
+    "@shukhilife/config": "workspace:*",
     "typescript": "^5.5.3"
   }
 }

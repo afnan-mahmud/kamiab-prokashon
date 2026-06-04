@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Transaction, CreateExpenseInput, PaginatedResponse } from '@sodaikini/types';
+import type { Transaction, CreateExpenseInput, PaginatedResponse } from '@shukhilife/types';
 
 export interface AccountsSummary {
   totalIncome: number;

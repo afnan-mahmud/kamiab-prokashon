@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { AdminUser } from '@sodaikini/types';
+import type { AdminUser } from '@shukhilife/types';
 
 export interface AuthResponse {
   accessToken: string;

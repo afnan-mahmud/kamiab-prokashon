@@ -6,7 +6,7 @@ import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { apiClient, ApiError } from '@/lib/api-client';
-import type { ProductImage } from '@sodaikini/types';
+import type { ProductImage } from '@shukhilife/types';
 
 interface ImageUploaderProps {
   images: ProductImage[];

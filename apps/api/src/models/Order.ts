@@ -5,7 +5,7 @@ import type {
   PaymentStatus,
   DeliveryLocation,
   OrderSource,
-} from '@sodaikini/types';
+} from '@shukhilife/types';
 
 export interface IOrderItem {
   product: Types.ObjectId;

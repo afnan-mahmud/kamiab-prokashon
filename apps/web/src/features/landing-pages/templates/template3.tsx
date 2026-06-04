@@ -4,7 +4,7 @@ import { Star, CheckCircle } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { fixImageUrl } from '@/lib/image-url';
-import type { LandingPage, Product, ContentSection } from '@sodaikini/types';
+import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
 interface Props {
   page: LandingPage;

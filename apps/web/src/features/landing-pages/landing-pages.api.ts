@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { LandingPage, PaginatedResponse } from '@sodaikini/types';
+import type { LandingPage, PaginatedResponse } from '@shukhilife/types';
 
 export interface CreateLandingPageInput {
   name: string;

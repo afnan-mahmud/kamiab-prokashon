@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useCartStore } from '@/stores/cart.store';
 import { formatPrice } from '@/lib/format';
 import { gtmAddToCart } from '@/lib/gtm';
-import type { Product } from '@sodaikini/types';
+import type { Product } from '@shukhilife/types';
 
 interface ProductCardProps {
   product: Product;

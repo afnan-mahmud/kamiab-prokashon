@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ordersApi } from '@/features/orders/orders.api';
 import { shopApi } from '@/features/shop/shop.api';
 import { productsApi } from '@/features/products/products.api';
-import type { Product } from '@sodaikini/types';
+import type { Product } from '@shukhilife/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

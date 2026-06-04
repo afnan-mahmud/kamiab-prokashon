@@ -101,7 +101,7 @@ async function migrate() {
 
   console.log('🔌 MongoDB-তে connect হচ্ছে...');
   await mongoose.connect(env.MONGODB_URI);
-  console.log('✅ Connected to MongoDB (database: sodaikini)');
+  console.log('✅ Connected to MongoDB (database: shukhilife)');
 
   const raw = fs.readFileSync(csvPath, 'utf-8');
   const rows = parseCSV(raw);
@@ -183,7 +183,7 @@ async function migrate() {
   }
 
   await mongoose.disconnect();
-  console.log('\n🎉 Done! MongoDB Atlas-এ sodaikini.customers collection চেক করুন।');
+  console.log('\n🎉 Done! MongoDB Atlas-এ shukhilife.customers collection চেক করুন।');
 }
 
 migrate().catch(err => {

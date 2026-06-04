@@ -1,4 +1,4 @@
-import type { Permission } from '@sodaikini/types';
+import type { Permission } from '@shukhilife/types';
 
 export interface AuthenticatedUser {
   _id: string;

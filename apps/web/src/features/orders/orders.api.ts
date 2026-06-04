@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Order, PaginatedResponse, ProcessReturnInput, FraudReport } from '@sodaikini/types';
+import type { Order, PaginatedResponse, ProcessReturnInput, FraudReport } from '@shukhilife/types';
 
 export interface OrderFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;

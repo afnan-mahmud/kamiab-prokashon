@@ -32,16 +32,16 @@ const templatesSchema = new Schema<ISmsTemplates>(
     orderConfirmed: {
       type: String,
       default:
-        'আপনার অর্ডার নিশ্চিত হয়েছে। অর্ডার নম্বর: {orderNumber}। ধন্যবাদ - Sodai Kini',
+        'আপনার অর্ডার নিশ্চিত হয়েছে। অর্ডার নম্বর: {orderNumber}। ধন্যবাদ - Shukhi Life',
     },
     orderShipped: {
       type: String,
       default:
-        'আপনার অর্ডার কুরিয়ারে পাঠানো হয়েছে। ট্র্যাকিং কোড: {trackingCode}। - Sodai Kini',
+        'আপনার অর্ডার কুরিয়ারে পাঠানো হয়েছে। ট্র্যাকিং কোড: {trackingCode}। - Shukhi Life',
     },
     orderCancelled: {
       type: String,
-      default: 'আপনার অর্ডার ({orderNumber}) বাতিল করা হয়েছে। - Sodai Kini',
+      default: 'আপনার অর্ডার ({orderNumber}) বাতিল করা হয়েছে। - Shukhi Life',
     },
   },
   { _id: false },

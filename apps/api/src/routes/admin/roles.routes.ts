@@ -4,7 +4,7 @@ import { Role } from '../../models/Role.js';
 import { User } from '../../models/User.js';
 import { requirePermission } from '../../middleware/require-permission.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
-import type { Permission } from '@sodaikini/types';
+import type { Permission } from '@shukhilife/types';
 
 const router: Router = Router();
 

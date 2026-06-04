@@ -1,8 +1,8 @@
-# Sodai Kini - Full Stack E-commerce Platform
+# Shukhi Life - Full Stack E-commerce Platform
 
 ## Project Overview
 
-Migrate Sodai Kini (https://sodaikini.com/) from WordPress/WooCommerce to a custom MERN stack solution with a comprehensive admin panel, landing page builder, and integrated courier + SMS systems.
+Migrate Shukhi Life (https://shukhilife.com/) from WordPress/WooCommerce to a custom MERN stack solution with a comprehensive admin panel, landing page builder, and integrated courier + SMS systems.
 
 **Business Context:** Bangladesh-based organic food e-commerce store (rice, honey, spices, sweets, etc.) primarily serving Bengali-speaking customers. Orders are mostly Cash on Delivery (COD) with Steadfast as the delivery partner. Most product listings, UI text, and customer communication happen in Bengali.
 
@@ -41,7 +41,7 @@ Migrate Sodai Kini (https://sodaikini.com/) from WordPress/WooCommerce to a cust
 ### Repository Structure (Monorepo)
 
 ```
-sodaikini/
+shukhilife/
 ├── apps/
 │   ├── web/                  # Next.js — public site + admin panel
 │   └── api/                  # Express backend
@@ -60,7 +60,7 @@ Use **pnpm workspaces**. Single deployment target: VPS with Nginx reverse proxy 
 
 ## Design System
 
-### Colors (extracted from sodaikini.com — verify with screenshots)
+### Colors (extracted from shukhilife.com — verify with screenshots)
 ```css
 --primary: #4a7c2e;        /* organic green */
 --primary-dark: #3a6324;
@@ -176,7 +176,7 @@ Index on `phone` is critical — checkout auto-fills from this.
 #### `orders`
 ```ts
 {
-  _id, orderNumber (e.g., "SK-2026-0001"),
+  _id, orderNumber (e.g., "SL-2026-0001"),
   customer: ObjectId (ref Customer),
   customerSnapshot: { phone, name, address, city, area },  // freeze at order time
   items: [{
@@ -673,14 +673,14 @@ CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 STEADFAST_BASE_URL=https://portal.packzy.com/api/v1
-COOKIE_DOMAIN=.sodaikini.com
-CORS_ORIGIN=https://sodaikini.com,https://admin.sodaikini.com
+COOKIE_DOMAIN=.shukhilife.com
+CORS_ORIGIN=https://shukhilife.com,https://admin.shukhilife.com
 ```
 
 ### `.env.local` (web)
 ```
-NEXT_PUBLIC_API_URL=https://api.sodaikini.com
-NEXT_PUBLIC_SITE_URL=https://sodaikini.com
+NEXT_PUBLIC_API_URL=https://api.shukhilife.com
+NEXT_PUBLIC_SITE_URL=https://shukhilife.com
 ```
 
 ---
@@ -710,7 +710,7 @@ NEXT_PUBLIC_SITE_URL=https://sodaikini.com
 
 ## Design Reference
 
-Place all screenshots from sodaikini.com in `/design-references/` with subfolders `desktop/` and `mobile/`. When asking Claude Code to build a component, reference the relevant screenshot file. The new design should match the original's organic/earthy feel but use modern component library polish (shadcn/ui).
+Place all screenshots from shukhilife.com in `/design-references/` with subfolders `desktop/` and `mobile/`. When asking Claude Code to build a component, reference the relevant screenshot file. The new design should match the original's organic/earthy feel but use modern component library polish (shadcn/ui).
 
 Key visual elements to preserve:
 - Green organic theme

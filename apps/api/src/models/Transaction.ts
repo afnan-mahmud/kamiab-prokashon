@@ -3,7 +3,7 @@ import type {
   TransactionType,
   TransactionCategory,
   TransactionPaymentMethod,
-} from '@sodaikini/types';
+} from '@shukhilife/types';
 
 export interface ITransactionReference {
   type: 'order' | 'manual' | 'steadfast';

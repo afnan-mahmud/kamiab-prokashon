@@ -31,7 +31,7 @@ export interface UploadResult {
 
 export async function uploadImage(
   buffer: Buffer,
-  folder = 'sodaikini/products',
+  folder = 'shukhilife/products',
 ): Promise<UploadResult> {
   configure();
 

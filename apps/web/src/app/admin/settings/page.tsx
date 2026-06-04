@@ -135,7 +135,7 @@ export default function SmsSettingsPage() {
 
               <div>
                 <label className="text-sm font-medium">Sender ID</label>
-                <Input {...form.register('senderId')} className="mt-1" placeholder="e.g. SODAIKINI" />
+                <Input {...form.register('senderId')} className="mt-1" placeholder="e.g. SHUKHILIFE" />
               </div>
 
               <div className="flex items-center gap-3">
