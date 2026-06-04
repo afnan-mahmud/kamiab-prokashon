@@ -24,6 +24,12 @@ const contentSectionSchema = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('why_product'), items: z.array(z.string()) }),
   z.object({ type: z.literal('why_us'), items: z.array(z.string()) }),
+  z.object({
+    type: z.literal('reviews'),
+    images: z.array(
+      z.object({ url: z.string(), publicId: z.string(), alt: z.string().default('') }),
+    ),
+  }),
 ]);
 
 const contentSchema = z.object({

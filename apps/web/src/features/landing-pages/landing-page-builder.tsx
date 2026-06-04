@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { landingPagesApi, type CreateLandingPageInput } from './landing-pages.api';
 import { productsApi } from '@/features/products/products.api';
+import { ImageUploader } from '@/components/admin/image-uploader';
 import type { LandingPage, ContentSection } from '@shukhilife/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -53,6 +54,7 @@ const SECTION_TYPES = [
   { type: 'faq', label: 'FAQ' },
   { type: 'why_product', label: 'কেন খাবেন আমাদের পণ্য?' },
   { type: 'why_us', label: 'কেন আমাদের থেকে কিনবেন?' },
+  { type: 'reviews', label: 'গ্রাহকদের মন্তব্য (স্ক্রিনশট)' },
 ] as const;
 
 // ── Step indicator ─────────────────────────────────────────────────────────────
@@ -238,6 +240,7 @@ function ContentStep({
       case 'faq': newSection = { type: 'faq', items: [{ q: '', a: '' }] }; break;
       case 'why_product': newSection = { type: 'why_product', items: [''] }; break;
       case 'why_us': newSection = { type: 'why_us', items: [''] }; break;
+      case 'reviews': newSection = { type: 'reviews', images: [] }; break;
     }
     onChange({ ...content, sections: [...content.sections, newSection] });
   };
@@ -268,7 +271,7 @@ function ContentStep({
         </div>
         <div>
           <label className="text-xs text-muted-foreground">Hero Subtitle</label>
-          <Input value={content.heroSubtitle} onChange={(e) => onChange({ ...content, heroSubtitle: e.target.value })} className="mt-1" placeholder="১০০% অর্গানিক, সরাসরি কৃষক থেকে" />
+          <Input value={content.heroSubtitle} onChange={(e) => onChange({ ...content, heroSubtitle: e.target.value })} className="mt-1" placeholder="১০০% প্রাকৃতিক হার্বাল হেলথ সলিউশন" />
         </div>
         <div>
           <label className="text-xs text-muted-foreground">CTA Button Text</label>
@@ -514,6 +517,19 @@ function ContentStep({
                 <Button size="sm" variant="outline" onClick={() => updateSection(i, { ...section, items: [...section.items, ''] })}>
                   <Plus className="mr-1 h-3.5 w-3.5" /> কারণ যোগ করুন
                 </Button>
+              </div>
+            )}
+
+            {section.type === 'reviews' && (
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Title: গ্রাহকদের মন্তব্য <span className="italic">(hardcoded)</span> — স্ক্রিনশট আপলোড করুন, ওয়েবসাইটে অটো-স্লাইড হবে
+                </p>
+                <ImageUploader
+                  images={section.images}
+                  onChange={(images) => updateSection(i, { ...section, images })}
+                  maxImages={20}
+                />
               </div>
             )}
           </div>

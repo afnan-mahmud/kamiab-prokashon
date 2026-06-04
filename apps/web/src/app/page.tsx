@@ -6,13 +6,13 @@ import { ProductsGrid } from '@/components/public/products-grid';
 const FEATURES = [
   {
     icon: Leaf,
-    title: '১০০% অর্গানিক',
-    desc: 'কোনো কৃত্রিম রং বা সংরক্ষক ছাড়া',
+    title: '১০০% প্রাকৃতিক',
+    desc: 'খাঁটি হার্বাল উপাদান — কোনো ক্ষতিকর রাসায়নিক ছাড়া',
   },
   {
     icon: Shield,
     title: 'মান নিশ্চিত',
-    desc: 'সরাসরি কৃষক থেকে আপনার দরজায়',
+    desc: 'বিশেষজ্ঞ নির্বাচিত প্রাকৃতিক হেলথ সলিউশন',
   },
   {
     icon: Truck,
@@ -34,14 +34,14 @@ export default function HomePage() {
         <div className="container-page relative py-20 text-white md:py-28">
           <div className="max-w-xl">
             <span className="mb-4 inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium">
-              🌿 প্রকৃতির সেরা উপহার
+              🌿 ন্যাচারাল হেলথ সলিউশন
             </span>
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              সুখী লাইফের<br />
-              <span className="text-yellow-300">অর্গানিক</span> পণ্য
+              দিন শুরু হোক<br />
+              <span className="text-yellow-300">সুখী লাইফের</span> সাথে
             </h1>
             <p className="mt-4 text-lg text-white/80">
-              সম্পূর্ণ প্রাকৃতিক চাল, মধু, মশলা ও মিষ্টি — কোনো ভেজাল নেই, কোনো রাসায়নিক নেই।
+              প্রাকৃতিক হার্বস ও অর্গানিক হেলথ সলিউশন — কোনো ভেজাল নেই, কোনো ক্ষতিকর রাসায়নিক নেই।
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

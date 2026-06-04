@@ -3,6 +3,7 @@
 import { Star, ShieldCheck, Truck, PhoneCall } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
+import { ReviewsCarousel } from './reviews-carousel';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -157,6 +158,8 @@ function SectionRenderer({
           </div>
         </div>
       );
+    case 'reviews':
+      return <ReviewsCarousel images={section.images} primary={primary} />;
     default:
       return null;
   }

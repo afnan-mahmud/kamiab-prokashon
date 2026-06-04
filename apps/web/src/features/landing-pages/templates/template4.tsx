@@ -3,6 +3,7 @@
 import { Star, ShieldCheck, Truck, CheckCircle } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
+import { ReviewsCarousel } from './reviews-carousel';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -38,6 +39,10 @@ export default function Template4({ page, product }: Props) {
     .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
     .flatMap((s) => s.items);
 
+  const reviewImages = content.sections
+    .filter((s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews')
+    .flatMap((s) => s.images);
+
   const productImgs = product.images.slice(0, 4).map((img) => ({
     url: img.url,
     alt: img.alt ?? product.name,
@@ -63,7 +68,7 @@ export default function Template4({ page, product }: Props) {
           background: `linear-gradient(90deg, ${primary} 0%, ${primary}cc 100%)`,
         }}
       >
-        🌿 ১০০% অর্গানিক — সরাসরি কৃষক থেকে আপনার দরজায় &nbsp;•&nbsp; ক্যাশ অন ডেলিভারি
+        🌿 ১০০% প্রাকৃতিক হেলথ সলিউশন — হোম ডেলিভারি &nbsp;•&nbsp; ক্যাশ অন ডেলিভারি
       </div>
 
       {/* Hero: product gallery left + info+form right */}
@@ -91,7 +96,7 @@ export default function Template4({ page, product }: Props) {
                 className="inline-block rounded-full px-3 py-1 text-xs font-semibold mb-2"
                 style={{ backgroundColor: primary + '15', color: primary }}
               >
-                প্রিমিয়াম অর্গানিক
+                প্রিমিয়াম ন্যাচারাল হেলথ
               </div>
               <h1
                 className="text-2xl sm:text-3xl font-extrabold leading-tight"
@@ -273,6 +278,13 @@ export default function Template4({ page, product }: Props) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Review screenshots — গ্রাহকদের মন্তব্য (auto-slide) */}
+      {reviewImages.length > 0 && (
+        <div className="py-12 mx-auto max-w-5xl px-4">
+          <ReviewsCarousel images={reviewImages} primary={primary} />
         </div>
       )}
 

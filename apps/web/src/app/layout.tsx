@@ -16,12 +16,12 @@ const hindSiliguri = Hind_Siliguri({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Shukhi Life | অর্গানিক খাদ্যপণ্য',
+    default: 'Shukhi Life | ন্যাচারাল হেলথ সলিউশন',
     template: '%s | Shukhi Life',
   },
   description:
-    'বাংলাদেশের সেরা অর্গানিক খাদ্যপণ্য — চাল, মধু, মশলা, মিষ্টি এবং আরও অনেক কিছু।',
-  keywords: ['organic', 'বাংলাদেশ', 'চাল', 'মধু', 'মশলা', 'অর্গানিক খাদ্য'],
+    'দিন শুরু হোক সুখী লাইফের সাথে। Shukhi Life — প্রাকৃতিক হার্বস ও অর্গানিক হেলথ সলিউশন। সুস্থ ও সুখী জীবনের জন্য বিশ্বস্ত ন্যাচারাল মেডিসিন।',
+  keywords: ['natural health solution', 'herbal', 'অর্গানিক হার্বস', 'ন্যাচারাল মেডিসিন', 'হেলথ সলিউশন', 'বাংলাদেশ'],
   openGraph: {
     siteName: 'Shukhi Life',
     locale: 'bn_BD',

@@ -40,3 +40,6 @@ Thumbs.db
 
 # PM2
 ecosystem.config.js
+
+# Local WordPress migration backups (large archives + customer PII — keep out of git)
+wordpressbackup/

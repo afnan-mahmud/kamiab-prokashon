@@ -1,6 +1,8 @@
+import type { ProductImage } from './product.js';
+
 export type LandingPageTemplate = 'template1' | 'template2' | 'template3' | 'template4';
 
-export type ContentSectionType = 'text' | 'image' | 'video' | 'features' | 'testimonial' | 'faq' | 'why_product' | 'why_us';
+export type ContentSectionType = 'text' | 'image' | 'video' | 'features' | 'testimonial' | 'faq' | 'why_product' | 'why_us' | 'reviews';
 
 export interface TextSection {
   type: 'text';
@@ -60,6 +62,12 @@ export interface WhyUsSection {
   items: string[];
 }
 
+// গ্রাহকদের মন্তব্য — customer review screenshots that auto-slide on the public page
+export interface ReviewsSection {
+  type: 'reviews';
+  images: ProductImage[];
+}
+
 export type ContentSection =
   | TextSection
   | ImageSection
@@ -68,7 +76,8 @@ export type ContentSection =
   | TestimonialSection
   | FaqSection
   | WhyProductSection
-  | WhyUsSection;
+  | WhyUsSection
+  | ReviewsSection;
 
 export interface LandingPageContent {
   heroImage: { url: string; publicId: string };

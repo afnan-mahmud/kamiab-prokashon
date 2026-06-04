@@ -1,21 +1,25 @@
 'use client';
 
-import Script from 'next/script';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Clarity from '@microsoft/clarity';
 
-const CLARITY_ID = 'wuryo1a9ta';
+// Clarity project id is managed via env — set NEXT_PUBLIC_CLARITY_ID in .env.local / production env
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
+
+// Module-level guard so Clarity.init runs only once per SPA session
+let initialized = false;
 
 export function ClarityScript() {
   const pathname = usePathname();
-  if (pathname.startsWith('/admin')) return null;
 
-  return (
-    <Script id="ms-clarity" strategy="afterInteractive">{`
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window,document,"clarity","script","${CLARITY_ID}");
-    `}</Script>
-  );
+  useEffect(() => {
+    if (initialized || !CLARITY_ID) return;
+    // Don't track the admin panel
+    if (pathname.startsWith('/admin')) return;
+    Clarity.init(CLARITY_ID);
+    initialized = true;
+  }, [pathname]);
+
+  return null;
 }

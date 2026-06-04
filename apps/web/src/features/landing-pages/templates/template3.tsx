@@ -3,6 +3,7 @@
 import { Star, CheckCircle } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
+import { ReviewsCarousel } from './reviews-carousel';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -40,6 +41,10 @@ export default function Template3({ page, product }: Props) {
     .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
     .flatMap((s) => s.items);
 
+  const reviewImages = content.sections
+    .filter((s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews')
+    .flatMap((s) => s.images);
+
   return (
     <div
       style={{ backgroundColor: bg, fontFamily: 'Hind Siliguri, sans-serif' }}
@@ -50,7 +55,7 @@ export default function Template3({ page, product }: Props) {
         className="text-center py-2 px-4 text-xs sm:text-sm font-medium text-white"
         style={{ backgroundColor: accent }}
       >
-        🌾 সরাসরি কৃষক থেকে — সর্বোচ্চ মান নিশ্চিত
+        🌿 প্রাকৃতিক হার্বাল উপাদান — সর্বোচ্চ মান নিশ্চিত
       </div>
 
       {/* Full-width hero */}
@@ -73,7 +78,7 @@ export default function Template3({ page, product }: Props) {
 
         <div className="relative mx-auto max-w-3xl px-4 text-center text-white space-y-5">
           <span className="inline-block rounded-full px-4 py-1.5 text-xs font-semibold bg-white/15 border border-white/30">
-            🏆 সেরা মানের অর্গানিক পণ্য
+            🏆 সেরা মানের ন্যাচারাল হেলথ পণ্য
           </span>
 
           {/* Circular hero/product image */}
@@ -258,6 +263,15 @@ export default function Template3({ page, product }: Props) {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review screenshots — গ্রাহকদের মন্তব্য (auto-slide) */}
+      {reviewImages.length > 0 && (
+        <div className="py-12">
+          <div className="mx-auto max-w-3xl px-4">
+            <ReviewsCarousel images={reviewImages} primary={primary} />
           </div>
         </div>
       )}

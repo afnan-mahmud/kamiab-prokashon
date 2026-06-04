@@ -13,7 +13,7 @@ export function PublicFooter() {
               <Image src="/logo-white.png" alt="Shukhi Life" width={160} height={48} className="object-contain" />
             </div>
             <p className="text-sm leading-relaxed text-gray-400">
-              The finest natural and organic food products straight from the heart of Bangladesh.
+              দিন শুরু হোক সুখী লাইফের সাথে। Shukhi Life — natural &amp; herbal health solutions from the heart of Bangladesh.
             </p>
           </div>
 
