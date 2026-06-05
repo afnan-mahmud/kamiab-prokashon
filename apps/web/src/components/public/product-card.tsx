@@ -6,6 +6,7 @@ import { ShoppingCart, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/stores/cart.store';
 import { formatPrice } from '@/lib/format';
+import { fireEvent } from '@/lib/pixel';
 import { gtmAddToCart } from '@/lib/gtm';
 import type { Product } from '@shukhilife/types';
 
@@ -33,6 +34,14 @@ export function ProductCard({ product }: ProductCardProps) {
         product.customDeliveryEnabled && defaultVariant.customDelivery
           ? defaultVariant.customDelivery
           : null,
+    });
+    fireEvent('AddToCart', {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: 'product',
+      value: defaultVariant.price,
+      currency: 'BDT',
+      num_items: 1,
     });
     gtmAddToCart({
       item_id: product._id,

@@ -2,7 +2,7 @@
 
 **Stack:** Next.js 14 (web) + Express.js (api) — pnpm monorepo
 **Server:** KVM 4 VPS, **CloudPanel** installed, **multiple sites hosted** (shared)
-**Repo:** https://github.com/afnan-mahmud/sodai-kini (private)
+**Repo:** https://github.com/afnan-mahmud/shukhi-life (private)
 
 > ⚠️ Ei VPS-e onno website-o ase. Tai **global Nginx config / `rm default` / `certbot --nginx`
 > chalabe NA** — sob kaj CloudPanel-er per-site UI theke hobe. `docs/deployment.md` (purono,
@@ -65,7 +65,7 @@ cd /home/<SITE_USER>/htdocs/shukhilife.com
 rm -f index.html
 
 # Private repo — Personal Access Token (PAT) diye clone (repo scope)
-git clone https://<GITHUB_TOKEN>@github.com/afnan-mahmud/shukhi-life.git .
+git clone https://<YOUR_PAT>@github.com/afnan-mahmud/shukhi-life.git .
 # (sesher '.' = current dir-e clone, notun folder banabe na)
 ```
 

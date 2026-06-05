@@ -21,6 +21,7 @@ const MIME_EXT: Record<string, string> = {
   'image/gif': '.gif',
   'image/avif': '.avif',
   'image/svg+xml': '.svg',
+  'video/mp4': '.mp4',
 };
 
 function extFor(mimetype: string, originalName?: string): string {

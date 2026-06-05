@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { landingPagesApi, type CreateLandingPageInput } from './landing-pages.api';
 import { productsApi } from '@/features/products/products.api';
 import { ImageUploader } from '@/components/admin/image-uploader';
+import { VideoUploader } from '@/components/admin/video-uploader';
 import type { LandingPage, ContentSection } from '@shukhilife/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -31,6 +32,8 @@ interface BuilderState {
     heroTitle: string;
     heroSubtitle: string;
     heroImage: { url: string; publicId: string };
+    heroMediaType: 'image' | 'video';
+    heroVideo: { url: string; publicId: string };
     ctaText: string;
     colors: { primary: string; accent: string; background: string };
     sections: ContentSection[];
@@ -278,9 +281,40 @@ function ContentStep({
           <Input value={content.ctaText} onChange={(e) => onChange({ ...content, ctaText: e.target.value })} className="mt-1" placeholder="অর্ডার করুন" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Hero Image URL</label>
-          <Input value={content.heroImage.url} onChange={(e) => onChange({ ...content, heroImage: { ...content.heroImage, url: e.target.value } })} className="mt-1" placeholder="https://..." />
+          <label className="text-xs text-muted-foreground">Hero Media</label>
+          <div className="mt-1 flex gap-1 rounded-lg border border-border p-1">
+            {(['image', 'video'] as const).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => onChange({ ...content, heroMediaType: type })}
+                className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+                  content.heroMediaType === type
+                    ? 'bg-primary text-white'
+                    : 'text-muted-foreground hover:bg-muted'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
         </div>
+        {content.heroMediaType === 'video' ? (
+          <div>
+            <label className="text-xs text-muted-foreground">Hero Video (1:1, auto-play loop)</label>
+            <div className="mt-1">
+              <VideoUploader
+                value={content.heroVideo}
+                onChange={(heroVideo) => onChange({ ...content, heroVideo })}
+              />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label className="text-xs text-muted-foreground">Hero Image URL</label>
+            <Input value={content.heroImage.url} onChange={(e) => onChange({ ...content, heroImage: { ...content.heroImage, url: e.target.value } })} className="mt-1" placeholder="https://..." />
+          </div>
+        )}
       </div>
 
       {/* Colors */}
@@ -660,6 +694,8 @@ export function LandingPageBuilder({ initial }: LandingPageBuilderProps) {
       heroTitle: initial?.content.heroTitle ?? '',
       heroSubtitle: initial?.content.heroSubtitle ?? '',
       heroImage: initial?.content.heroImage ?? { url: '', publicId: '' },
+      heroMediaType: initial?.content.heroMediaType ?? 'image',
+      heroVideo: initial?.content.heroVideo ?? { url: '', publicId: '' },
       ctaText: initial?.content.ctaText ?? 'অর্ডার করুন',
       colors: initial?.content.colors ?? { primary: '#4a7c2e', accent: '#d97706', background: '#fefcf7' },
       sections: initial?.content.sections ?? [],

@@ -4,6 +4,7 @@ import { Star, ShieldCheck, Truck, CheckCircle } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
+import { HeroMedia } from './hero-media';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -55,6 +56,7 @@ export default function Template4({ page, product }: Props) {
       ? [{ url: content.heroImage.url, alt: product.name }]
       : [];
   const allImages = [...heroFallback, ...productImgs, ...sectionImgs];
+  const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
 
   return (
     <div
@@ -74,8 +76,17 @@ export default function Template4({ page, product }: Props) {
       {/* Hero: product gallery left + info+form right */}
       <div className="mx-auto max-w-6xl px-4 py-8 sm:py-14">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-          {/* Product image grid */}
+          {/* Product image grid (video lead tile in video mode) */}
           <div className="grid grid-cols-2 gap-2.5">
+            {hasHeroVideo && (
+              <div className="col-span-2">
+                <HeroMedia
+                  content={content}
+                  alt={product.name}
+                  className="w-full rounded-2xl object-cover aspect-square shadow-sm"
+                />
+              </div>
+            )}
             {allImages.map((img, i) => (
               <img
                 key={i}

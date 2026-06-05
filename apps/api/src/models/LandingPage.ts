@@ -3,6 +3,8 @@ import type { LandingPageTemplate, ContentSection } from '@shukhilife/types';
 
 export interface ILandingPageContent {
   heroImage: { url: string; publicId: string };
+  heroMediaType?: 'image' | 'video';
+  heroVideo?: { url: string; publicId: string };
   heroTitle: string;
   heroSubtitle: string;
   sections: ContentSection[];
@@ -27,6 +29,11 @@ export interface ILandingPage extends Document {
 const contentSchema = new Schema<ILandingPageContent>(
   {
     heroImage: {
+      url: { type: String, default: '' },
+      publicId: { type: String, default: '' },
+    },
+    heroMediaType: { type: String, enum: ['image', 'video'], default: 'image' },
+    heroVideo: {
       url: { type: String, default: '' },
       publicId: { type: String, default: '' },
     },

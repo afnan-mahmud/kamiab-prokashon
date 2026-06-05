@@ -4,6 +4,7 @@ import { Star, ShieldCheck, Truck, PhoneCall } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
+import { HeroMedia } from './hero-media';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -171,6 +172,7 @@ export default function Template1({ page, product }: Props) {
   const accent = content.colors?.accent ?? '#d97706';
   const bg = content.colors?.background ?? '#fefcf7';
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
+  const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
 
   return (
     <div
@@ -265,16 +267,17 @@ export default function Template1({ page, product }: Props) {
               </a>
             </div>
 
-            {/* Right: hero/product image */}
-            {heroDisplayImage && (
+            {/* Right: hero/product media (image or video) */}
+            {(hasHeroVideo || heroDisplayImage) && (
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
                   <div
                     className="absolute inset-0 rounded-3xl blur-2xl opacity-40 scale-110"
                     style={{ backgroundColor: accent }}
                   />
-                  <img
-                    src={fixImageUrl(heroDisplayImage)}
+                  <HeroMedia
+                    content={content}
+                    fallbackImage={product.images?.[0]?.url}
                     alt={product.name}
                     className="relative w-60 sm:w-72 lg:w-80 rounded-3xl shadow-2xl object-cover aspect-square"
                   />

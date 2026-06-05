@@ -79,8 +79,12 @@ export type ContentSection =
   | WhyUsSection
   | ReviewsSection;
 
+export type HeroMediaType = 'image' | 'video';
+
 export interface LandingPageContent {
   heroImage: { url: string; publicId: string };
+  heroMediaType?: HeroMediaType;
+  heroVideo?: { url: string; publicId: string };
   heroTitle: string;
   heroSubtitle: string;
   sections: ContentSection[];

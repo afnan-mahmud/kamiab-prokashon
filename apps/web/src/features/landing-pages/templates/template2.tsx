@@ -4,6 +4,7 @@ import { Star, ShieldCheck, Truck } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
+import { HeroMedia } from './hero-media';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -170,6 +171,7 @@ export default function Template2({ page, product }: Props) {
   const accent = content.colors?.accent ?? '#d97706';
   const bg = content.colors?.background ?? '#ffffff';
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
+  const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
 
   return (
     <div
@@ -186,15 +188,16 @@ export default function Template2({ page, product }: Props) {
       {/* Split hero */}
       <div className="mx-auto max-w-5xl px-4 py-10 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-2 items-center">
-          {/* Hero/product image */}
-          {heroDisplayImage && (
+          {/* Hero/product media (image or video) */}
+          {(hasHeroVideo || heroDisplayImage) && (
             <div className="relative">
               <div
                 className="absolute -inset-4 rounded-3xl opacity-10 blur-xl"
                 style={{ backgroundColor: accent }}
               />
-              <img
-                src={fixImageUrl(heroDisplayImage)}
+              <HeroMedia
+                content={content}
+                fallbackImage={product.images?.[0]?.url}
                 alt={product.name}
                 className="relative w-full rounded-2xl object-cover aspect-square shadow-xl"
               />

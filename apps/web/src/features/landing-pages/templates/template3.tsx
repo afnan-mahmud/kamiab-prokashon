@@ -4,6 +4,7 @@ import { Star, CheckCircle } from 'lucide-react';
 import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
+import { HeroMedia } from './hero-media';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -36,6 +37,7 @@ export default function Template3({ page, product }: Props) {
     )
     .flatMap((s) => s.items);
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
+  const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
 
   const whyUsItems = content.sections
     .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
@@ -81,13 +83,14 @@ export default function Template3({ page, product }: Props) {
             🏆 সেরা মানের ন্যাচারাল হেলথ পণ্য
           </span>
 
-          {/* Circular hero/product image */}
-          {heroDisplayImage && (
+          {/* Circular hero/product media (image or video) */}
+          {(hasHeroVideo || heroDisplayImage) && (
             <div className="flex justify-center py-2">
               <div className="relative inline-block">
                 <div className="absolute inset-0 rounded-full blur-2xl bg-white opacity-25 scale-125" />
-                <img
-                  src={fixImageUrl(heroDisplayImage)}
+                <HeroMedia
+                  content={content}
+                  fallbackImage={product.images?.[0]?.url}
                   alt={product.name}
                   className="relative w-32 sm:w-44 h-32 sm:h-44 rounded-full object-cover border-4 border-white/30 shadow-2xl"
                 />

@@ -34,6 +34,8 @@ const contentSectionSchema = z.discriminatedUnion('type', [
 
 const contentSchema = z.object({
   heroImage: z.object({ url: z.string(), publicId: z.string() }).optional(),
+  heroMediaType: z.enum(['image', 'video']).default('image'),
+  heroVideo: z.object({ url: z.string(), publicId: z.string() }).optional(),
   heroTitle: z.string().default(''),
   heroSubtitle: z.string().default(''),
   sections: z.array(contentSectionSchema).default([]),
