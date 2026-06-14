@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useAuthStore } from '@/stores/auth.store';
 import { authApi } from '@/features/auth/auth.api';
 import { ApiError } from '@/lib/api-client';
+import { BRAND } from '@/lib/brand';
 
 const loginSchema = z.object({
   email: z.string().email('Valid email required'),
@@ -62,7 +63,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">
             <Lock className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">Shukhi Life</h1>
+          <h1 className="text-xl font-bold text-foreground">{BRAND.nameEn}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Admin Panel</p>
         </div>
 
