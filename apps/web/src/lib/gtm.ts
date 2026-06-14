@@ -1,4 +1,4 @@
-// GA4 ecommerce dataLayer helpers for Google Tag Manager (GTM-PDHJ7TRW).
+// GA4 ecommerce dataLayer helpers for Google Tag Manager (GTM-demo).
 // These push standard GA4 ecommerce events so GTM can forward them to GA4,
 // Meta, or any other tag. Schema: https://developers.google.com/tag-platform/gtagjs/reference/events
 

@@ -3,7 +3,7 @@
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-PDHJ7TRW';
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export function GtmScript() {
   const pathname = usePathname();

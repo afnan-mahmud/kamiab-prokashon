@@ -21,13 +21,16 @@ export function PixelScript() {
         fbq('init','${PIXEL_ID}');
         fbq('track','PageView');
       `}</Script>
-      {/*
-        No <noscript> fallback img on purpose. This is a JS-driven SPA, so a
-        no-JS visitor can't use the site anyway. Worse: Next.js auto-preloads
-        any <img> src (even inside <noscript>) as `<link rel="preload" as="image">`,
-        which performs a real GET to facebook.com/tr WITH JS enabled — firing a
-        duplicate PageView on every page load in addition to the fbq PageView.
-      */}
+      <noscript>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          height="1"
+          width="1"
+          style={{ display: 'none' }}
+          src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
+          alt=""
+        />
+      </noscript>
     </>
   );
 }

@@ -39,9 +39,7 @@ export async function sendCapiEvent(payload: CapiPayload): Promise<void> {
   };
 
   const body: Record<string, unknown> = { data: [event] };
-  // Only attach test_event_code outside production, so a stray code in the
-  // server env can never route live conversions into the Test Events tab.
-  if (process.env.META_TEST_EVENT_CODE && process.env.NODE_ENV !== 'production') {
+  if (process.env.META_TEST_EVENT_CODE) {
     body.test_event_code = process.env.META_TEST_EVENT_CODE;
   }
 
