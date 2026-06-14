@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, Mail, MapPin, Facebook } from 'lucide-react';
+import { BRAND } from '@/lib/brand';
 
 export function PublicFooter() {
   return (
@@ -10,10 +11,10 @@ export function PublicFooter() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <Image src="/logo-white.png" alt="Shukhi Life" width={160} height={48} className="object-contain" />
+              <Image src="/logo-white.png" alt={BRAND.nameEn} width={160} height={48} className="object-contain" />
             </div>
             <p className="text-sm leading-relaxed text-gray-400">
-              দিন শুরু হোক সুখী লাইফের সাথে। Shukhi Life — natural &amp; herbal health solutions from the heart of Bangladesh.
+              {BRAND.sloganBn} — তাফসীর, হাদিস, ফিকহ, সীরাত ও মানসম্পন্ন ইসলামী বইয়ের নির্ভরযোগ্য প্রকাশক ও বিক্রেতা।
             </p>
           </div>
 
@@ -43,15 +44,15 @@ export function PublicFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>880 1346-990556</span>
+                <span>{BRAND.phone}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>contact@shukhilife.com</span>
+                <span>{BRAND.email}</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary-light" />
-                <span>House 37, Road 07, Sector 03, Uttara, Dhaka</span>
+                <span>{BRAND.address}</span>
               </li>
             </ul>
           </div>
@@ -60,7 +61,7 @@ export function PublicFooter() {
           <div>
             <h3 className="mb-4 font-semibold text-white">Follow Us</h3>
             <a
-              href="https://web.facebook.com/shukhilife"
+              href={BRAND.facebook}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm hover:text-primary-light transition-colors"
@@ -79,7 +80,7 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-8 border-t border-gray-800 pt-6 flex flex-col items-center gap-1.5 text-center text-xs text-gray-500">
-          <span>© {new Date().getFullYear()} Shukhi Life — All rights reserved.</span>
+          <span>© {new Date().getFullYear()} {BRAND.nameEn} — All rights reserved.</span>
           <span>
             Developed by{' '}
             <a
