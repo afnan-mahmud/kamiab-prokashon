@@ -30,7 +30,7 @@ import type { Transaction } from '@shukhilife/types';
 const EXPENSE_CATEGORIES = ['rent', 'salary', 'marketing', 'inventory', 'delivery', 'utility', 'other'] as const;
 const PAYMENT_METHODS = ['cash', 'bkash', 'card', 'bank'] as const;
 
-const PIE_COLORS = ['#4a7c2e', '#6fa14a', '#d97706', '#3a6324', '#a3c96e', '#f59e0b', '#94a3b8'];
+const PIE_COLORS = ['#8dc53d', '#6fa14a', '#0065b3', '#3a6324', '#a3c96e', '#f59e0b', '#94a3b8'];
 
 // ── Expense form schema ───────────────────────────────────────────────────────
 
@@ -319,7 +319,7 @@ export default function AccountsPage() {
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
                   <Tooltip formatter={(v: number) => `৳${v.toLocaleString()}`} />
                   <Legend />
-                  <Line type="monotone" dataKey="income" stroke="#4a7c2e" strokeWidth={2} dot={false} name="Income" />
+                  <Line type="monotone" dataKey="income" stroke="#8dc53d" strokeWidth={2} dot={false} name="Income" />
                   <Line type="monotone" dataKey="expense" stroke="#dc2626" strokeWidth={2} dot={false} name="Expense" />
                 </LineChart>
               </ResponsiveContainer>
@@ -365,7 +365,7 @@ export default function AccountsPage() {
                     <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={70} />
                     <Tooltip formatter={(v: number) => `৳${v.toLocaleString()}`} />
-                    <Bar dataKey="value" fill="#d97706" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="value" fill="#0065b3" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
