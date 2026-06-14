@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/stores/cart.store';
 import { cn } from '@/lib/utils';
+import { BRAND } from '@/lib/brand';
 
 const NAV_LINKS = [
   { href: '/', label: 'হোম' },
@@ -24,7 +25,7 @@ export function PublicHeader() {
       <div className="container-page flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="Shukhi Life" width={140} height={44} className="object-contain" priority />
+          <Image src="/logo.png" alt={BRAND.nameEn} width={140} height={44} className="object-contain" priority />
         </Link>
 
         {/* Desktop nav */}

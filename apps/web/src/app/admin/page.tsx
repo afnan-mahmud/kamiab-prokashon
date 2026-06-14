@@ -25,7 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
   'Hand over to Courier': 'bg-green-100 text-green-800',
 };
 
-const PIE_COLORS = ['#4a7c2e', '#d97706', '#dc2626', '#6fa14a', '#f59e0b', '#94a3b8'];
+const PIE_COLORS = ['#8dc53d', '#0065b3', '#dc2626', '#6fa14a', '#f59e0b', '#94a3b8'];
 
 type DateRange = 'today' | 'yesterday' | '7d' | 'month' | 'last_month';
 
@@ -139,8 +139,8 @@ export default function AdminDashboardPage() {
                 labelFormatter={(l: string) => format(new Date(l + 'T00:00:00'), 'dd MMM yyyy')}
               />
               <Legend />
-              <Line yAxisId="rev" type="monotone" dataKey="revenue" stroke="#4a7c2e" strokeWidth={2} dot={false} name="Revenue" />
-              <Line yAxisId="ord" type="monotone" dataKey="orders" stroke="#d97706" strokeWidth={2} dot={false} name="Orders" />
+              <Line yAxisId="rev" type="monotone" dataKey="revenue" stroke="#8dc53d" strokeWidth={2} dot={false} name="Revenue" />
+              <Line yAxisId="ord" type="monotone" dataKey="orders" stroke="#0065b3" strokeWidth={2} dot={false} name="Orders" />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -161,7 +161,7 @@ export default function AdminDashboardPage() {
                 <XAxis type="number" tick={{ fontSize: 10 }} />
                 <YAxis type="category" dataKey="productName" tick={{ fontSize: 10 }} width={110} tickFormatter={(v: string) => v.length > 16 ? v.slice(0, 16) + '…' : v} />
                 <Tooltip formatter={(v: number) => [v, 'Units sold']} />
-                <Bar dataKey="totalSold" fill="#4a7c2e" radius={[0, 4, 4, 0]} name="Sold" />
+                <Bar dataKey="totalSold" fill="#8dc53d" radius={[0, 4, 4, 0]} name="Sold" />
               </BarChart>
             </ResponsiveContainer>
           )}
