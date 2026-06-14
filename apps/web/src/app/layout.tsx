@@ -15,15 +15,16 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://kamiabprokashon.xyz'),
   title: {
-    default: 'Shukhi Life | ন্যাচারাল হেলথ সলিউশন',
-    template: '%s | Shukhi Life',
+    default: 'Kamiab Prokashon | ইসলামী গ্রন্থ প্রকাশক ও বিক্রেতা',
+    template: '%s | Kamiab Prokashon',
   },
   description:
-    'দিন শুরু হোক সুখী লাইফের সাথে। Shukhi Life — প্রাকৃতিক হার্বস ও অর্গানিক হেলথ সলিউশন। সুস্থ ও সুখী জীবনের জন্য বিশ্বস্ত ন্যাচারাল মেডিসিন।',
-  keywords: ['natural health solution', 'herbal', 'অর্গানিক হার্বস', 'ন্যাচারাল মেডিসিন', 'হেলথ সলিউশন', 'বাংলাদেশ'],
+    'কামিয়াব প্রকাশন — ইসলামী গ্রন্থ প্রকাশক ও বিক্রেতা। তাফসীর, হাদিস, ফিকহ, সীরাত ও মানসম্পন্ন ইসলামী বইয়ের নির্ভরযোগ্য ঠিকানা। সারা বাংলাদেশে দ্রুত ডেলিভারি।',
+  keywords: ['ইসলামী বই', 'বই', 'কামিয়াব প্রকাশন', 'Kamiab Prokashon', 'Islamic books', 'তাফসীর', 'হাদিস', 'বাংলাবাজার', 'বাংলাদেশ'],
   openGraph: {
-    siteName: 'Shukhi Life',
+    siteName: 'Kamiab Prokashon',
     locale: 'bn_BD',
     type: 'website',
   },
