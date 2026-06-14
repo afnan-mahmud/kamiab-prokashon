@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Can } from '@/components/can';
 import type { Permission } from '@shukhilife/types';
+import { BRAND } from '@/lib/brand';
 
 interface NavItem {
   label: string;
@@ -76,9 +77,9 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
         <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-5">
           <Link href="/admin" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-sm font-bold text-white">CB</span>
+              <span className="text-sm font-bold text-white">KP</span>
             </div>
-            <span className="text-sm font-semibold text-sidebar-foreground">Shukhi Life</span>
+            <span className="text-sm font-semibold text-sidebar-foreground">{BRAND.nameEn}</span>
           </Link>
           <button
             onClick={onClose}
@@ -115,7 +116,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
 
         {/* Footer */}
         <div className="border-t border-sidebar-border px-5 py-3">
-          <p className="text-xs text-sidebar-foreground/40">Shukhi Life Admin</p>
+          <p className="text-xs text-sidebar-foreground/40">{BRAND.nameEn} Admin</p>
         </div>
       </aside>
     </>
