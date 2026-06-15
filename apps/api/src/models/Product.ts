@@ -14,6 +14,7 @@ export interface ICustomDeliveryCharge {
 export interface IProductVariant {
   label: string;
   price: number;
+  regularPrice?: number;
   sku: string;
   weight: number;
   isDefault: boolean;
@@ -26,6 +27,17 @@ export interface IProduct extends Document {
   description: string;
   images: IProductImage[];
   category: string;
+  author?: string;
+  publisher?: string;
+  translator?: string;
+  language?: string;
+  binding?: string;
+  edition?: string;
+  isbn?: string;
+  pages?: number;
+  publicationYear?: number;
+  previewImages?: IProductImage[];
+  previewPdf?: { url: string; publicId: string } | null;
   variants: (IProductVariant & { _id: import('mongoose').Types.ObjectId })[];
   poolStock: number;
   reorderPoint: number;
@@ -58,12 +70,21 @@ const variantSchema = new Schema<IProductVariant>(
   {
     label: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
+    regularPrice: { type: Number, min: 0 },
     sku: { type: String, trim: true, default: '' },
     weight: { type: Number, required: true, min: 0 },
     isDefault: { type: Boolean, default: false },
     customDelivery: { type: customDeliverySchema, default: undefined },
   },
   { _id: true },
+);
+
+const previewPdfSchema = new Schema<{ url: string; publicId: string }>(
+  {
+    url: { type: String, required: true },
+    publicId: { type: String, required: true },
+  },
+  { _id: false },
 );
 
 const productSchema = new Schema<IProduct>(
@@ -73,6 +94,17 @@ const productSchema = new Schema<IProduct>(
     description: { type: String, default: '' },
     images: [imageSchema],
     category: { type: String, required: true, trim: true },
+    author: { type: String, trim: true },
+    publisher: { type: String, trim: true },
+    translator: { type: String, trim: true },
+    language: { type: String, trim: true },
+    binding: { type: String, trim: true },
+    edition: { type: String, trim: true },
+    isbn: { type: String, trim: true },
+    pages: { type: Number, min: 0 },
+    publicationYear: { type: Number, min: 0 },
+    previewImages: { type: [imageSchema], default: undefined },
+    previewPdf: { type: previewPdfSchema, default: undefined },
     variants: {
       type: [variantSchema],
       validate: {
