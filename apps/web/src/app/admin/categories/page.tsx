@@ -410,7 +410,6 @@ export default function CategoriesPage() {
     }
   }
   // Also include orphaned children (parent deleted) at the end without indentation
-  const rootIds = new Set(roots.map((r) => r._id));
   const renderedIds = new Set(flatRows.map((r) => r.cat._id));
   for (const cat of categories) {
     if (!renderedIds.has(cat._id)) {

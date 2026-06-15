@@ -39,18 +39,33 @@ const bannerImageSchema = z.object({
   publicId: z.string().min(1),
 });
 
-const bannerFormSchema = z.object({
-  desktopImage: bannerImageSchema.nullable().refine((v) => v !== null, {
-    message: 'Desktop image is required',
-  }),
-  mobileImage: bannerImageSchema.nullable().refine((v) => v !== null, {
-    message: 'Mobile image is required',
-  }),
-  title: z.string().optional(),
-  link: z.string().optional(),
-  order: z.coerce.number().min(0).default(0),
-  isActive: z.boolean(),
-});
+// Keep image fields nullable in the schema so the form can hold null while
+// the user hasn't uploaded yet. Presence is validated via superRefine.
+const bannerFormSchema = z
+  .object({
+    desktopImage: bannerImageSchema.nullable(),
+    mobileImage: bannerImageSchema.nullable(),
+    title: z.string().optional(),
+    link: z.string().optional(),
+    order: z.coerce.number().min(0).default(0),
+    isActive: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.desktopImage) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Desktop image is required',
+        path: ['desktopImage'],
+      });
+    }
+    if (!data.mobileImage) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Mobile image is required',
+        path: ['mobileImage'],
+      });
+    }
+  });
 
 type BannerFormValues = z.infer<typeof bannerFormSchema>;
 
@@ -156,6 +171,15 @@ function BannerFormDialog({ banner, open, onClose }: BannerFormDialogProps) {
   const qc = useQueryClient();
   const isEdit = !!banner;
 
+  const defaultFormValues = (): BannerFormValues => ({
+    desktopImage: banner?.desktopImage ?? null,
+    mobileImage: banner?.mobileImage ?? null,
+    title: banner?.title ?? '',
+    link: banner?.link ?? '',
+    order: banner?.order ?? 0,
+    isActive: banner?.isActive ?? true,
+  });
+
   const {
     register,
     control,
@@ -164,26 +188,13 @@ function BannerFormDialog({ banner, open, onClose }: BannerFormDialogProps) {
     reset,
   } = useForm<BannerFormValues>({
     resolver: zodResolver(bannerFormSchema),
-    defaultValues: {
-      desktopImage: banner?.desktopImage ?? null,
-      mobileImage: banner?.mobileImage ?? null,
-      title: banner?.title ?? '',
-      link: banner?.link ?? '',
-      order: banner?.order ?? 0,
-      isActive: banner?.isActive ?? true,
-    },
+    defaultValues: defaultFormValues(),
   });
 
   useEffect(() => {
-    reset({
-      desktopImage: banner?.desktopImage ?? null,
-      mobileImage: banner?.mobileImage ?? null,
-      title: banner?.title ?? '',
-      link: banner?.link ?? '',
-      order: banner?.order ?? 0,
-      isActive: banner?.isActive ?? true,
-    });
-  }, [banner, reset]);
+    reset(defaultFormValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [banner]);
 
   const mutation = useMutation({
     mutationFn: (data: BannerFormValues) => {

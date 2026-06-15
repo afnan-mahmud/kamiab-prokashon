@@ -29,7 +29,6 @@ import {
 } from '@/components/ui/select';
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { ApiError, apiClient } from '@/lib/api-client';
-import { productsApi } from './products.api';
 import { categoriesApi } from '@/features/categories/categories.api';
 import type { Product, ProductImage, PreviewPdf } from '@shukhilife/types';
 
