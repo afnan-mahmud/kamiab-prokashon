@@ -32,6 +32,19 @@ import { formatPrice, toBengali, discountPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { fireEvent } from '@/lib/pixel';
 import { gtmViewItem, gtmAddToCart } from '@/lib/gtm';
+import type { CategoryNode } from '@shukhilife/types';
+
+function buildSlugNameMap(nodes: CategoryNode[]): Map<string, string> {
+  const map = new Map<string, string>();
+  const traverse = (items: CategoryNode[]) => {
+    for (const node of items) {
+      map.set(node.slug, node.name);
+      if (node.children.length > 0) traverse(node.children);
+    }
+  };
+  traverse(nodes);
+  return map;
+}
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -50,6 +63,14 @@ export default function ProductDetailPage() {
     enabled: !!product?._id,
     staleTime: 60_000,
   });
+
+  const { data: categoryTree = [] } = useQuery({
+    queryKey: ['public-category-tree'],
+    queryFn: () => shopApi.categoryTree(),
+    staleTime: 5 * 60_000,
+  });
+
+  const categoryNameMap = buildSlugNameMap(categoryTree);
 
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -240,7 +261,7 @@ export default function ProductDetailPage() {
           {/* Product info */}
           <div className="space-y-5">
             <div>
-              <p className="text-sm text-muted-foreground">{product.category}</p>
+              <p className="text-sm text-muted-foreground">{categoryNameMap.get(product.category) ?? product.category}</p>
               <h1 className="mt-1 text-2xl font-bold leading-snug">{product.name}</h1>
               {(product.author || product.publisher) && (
                 <p className="mt-1 text-sm text-muted-foreground">

@@ -31,11 +31,15 @@ router.get('/', async (req, res, next) => {
           childrenByParent.set(key, arr);
         });
         const slugs: string[] = [];
+        const visited = new Set<string>();
         const stack = [match];
         while (stack.length) {
           const cur = stack.pop()!;
+          const curId = String(cur._id);
+          if (visited.has(curId)) continue;
+          visited.add(curId);
           slugs.push(cur.slug);
-          (childrenByParent.get(String(cur._id)) ?? []).forEach((ch) => stack.push(ch));
+          (childrenByParent.get(curId) ?? []).forEach((ch) => stack.push(ch));
         }
         filter['category'] = { $in: slugs };
       } else {

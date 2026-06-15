@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useCallback } from 'react';
+import { Suspense, useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -115,6 +115,27 @@ function ShopContent() {
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+
+  // Sync local state when URL params change (e.g. navigating to /shop?search=... from the header)
+  useEffect(() => {
+    const paramSearch = searchParams.get('search') ?? '';
+    const paramCategory = searchParams.get('category') ?? '';
+    const paramSort = searchParams.get('sort') ?? 'newest';
+    if (paramSearch !== search) {
+      setSearch(paramSearch);
+      setSearchInput(paramSearch);
+      setPage(1);
+    }
+    if (paramCategory !== category) {
+      setCategory(paramCategory);
+      setPage(1);
+    }
+    if (paramSort !== sort) {
+      setSort(paramSort);
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Sync URL when key filter state changes
   const pushParams = useCallback(

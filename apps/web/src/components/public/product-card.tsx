@@ -90,10 +90,8 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </p>
         </Link>
-        {product.author ? (
+        {product.author && (
           <p className="mt-0.5 text-xs text-muted-foreground">{product.author}</p>
-        ) : (
-          <p className="mt-0.5 text-xs text-muted-foreground">{product.category}</p>
         )}
 
         {/* Variant pills */}
