@@ -1,71 +1,76 @@
+'use client';
+
 import Link from 'next/link';
-import { ArrowRight, Leaf, Shield, Truck } from 'lucide-react';
+import { ArrowRight, BookOpen, HandCoins, Truck } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { PublicLayout } from '@/components/layout/public-layout';
-import { ProductsGrid } from '@/components/public/products-grid';
+import { ProductCard } from '@/components/public/product-card';
+import { HeroCarousel } from '@/components/public/hero-carousel';
+import { shopApi } from '@/features/shop/shop.api';
 
 const FEATURES = [
   {
-    icon: Leaf,
-    title: '১০০% প্রাকৃতিক',
-    desc: 'খাঁটি হার্বাল উপাদান — কোনো ক্ষতিকর রাসায়নিক ছাড়া',
+    icon: BookOpen,
+    title: 'অরিজিনাল বই',
+    desc: 'সরাসরি প্রকাশক থেকে প্রামাণিক ইসলামী গ্রন্থ',
   },
   {
-    icon: Shield,
-    title: 'মান নিশ্চিত',
-    desc: 'বিশেষজ্ঞ নির্বাচিত প্রাকৃতিক হেলথ সলিউশন',
+    icon: HandCoins,
+    title: 'ক্যাশ অন ডেলিভারি',
+    desc: 'বই হাতে পেয়ে পেমেন্ট করুন — নিরাপদ ও সহজ',
   },
   {
     icon: Truck,
     title: 'দ্রুত ডেলিভারি',
-    desc: 'ঢাকার ভেতরে ও বাইরে সারা বাংলাদেশে',
+    desc: 'ঢাকার ভেতরে ও সারা বাংলাদেশে দ্রুত পৌঁছে দেই',
   },
 ];
 
-export default function HomePage() {
+const SKELETON_COUNT = 12;
+
+function ProductGridSkeleton() {
   return (
-    <PublicLayout>
-      {/* Hero */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #2d5a1b 0%, #4a7c2e 50%, #6fa14a 100%)',
-        }}
-      >
-        <div className="container-page relative py-20 text-white md:py-28">
-          <div className="max-w-xl">
-            <span className="mb-4 inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium">
-              🌿 ন্যাচারাল হেলথ সলিউশন
-            </span>
-            <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              দিন শুরু হোক<br />
-              <span className="text-yellow-300">সুখী লাইফের</span> সাথে
-            </h1>
-            <p className="mt-4 text-lg text-white/80">
-              প্রাকৃতিক হার্বস ও অর্গানিক হেলথ সলিউশন — কোনো ভেজাল নেই, কোনো ক্ষতিকর রাসায়নিক নেই।
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-lg transition hover:bg-accent/90"
-              >
-                পণ্য দেখুন
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/cart"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-white/60 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-              >
-                আমার কার্ট
-              </Link>
-            </div>
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+        <div key={i} className="animate-pulse rounded-2xl border border-border bg-white">
+          <div className="aspect-square rounded-t-2xl bg-muted" />
+          <div className="space-y-2 p-3">
+            <div className="h-3 w-3/4 rounded bg-muted" />
+            <div className="h-3 w-1/2 rounded bg-muted" />
+            <div className="h-8 w-full rounded bg-muted" />
           </div>
         </div>
-        {/* Decorative circle */}
-        <div
-          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, #fff 0%, transparent 70%)' }}
-        />
-      </section>
+      ))}
+    </div>
+  );
+}
+
+export default function HomePage() {
+  const { data: bannerData } = useQuery({
+    queryKey: ['home-banners'],
+    queryFn: () => shopApi.banners(),
+    staleTime: 5 * 60_000,
+  });
+
+  const { data: newData, isLoading: newLoading } = useQuery({
+    queryKey: ['home-new'],
+    queryFn: () => shopApi.products({ sort: 'newest', limit: 12 }),
+    staleTime: 60_000,
+  });
+
+  const { data: bestData, isLoading: bestLoading } = useQuery({
+    queryKey: ['home-bestsellers'],
+    queryFn: () => shopApi.products({ sort: 'popular', limit: 12 }),
+    staleTime: 60_000,
+  });
+
+  const newBooks = newData?.data ?? [];
+  const bestBooks = bestData?.data ?? [];
+
+  return (
+    <PublicLayout>
+      {/* Hero carousel */}
+      <HeroCarousel banners={bannerData ?? []} />
 
       {/* Features strip */}
       <section className="border-b border-border bg-white">
@@ -84,36 +89,49 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Best Sellers */}
+      {/* New arrivals */}
       <section className="container-page py-12">
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <h2 className="text-2xl font-bold">বেস্ট সেলিং পণ্য</h2>
-            <p className="mt-1 text-sm text-muted-foreground">আমাদের সবচেয়ে জনপ্রিয় পণ্যগুলো</p>
+            <h2 className="text-2xl font-bold">নতুন বই</h2>
+            <p className="mt-1 text-sm text-muted-foreground">সদ্য যোগ হওয়া বইগুলো</p>
           </div>
           <Link href="/shop" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             সব দেখুন <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <ProductsGrid sort="popular" limit={8} />
+        {newLoading ? (
+          <ProductGridSkeleton />
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {newBooks.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* All Products */}
+      {/* Best sellers */}
       <section className="bg-muted/30 py-12">
         <div className="container-page">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold">সকল পণ্য</h2>
-            <p className="mt-1 text-sm text-muted-foreground">আমাদের সম্পূর্ণ সংগ্রহ</p>
-          </div>
-          <ProductsGrid limit={12} />
-          <div className="mt-8 text-center">
-            <Link
-              href="/shop"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-8 py-3 font-semibold text-primary transition hover:bg-primary hover:text-white"
-            >
-              সব পণ্য দেখুন <ArrowRight className="h-4 w-4" />
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">বেস্ট সেলিং বই</h2>
+              <p className="mt-1 text-sm text-muted-foreground">পাঠকদের সবচেয়ে পছন্দের বইগুলো</p>
+            </div>
+            <Link href="/shop" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              সব দেখুন <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
+          {bestLoading ? (
+            <ProductGridSkeleton />
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {bestBooks.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </PublicLayout>
