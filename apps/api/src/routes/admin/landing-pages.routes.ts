@@ -30,6 +30,15 @@ const contentSectionSchema = z.discriminatedUnion('type', [
       z.object({ url: z.string(), publicId: z.string(), alt: z.string().default('') }),
     ),
   }),
+  z.object({ type: z.literal('book_specs'), title: z.string().optional() }),
+  z.object({ type: z.literal('toc'), title: z.string().optional(), items: z.array(z.string()) }),
+  z.object({
+    type: z.literal('author_bio'),
+    name: z.string(),
+    bio: z.string(),
+    image: z.object({ url: z.string(), publicId: z.string(), alt: z.string().default('') }).nullable().optional(),
+  }),
+  z.object({ type: z.literal('preview'), title: z.string().optional() }),
 ]);
 
 const contentSchema = z.object({

@@ -36,7 +36,7 @@ interface Props {
   accentColor?: string;
 }
 
-export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText = 'অর্ডার করুন', primaryColor = '#4a7c2e', accentColor = '#d97706' }: Props) {
+export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText = 'অর্ডার করুন', primaryColor = '#8dc53d', accentColor = '#0065b3' }: Props) {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const hasFiredCheckout = useRef(false);
   const capturedPhone = useRef('');

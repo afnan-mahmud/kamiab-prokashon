@@ -42,9 +42,9 @@ interface BuilderState {
 }
 
 const TEMPLATES: { id: Template; label: string; desc: string; color: string }[] = [
-  { id: 'template1', label: 'Bold Hero', desc: 'Full-width hero with large CTA — best for high-impact campaigns', color: '#4a7c2e' },
+  { id: 'template1', label: 'Bold Hero', desc: 'Full-width hero with large CTA — best for high-impact campaigns', color: '#8dc53d' },
   { id: 'template2', label: 'Minimal', desc: 'Clean, distraction-free layout — best for premium products', color: '#1f2937' },
-  { id: 'template3', label: 'Story', desc: 'Long-form scroll with testimonials and FAQs', color: '#d97706' },
+  { id: 'template3', label: 'Story', desc: 'Long-form scroll with testimonials and FAQs', color: '#0065b3' },
   { id: 'template4', label: 'Grid', desc: 'Product feature grid — best for showcasing multiple benefits', color: '#7c3aed' },
 ];
 
@@ -55,9 +55,13 @@ const SECTION_TYPES = [
   { type: 'features', label: 'Feature List' },
   { type: 'testimonial', label: 'Testimonials' },
   { type: 'faq', label: 'FAQ' },
-  { type: 'why_product', label: 'কেন খাবেন আমাদের পণ্য?' },
+  { type: 'why_product', label: 'কেন পড়বেন এই বইটি?' },
   { type: 'why_us', label: 'কেন আমাদের থেকে কিনবেন?' },
   { type: 'reviews', label: 'গ্রাহকদের মন্তব্য (স্ক্রিনশট)' },
+  { type: 'book_specs', label: 'বই পরিচিতি (অটো)' },
+  { type: 'toc', label: 'সূচিপত্র' },
+  { type: 'author_bio', label: 'লেখক পরিচিতি' },
+  { type: 'preview', label: 'একটু পড়ে দেখুন' },
 ] as const;
 
 // ── Step indicator ─────────────────────────────────────────────────────────────
@@ -244,6 +248,10 @@ function ContentStep({
       case 'why_product': newSection = { type: 'why_product', items: [''] }; break;
       case 'why_us': newSection = { type: 'why_us', items: [''] }; break;
       case 'reviews': newSection = { type: 'reviews', images: [] }; break;
+      case 'book_specs': newSection = { type: 'book_specs', title: 'বই পরিচিতি' }; break;
+      case 'toc': newSection = { type: 'toc', title: 'সূচিপত্র', items: [''] }; break;
+      case 'author_bio': newSection = { type: 'author_bio', name: '', bio: '', image: null }; break;
+      case 'preview': newSection = { type: 'preview', title: 'একটু পড়ে দেখুন' }; break;
     }
     onChange({ ...content, sections: [...content.sections, newSection] });
   };
@@ -502,7 +510,7 @@ function ContentStep({
 
             {section.type === 'why_product' && (
               <div className="space-y-3">
-                <p className="text-xs font-medium text-muted-foreground">Title: কেন খাবেন আমাদের পণ্য? <span className="italic">(hardcoded)</span></p>
+                <p className="text-xs font-medium text-muted-foreground">Title: কেন পড়বেন এই বইটি? <span className="italic">(hardcoded)</span></p>
                 {section.items.map((item, j) => (
                   <div key={j} className="flex gap-2">
                     <Input
@@ -564,6 +572,139 @@ function ContentStep({
                   onChange={(images) => updateSection(i, { ...section, images })}
                   maxImages={20}
                 />
+              </div>
+            )}
+
+            {section.type === 'book_specs' && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="বই পরিচিতি"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  লিঙ্ক করা বইয়ের তথ্য স্বয়ংক্রিয়ভাবে দেখানো হবে।
+                </p>
+              </div>
+            )}
+
+            {section.type === 'toc' && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="সূচিপত্র"
+                  />
+                </div>
+                {section.items.map((item, j) => (
+                  <div key={j} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const items = [...section.items];
+                        items[j] = e.target.value;
+                        updateSection(i, { ...section, items });
+                      }}
+                      placeholder="একটি অধ্যায়ের নাম লিখুন..."
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-9 w-9 p-0 shrink-0"
+                      onClick={() => {
+                        updateSection(i, { ...section, items: section.items.filter((_, k) => k !== j) });
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => updateSection(i, { ...section, items: [...section.items, ''] })}
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" /> আইটেম যোগ করুন
+                </Button>
+              </div>
+            )}
+
+            {section.type === 'author_bio' && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">লেখকের নাম</label>
+                  <Input
+                    value={section.name}
+                    onChange={(e) => updateSection(i, { ...section, name: e.target.value })}
+                    className="mt-1"
+                    placeholder="লেখকের নাম..."
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">পরিচিতি</label>
+                  <textarea
+                    value={section.bio}
+                    onChange={(e) => updateSection(i, { ...section, bio: e.target.value })}
+                    className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    rows={3}
+                    placeholder="লেখক সম্পর্কে সংক্ষিপ্ত পরিচিতি..."
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">লেখকের ছবি</label>
+                  <div className="mt-1">
+                    {section.image ? (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={section.image.url}
+                          alt={section.image.alt || section.name}
+                          className="h-16 w-16 rounded-full object-cover border border-border"
+                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateSection(i, { ...section, image: null })}
+                        >
+                          <Trash2 className="mr-1 h-3.5 w-3.5 text-destructive" /> ছবি সরান
+                        </Button>
+                      </div>
+                    ) : (
+                      <ImageUploader
+                        images={[]}
+                        onChange={(images) => {
+                          if (images[0]) {
+                            updateSection(i, { ...section, image: { url: images[0].url, publicId: images[0].publicId, alt: '' } });
+                          }
+                        }}
+                        maxImages={1}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {section.type === 'preview' && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="একটু পড়ে দেখুন"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  লিঙ্ক করা বইয়ের প্রিভিউ (ছবি/পিডিএফ) দেখানো হবে।
+                </p>
               </div>
             )}
           </div>
@@ -697,7 +838,7 @@ export function LandingPageBuilder({ initial }: LandingPageBuilderProps) {
       heroMediaType: initial?.content.heroMediaType ?? 'image',
       heroVideo: initial?.content.heroVideo ?? { url: '', publicId: '' },
       ctaText: initial?.content.ctaText ?? 'অর্ডার করুন',
-      colors: initial?.content.colors ?? { primary: '#4a7c2e', accent: '#d97706', background: '#fefcf7' },
+      colors: initial?.content.colors ?? { primary: '#8dc53d', accent: '#0065b3', background: '#fefcf7' },
       sections: initial?.content.sections ?? [],
     },
     isActive: initial?.isActive ?? true,

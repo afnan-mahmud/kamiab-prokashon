@@ -2,7 +2,7 @@ import type { ProductImage } from './product.js';
 
 export type LandingPageTemplate = 'template1' | 'template2' | 'template3' | 'template4';
 
-export type ContentSectionType = 'text' | 'image' | 'video' | 'features' | 'testimonial' | 'faq' | 'why_product' | 'why_us' | 'reviews';
+export type ContentSectionType = 'text' | 'image' | 'video' | 'features' | 'testimonial' | 'faq' | 'why_product' | 'why_us' | 'reviews' | 'book_specs' | 'toc' | 'author_bio' | 'preview';
 
 export interface TextSection {
   type: 'text';
@@ -68,6 +68,29 @@ export interface ReviewsSection {
   images: ProductImage[];
 }
 
+export interface BookSpecsSection {
+  type: 'book_specs';
+  title?: string;
+}
+
+export interface TocSection {
+  type: 'toc';
+  title?: string;
+  items: string[];
+}
+
+export interface AuthorBioSection {
+  type: 'author_bio';
+  name: string;
+  bio: string;
+  image?: ProductImage | null;
+}
+
+export interface PreviewSection {
+  type: 'preview';
+  title?: string;
+}
+
 export type ContentSection =
   | TextSection
   | ImageSection
@@ -77,7 +100,11 @@ export type ContentSection =
   | FaqSection
   | WhyProductSection
   | WhyUsSection
-  | ReviewsSection;
+  | ReviewsSection
+  | BookSpecsSection
+  | TocSection
+  | AuthorBioSection
+  | PreviewSection;
 
 export type HeroMediaType = 'image' | 'video';
 
