@@ -15,6 +15,8 @@ import {
   UserCog,
   MessageSquare,
   ShoppingCart,
+  FolderTree,
+  Images,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,6 +38,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Customers', href: '/admin/customers', icon: Users, permission: 'customers.view' },
   { label: 'Accounts', href: '/admin/accounts', icon: Wallet, permission: 'accounts.view' },
   { label: 'Products', href: '/admin/products', icon: Package, permission: 'products.view' },
+  { label: 'Categories', href: '/admin/categories', icon: FolderTree, permission: 'categories.view' },
+  { label: 'Banners', href: '/admin/banners', icon: Images, permission: 'banners.view' },
   { label: 'Stock', href: '/admin/stock', icon: BarChart3, permission: 'stock.view' },
   { label: 'Landing Pages', href: '/admin/landing-pages', icon: FileText, permission: 'landing.view' },
   { label: 'Delivery', href: '/admin/delivery', icon: Truck, permission: 'delivery.view' },
