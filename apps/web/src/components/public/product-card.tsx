@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ShoppingCart, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/stores/cart.store';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, discountPercent, toBengali } from '@/lib/format';
 import { fireEvent } from '@/lib/pixel';
 import { gtmAddToCart } from '@/lib/gtm';
 import type { Product } from '@shukhilife/types';
@@ -54,23 +54,31 @@ export function ProductCard({ product }: ProductCardProps) {
     toast.success('কার্টে যোগ হয়েছে');
   };
 
+  const pct = discountPercent(defaultVariant?.regularPrice, defaultVariant?.price);
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-card transition-shadow hover:shadow-card-hover">
       {/* Thumbnail */}
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-square overflow-hidden bg-muted">
+        <div className="relative aspect-[3/4] overflow-hidden bg-muted/40">
           {mainImage?.url ? (
             <Image
               src={mainImage.url}
               alt={mainImage.alt || product.name}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center">
               <ImageIcon className="h-12 w-12 text-muted-foreground/30" />
             </div>
+          )}
+          {/* Discount badge */}
+          {pct !== null && (
+            <span className="absolute left-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[11px] font-bold text-white">
+              -{toBengali(pct)}%
+            </span>
           )}
         </div>
       </Link>
@@ -82,7 +90,11 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </p>
         </Link>
-        <p className="mt-0.5 text-xs text-muted-foreground">{product.category}</p>
+        {product.author ? (
+          <p className="mt-0.5 text-xs text-muted-foreground">{product.author}</p>
+        ) : (
+          <p className="mt-0.5 text-xs text-muted-foreground">{product.category}</p>
+        )}
 
         {/* Variant pills */}
         {product.variants.length > 1 && (
@@ -104,9 +116,16 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         <div className="mt-auto pt-3 flex items-center justify-between">
-          <span className="text-base font-bold text-primary">
-            {defaultVariant ? formatPrice(defaultVariant.price) : '—'}
-          </span>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-base font-bold text-primary">
+              {defaultVariant ? formatPrice(defaultVariant.price) : '—'}
+            </span>
+            {pct !== null && defaultVariant?.regularPrice !== undefined && (
+              <span className="text-xs text-muted-foreground line-through">
+                {formatPrice(defaultVariant.regularPrice)}
+              </span>
+            )}
+          </div>
           <button
             type="button"
             onClick={handleAddToCart}
