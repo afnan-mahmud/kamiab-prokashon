@@ -12,14 +12,23 @@ import {
   ChevronRight,
   ImageIcon,
   Loader2,
+  BookOpen,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { ProductCard } from '@/components/public/product-card';
+import { BookPreviewModal } from '@/components/public/book-preview-modal';
 import { shopApi } from '@/features/shop/shop.api';
 import { useCartStore } from '@/stores/cart.store';
-import { formatPrice } from '@/lib/format';
+import { formatPrice, toBengali, discountPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { fireEvent } from '@/lib/pixel';
 import { gtmViewItem, gtmAddToCart } from '@/lib/gtm';
@@ -45,6 +54,8 @@ export default function ProductDetailPage() {
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [qty, setQty] = useState(1);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [orderPopupOpen, setOrderPopupOpen] = useState(false);
 
   const selectedVariant =
     product?.variants.find((v) => v._id === selectedVariantId) ??
@@ -135,6 +146,22 @@ export default function ProductDetailPage() {
     selectedVariant !== undefined &&
     (product?.poolStock ?? 0) >= selectedVariant.weight * qty;
 
+  const discount = discountPercent(selectedVariant?.regularPrice, selectedVariant?.price);
+  const hasPreview = (product.previewImages?.length ?? 0) > 0 || !!product.previewPdf;
+
+  // Build specs rows — only present fields
+  const specs: { label: string; value: string }[] = [
+    product.author ? { label: 'লেখক', value: product.author } : null,
+    product.publisher ? { label: 'প্রকাশনী', value: product.publisher } : null,
+    product.translator ? { label: 'অনুবাদক', value: product.translator } : null,
+    product.pages ? { label: 'পৃষ্ঠা', value: toBengali(product.pages) } : null,
+    product.language ? { label: 'ভাষা', value: product.language } : null,
+    product.binding ? { label: 'বাঁধাই', value: product.binding } : null,
+    product.edition ? { label: 'সংস্করণ', value: product.edition } : null,
+    product.isbn ? { label: 'ISBN', value: product.isbn } : null,
+    product.publicationYear ? { label: 'প্রকাশকাল', value: toBengali(product.publicationYear) } : null,
+  ].filter((row): row is { label: string; value: string } => row !== null);
+
   return (
     <PublicLayout>
       <div className="container-page py-6">
@@ -148,15 +175,15 @@ export default function ProductDetailPage() {
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-2">
-          {/* Image gallery */}
+          {/* Image gallery — book cover aspect ratio */}
           <div className="space-y-3">
-            <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-muted">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted">
               {activeImage?.url ? (
                 <Image
                   src={activeImage.url}
                   alt={activeImage.alt || product.name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
@@ -196,6 +223,18 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
+
+            {/* Preview button */}
+            {hasPreview && (
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={() => setPreviewOpen(true)}
+              >
+                <BookOpen className="h-4 w-4" />
+                একটু পড়ে দেখুন
+              </Button>
+            )}
           </div>
 
           {/* Product info */}
@@ -203,15 +242,36 @@ export default function ProductDetailPage() {
             <div>
               <p className="text-sm text-muted-foreground">{product.category}</p>
               <h1 className="mt-1 text-2xl font-bold leading-snug">{product.name}</h1>
-              {selectedVariant && (
-                <p className="mt-2 text-3xl font-bold text-primary">
-                  {formatPrice(selectedVariant.price)}
+              {(product.author || product.publisher) && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {product.author && <span>লেখক: {product.author}</span>}
+                  {product.author && product.publisher && <span> · </span>}
+                  {product.publisher && <span>প্রকাশনী: {product.publisher}</span>}
                 </p>
+              )}
+
+              {/* Price block */}
+              {selectedVariant && (
+                <div className="mt-3 flex items-baseline gap-3">
+                  <p className="text-3xl font-bold text-primary">
+                    {formatPrice(selectedVariant.price)}
+                  </p>
+                  {discount !== null && selectedVariant.regularPrice && (
+                    <>
+                      <p className="text-lg text-muted-foreground line-through">
+                        {formatPrice(selectedVariant.regularPrice)}
+                      </p>
+                      <span className="rounded bg-accent px-2 py-0.5 text-sm font-semibold text-white">
+                        -{toBengali(discount)}%
+                      </span>
+                    </>
+                  )}
+                </div>
               )}
             </div>
 
-            {/* Variants */}
-            {product.variants.length > 0 && (
+            {/* Variants — only when more than 1 */}
+            {product.variants.length > 1 && (
               <div>
                 <p className="mb-2 text-sm font-semibold">পরিমাণ / ভ্যারিয়েন্ট</p>
                 <div className="flex flex-wrap gap-2">
@@ -267,31 +327,51 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* CTA */}
+            {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row">
+              {/* Primary: order now → add to cart + open popup */}
               <Button
                 size="lg"
                 className="flex-1 gap-2"
-                onClick={handleAddToCart}
+                onClick={() => {
+                  handleAddToCart();
+                  setOrderPopupOpen(true);
+                }}
                 disabled={!inStock}
               >
-                <ShoppingCart className="h-5 w-5" />
-                {inStock ? 'কার্টে যোগ করুন' : 'স্টক নেই'}
+                {inStock ? 'অর্ডার করুন' : 'স্টক নেই'}
               </Button>
+              {/* Secondary: just add to cart, toast fires in handleAddToCart */}
               {inStock && (
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    handleAddToCart();
-                    router.push('/checkout');
-                  }}
+                  className="flex-1 gap-2"
+                  onClick={handleAddToCart}
                 >
-                  এখনই অর্ডার করুন
+                  <ShoppingCart className="h-5 w-5" />
+                  কার্টে যোগ করুন
                 </Button>
               )}
             </div>
+
+            {/* Specs table */}
+            {specs.length > 0 && (
+              <div className="rounded-xl border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {specs.map(({ label, value }) => (
+                      <tr key={label} className="border-b border-border last:border-0">
+                        <td className="w-1/3 bg-muted/50 px-4 py-2.5 font-medium text-muted-foreground">
+                          {label}
+                        </td>
+                        <td className="px-4 py-2.5">{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* Description */}
             {product.description && (
@@ -317,6 +397,36 @@ export default function ProductDetailPage() {
           </section>
         )}
       </div>
+
+      {/* Book preview modal */}
+      <BookPreviewModal
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        images={product.previewImages}
+        pdf={product.previewPdf}
+        title={product.name}
+      />
+
+      {/* Order added popup */}
+      <Dialog open={orderPopupOpen} onOpenChange={setOrderPopupOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>বইটি কার্টে যোগ হয়েছে</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">{product.name}</p>
+          <DialogFooter className="mt-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setOrderPopupOpen(false)}
+            >
+              আরও বই দেখুন
+            </Button>
+            <Button onClick={() => router.push('/checkout')}>
+              চেকআউট করুন
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PublicLayout>
   );
 }
