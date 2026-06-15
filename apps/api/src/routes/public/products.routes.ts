@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
 import { Product } from '../../models/Product.js';
+import { Category } from '../../models/Category.js';
 import { sendSuccess, sendError, sendPaginated } from '../../utils/api-response.js';
 
 const router: Router = Router();
@@ -13,8 +14,43 @@ router.get('/', async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const filter: Record<string, unknown> = { isActive: true, deletedAt: null };
-    if (req.query['search']) filter['$text'] = { $search: req.query['search'] };
-    if (req.query['category']) filter['category'] = req.query['category'];
+    if (req.query['search']) filter['$text'] = { $search: String(req.query['search']) };
+
+    if (req.query['category']) {
+      const slug = String(req.query['category']);
+      const cats = await Category.find({ isActive: true, deletedAt: null })
+        .select('slug parent _id')
+        .lean();
+      const match = cats.find((c) => c.slug === slug);
+      if (match) {
+        const childrenByParent = new Map<string, typeof cats>();
+        cats.forEach((c) => {
+          const key = c.parent ? String(c.parent) : 'root';
+          const arr = childrenByParent.get(key) ?? [];
+          arr.push(c);
+          childrenByParent.set(key, arr);
+        });
+        const slugs: string[] = [];
+        const stack = [match];
+        while (stack.length) {
+          const cur = stack.pop()!;
+          slugs.push(cur.slug);
+          (childrenByParent.get(String(cur._id)) ?? []).forEach((ch) => stack.push(ch));
+        }
+        filter['category'] = { $in: slugs };
+      } else {
+        filter['category'] = slug;
+      }
+    }
+
+    const minPrice = req.query['minPrice'] ? Number(req.query['minPrice']) : undefined;
+    const maxPrice = req.query['maxPrice'] ? Number(req.query['maxPrice']) : undefined;
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      const priceCond: Record<string, number> = {};
+      if (minPrice !== undefined) priceCond['$gte'] = minPrice;
+      if (maxPrice !== undefined) priceCond['$lte'] = maxPrice;
+      filter['variants'] = { $elemMatch: { price: priceCond } };
+    }
 
     const sortMap: Record<string, string> = {
       newest: '-createdAt',
