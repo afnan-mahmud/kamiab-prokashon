@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Product, PaginatedResponse } from '@shukhilife/types';
+import type { Product, PaginatedResponse, CategoryNode, Banner } from '@shukhilife/types';
 
 export interface PublicProductFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;
@@ -7,6 +7,8 @@ export interface PublicProductFilters extends Record<string, string | number | b
   search?: string;
   category?: string;
   sort?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export interface CustomerLookup {
@@ -54,6 +56,9 @@ export const shopApi = {
     }),
 
   categories: () => apiClient.get<string[]>('/products/categories'),
+
+  categoryTree: () => apiClient.get<CategoryNode[]>('/categories'),
+  banners: () => apiClient.get<Banner[]>('/banners'),
 
   lookup: (phone: string) =>
     apiClient.get<CustomerLookup>('/customers/lookup', { params: { phone } }),

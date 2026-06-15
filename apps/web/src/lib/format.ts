@@ -14,3 +14,9 @@ export function formatPrice(amount: number): string {
 export function toBengali(n: number): string {
   return toBengaliDigits(String(n));
 }
+
+// Returns the integer discount percent when regular > price, else null.
+export function discountPercent(regular?: number, price?: number): number | null {
+  if (!regular || !price || regular <= price) return null;
+  return Math.round(((regular - price) / regular) * 100);
+}
