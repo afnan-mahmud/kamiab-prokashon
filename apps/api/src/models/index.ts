@@ -9,6 +9,8 @@ export { DeliverySettings } from './DeliverySettings.js';
 export { SmsSettings } from './SmsSettings.js';
 export { StockMovement } from './StockMovement.js';
 export type { IStockMovement } from './StockMovement.js';
+export { Category } from './Category.js';
+export { Banner } from './Banner.js';
 
 export type { IRole } from './Role.js';
 export type { IUser } from './User.js';
@@ -19,3 +21,5 @@ export type { ITransaction, ITransactionReference, ITransactionAttachment } from
 export type { ILandingPage, ILandingPageContent } from './LandingPage.js';
 export type { IDeliverySettings, IDeliveryCharges, ISteadfastConfig } from './DeliverySettings.js';
 export type { ISmsSettings, IBulkSmsBdConfig, ISmsTemplates } from './SmsSettings.js';
+export type { ICategory } from './Category.js';
+export type { IBanner } from './Banner.js';

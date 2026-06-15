@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { uploadImage } from '../../services/storage.service.js';
 import { compressVideo } from '../../services/video.service.js';
-import { requirePermission } from '../../middleware/require-permission.js';
+import { requirePermission, requireAnyPermission } from '../../middleware/require-permission.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
 
 const router: Router = Router();
@@ -31,10 +31,22 @@ const uploadVideo = multer({
   },
 });
 
-// POST /api/admin/upload
+const uploadPdf = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter(_req, file, cb) {
+    if (file.mimetype !== 'application/pdf') {
+      cb(new Error('Only PDF files are allowed'));
+      return;
+    }
+    cb(null, true);
+  },
+});
+
+// POST /api/admin/upload — shared image upload, reachable from several feature areas
 router.post(
   '/',
-  requirePermission('products.create'),
+  requireAnyPermission('products.create', 'categories.create', 'banners.create', 'landing.create'),
   upload.single('file'),
   async (req, res, next) => {
     try {
@@ -70,6 +82,30 @@ router.post(
         mimetype: 'video/mp4',
         originalName: req.file.originalname,
         folder: 'landing-videos',
+        req,
+      });
+      sendSuccess(res, result, 201);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// POST /api/admin/upload/pdf — book preview sample
+router.post(
+  '/pdf',
+  requirePermission('products.create'),
+  uploadPdf.single('file'),
+  async (req, res, next) => {
+    try {
+      if (!req.file) {
+        sendError(res, 'No file provided', 400, 'BAD_REQUEST');
+        return;
+      }
+      const result = await uploadImage(req.file.buffer, {
+        mimetype: req.file.mimetype,
+        originalName: req.file.originalname,
+        folder: 'preview-pdfs',
         req,
       });
       sendSuccess(res, result, 201);

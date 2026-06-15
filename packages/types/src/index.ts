@@ -8,3 +8,5 @@ export * from './landing-page.js';
 export * from './delivery.js';
 export * from './dashboard.js';
 export * from './stock.js';
+export * from './category.js';
+export * from './banner.js';

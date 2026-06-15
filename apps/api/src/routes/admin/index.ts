@@ -14,6 +14,8 @@ import deliverySettingsRouter from './delivery-settings.routes.js';
 import smsSettingsRouter from './sms-settings.routes.js';
 import stockRouter from './stock.routes.js';
 import abandonedOrdersRouter from './abandoned-orders.routes.js';
+import categoriesRouter from './categories.routes.js';
+import bannersRouter from './banners.routes.js';
 
 const router: Router = Router();
 
@@ -32,5 +34,7 @@ router.use('/delivery-settings', deliverySettingsRouter);
 router.use('/sms-settings', smsSettingsRouter);
 router.use('/stock', stockRouter);
 router.use('/abandoned-orders', abandonedOrdersRouter);
+router.use('/categories', categoriesRouter);
+router.use('/banners', bannersRouter);
 
 export default router;

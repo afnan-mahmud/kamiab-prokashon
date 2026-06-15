@@ -13,6 +13,8 @@ const ALL_PERMISSIONS: Permission[] = [
   'customers.view', 'customers.edit', 'customers.delete',
   'accounts.view', 'accounts.income.view', 'accounts.expense.view', 'accounts.expense.create',
   'products.view', 'products.create', 'products.edit', 'products.delete',
+  'categories.view', 'categories.create', 'categories.edit', 'categories.delete',
+  'banners.view', 'banners.create', 'banners.edit', 'banners.delete',
   'landing.view', 'landing.create', 'landing.edit', 'landing.delete',
   'delivery.view', 'delivery.edit',
   'roles.view', 'roles.create', 'roles.edit', 'roles.delete',
