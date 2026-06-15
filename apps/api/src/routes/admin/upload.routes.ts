@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { uploadImage } from '../../services/storage.service.js';
 import { compressVideo } from '../../services/video.service.js';
-import { requirePermission } from '../../middleware/require-permission.js';
+import { requirePermission, requireAnyPermission } from '../../middleware/require-permission.js';
 import { sendSuccess, sendError } from '../../utils/api-response.js';
 
 const router: Router = Router();
@@ -43,10 +43,10 @@ const uploadPdf = multer({
   },
 });
 
-// POST /api/admin/upload
+// POST /api/admin/upload — shared image upload, reachable from several feature areas
 router.post(
   '/',
-  requirePermission('products.create'),
+  requireAnyPermission('products.create', 'categories.create', 'banners.create', 'landing.create'),
   upload.single('file'),
   async (req, res, next) => {
     try {
