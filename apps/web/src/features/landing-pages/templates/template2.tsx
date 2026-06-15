@@ -5,6 +5,7 @@ import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
 import { HeroMedia } from './hero-media';
+import { BookSpecsSection, TocSection, AuthorBioSection, PreviewSection } from './book-sections';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -17,12 +18,12 @@ function Section({
   section,
   primary,
   accent,
-  productName,
+  product,
 }: {
   section: ContentSection;
   primary: string;
   accent: string;
-  productName: string;
+  product: Product;
 }) {
   switch (section.type) {
     case 'text':
@@ -117,7 +118,7 @@ function Section({
         <div className="max-w-xl mx-auto w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           <div className="px-6 py-3.5" style={{ backgroundColor: primary + '15' }}>
             <h2 className="text-base font-bold" style={{ color: primary }}>
-              কেন খাবেন আমাদের {productName}?
+              কেন পড়বেন এই বইটি?
             </h2>
           </div>
           <div className="bg-white p-5 space-y-3">
@@ -160,6 +161,14 @@ function Section({
       );
     case 'reviews':
       return <ReviewsCarousel images={section.images} primary={primary} />;
+    case 'book_specs':
+      return <BookSpecsSection section={section} product={product} primary={primary} />;
+    case 'toc':
+      return <TocSection section={section} primary={primary} />;
+    case 'author_bio':
+      return <AuthorBioSection section={section} primary={primary} />;
+    case 'preview':
+      return <PreviewSection product={product} primary={primary} title={section.title} />;
     default:
       return null;
   }
@@ -168,7 +177,7 @@ function Section({
 export default function Template2({ page, product }: Props) {
   const { content } = page;
   const primary = content.colors?.primary ?? '#1f2937';
-  const accent = content.colors?.accent ?? '#d97706';
+  const accent = content.colors?.accent ?? '#0065b3';
   const bg = content.colors?.background ?? '#ffffff';
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
   const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
@@ -206,7 +215,7 @@ export default function Template2({ page, product }: Props) {
                 className="absolute -bottom-3 -right-3 rounded-2xl px-4 py-2 text-white text-xs sm:text-sm font-bold shadow-lg"
                 style={{ backgroundColor: accent }}
               >
-                ১০০% অর্গানিক ✓
+                অরিজিনাল বই ✓
               </div>
             </div>
           )}
@@ -217,7 +226,7 @@ export default function Template2({ page, product }: Props) {
               className="inline-block rounded-full px-3 py-1 text-xs font-semibold"
               style={{ backgroundColor: primary + '12', color: primary }}
             >
-              প্রিমিয়াম মানের পণ্য
+              প্রিমিয়াম মানের বই
             </div>
             <h1
               className="text-3xl sm:text-4xl font-extrabold leading-tight"
@@ -231,7 +240,7 @@ export default function Template2({ page, product }: Props) {
             {/* Trust badges */}
             <div className="flex flex-wrap gap-2">
               {[
-                { icon: <ShieldCheck className="h-3.5 w-3.5" />, text: '১০০% অর্গানিক' },
+                { icon: <ShieldCheck className="h-3.5 w-3.5" />, text: 'অরিজিনাল বই' },
                 { icon: <Truck className="h-3.5 w-3.5" />, text: 'দ্রুত ডেলিভারি' },
               ].map((b, i) => (
                 <div
@@ -282,7 +291,7 @@ export default function Template2({ page, product }: Props) {
               section={s}
               primary={primary}
               accent={accent}
-              productName={product.name}
+              product={product}
             />
           ))}
         </div>

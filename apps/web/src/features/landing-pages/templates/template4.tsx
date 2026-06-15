@@ -5,6 +5,7 @@ import { LandingCheckoutForm } from '../landing-checkout-form';
 import { StickyOrderButton } from '../sticky-order-button';
 import { ReviewsCarousel } from './reviews-carousel';
 import { HeroMedia } from './hero-media';
+import { BookSpecsSection, TocSection, AuthorBioSection, PreviewSection } from './book-sections';
 import { fixImageUrl } from '@/lib/image-url';
 import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
 
@@ -44,6 +45,19 @@ export default function Template4({ page, product }: Props) {
     .filter((s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews')
     .flatMap((s) => s.images);
 
+  const bookSpecsSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'book_specs' }> => s.type === 'book_specs',
+  );
+  const tocSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'toc' }> => s.type === 'toc',
+  );
+  const authorBioSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'author_bio' }> => s.type === 'author_bio',
+  );
+  const previewSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'preview' }> => s.type === 'preview',
+  );
+
   const productImgs = product.images.slice(0, 4).map((img) => ({
     url: img.url,
     alt: img.alt ?? product.name,
@@ -70,7 +84,7 @@ export default function Template4({ page, product }: Props) {
           background: `linear-gradient(90deg, ${primary} 0%, ${primary}cc 100%)`,
         }}
       >
-        🌿 ১০০% প্রাকৃতিক হেলথ সলিউশন — হোম ডেলিভারি &nbsp;•&nbsp; ক্যাশ অন ডেলিভারি
+        📚 অরিজিনাল বই • ক্যাশ অন ডেলিভারি • দ্রুত ডেলিভারি
       </div>
 
       {/* Hero: product gallery left + info+form right */}
@@ -107,7 +121,7 @@ export default function Template4({ page, product }: Props) {
                 className="inline-block rounded-full px-3 py-1 text-xs font-semibold mb-2"
                 style={{ backgroundColor: primary + '15', color: primary }}
               >
-                প্রিমিয়াম ন্যাচারাল হেলথ
+                প্রিমিয়াম বই কালেকশন
               </div>
               <h1
                 className="text-2xl sm:text-3xl font-extrabold leading-tight"
@@ -125,7 +139,7 @@ export default function Template4({ page, product }: Props) {
             {/* Trust signals */}
             <div className="flex flex-wrap gap-2">
               {[
-                { icon: <ShieldCheck className="h-3.5 w-3.5" />, text: '১০০% অর্গানিক' },
+                { icon: <ShieldCheck className="h-3.5 w-3.5" />, text: 'অরিজিনাল বই' },
                 { icon: <Truck className="h-3.5 w-3.5" />, text: 'দ্রুত ডেলিভারি' },
               ].map((b, i) => (
                 <div
@@ -211,7 +225,7 @@ export default function Template4({ page, product }: Props) {
       {whyProductItems.length > 0 && (
         <div className="py-10 mx-auto max-w-3xl px-4">
           <h2 className="text-2xl font-extrabold text-center mb-6" style={{ color: primary }}>
-            কেন খাবেন আমাদের {product.name}?
+            কেন পড়বেন এই বইটি?
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {whyProductItems.map((point, i) => (
@@ -328,6 +342,24 @@ export default function Template4({ page, product }: Props) {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Book-specific sections */}
+      {(bookSpecsSections.length > 0 || tocSections.length > 0 || authorBioSections.length > 0 || previewSections.length > 0) && (
+        <div className="mx-auto max-w-3xl px-4 py-10 space-y-6">
+          {bookSpecsSections.map((s, i) => (
+            <BookSpecsSection key={i} section={s} product={product} primary={primary} />
+          ))}
+          {tocSections.map((s, i) => (
+            <TocSection key={i} section={s} primary={primary} />
+          ))}
+          {authorBioSections.map((s, i) => (
+            <AuthorBioSection key={i} section={s} primary={primary} />
+          ))}
+          {previewSections.map((s, i) => (
+            <PreviewSection key={i} product={product} primary={primary} title={s.title} />
+          ))}
         </div>
       )}
 
