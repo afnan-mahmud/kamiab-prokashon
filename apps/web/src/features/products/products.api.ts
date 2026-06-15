@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Product, ProductImage, PaginatedResponse } from '@shukhilife/types';
+import type { Product, ProductImage, PreviewPdf, PaginatedResponse } from '@shukhilife/types';
 
 export interface ProductFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;
@@ -14,6 +14,7 @@ export interface VariantInput {
   _id?: string;
   label: string;
   price: number;
+  regularPrice?: number;
   sku: string;
   weight: number;
   isDefault: boolean;
@@ -26,6 +27,19 @@ export interface ProductInput {
   description: string;
   category: string;
   images: ProductImage[];
+  // Book fields
+  author?: string;
+  publisher?: string;
+  translator?: string;
+  language?: string;
+  binding?: string;
+  edition?: string;
+  isbn?: string;
+  pages?: number;
+  publicationYear?: number;
+  // Preview
+  previewImages?: ProductImage[];
+  previewPdf?: PreviewPdf | null;
   variants: VariantInput[];
   poolStock?: number;
   reorderPoint?: number;

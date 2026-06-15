@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, GripVertical, Truck } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Truck, FileText, X, Loader2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,15 +20,21 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ImageUploader } from '@/components/admin/image-uploader';
+import { ApiError, apiClient } from '@/lib/api-client';
 import { productsApi } from './products.api';
-import type { Product } from '@shukhilife/types';
+import { categoriesApi } from '@/features/categories/categories.api';
+import type { Product, ProductImage, PreviewPdf } from '@shukhilife/types';
 
 // ── Schema ──────────────────────────────────────────────────────────────────
 
-// Inner fields default to 0 so an empty/partial object coming back from the API
-// (e.g. `{}` or a half-filled charge) coerces cleanly instead of producing NaN
-// and silently blocking the whole form submit.
 const customDeliverySchema = z.object({
   insideDhaka: z.coerce.number().min(0, 'Must be ≥ 0').default(0),
   outsideDhaka: z.coerce.number().min(0, 'Must be ≥ 0').default(0),
@@ -38,6 +44,7 @@ const variantSchema = z.object({
   _id: z.string().optional(),
   label: z.string().min(1, 'Label required'),
   price: z.coerce.number().min(0, 'Price must be ≥ 0'),
+  regularPrice: z.coerce.number().min(0).optional(),
   sku: z.string().default(''),
   weight: z.coerce.number().min(0, 'Weight must be ≥ 0'),
   isDefault: z.boolean(),
@@ -52,6 +59,24 @@ const productFormSchema = z.object({
   images: z.array(
     z.object({ url: z.string(), publicId: z.string(), alt: z.string() }),
   ),
+  // Book details (all optional)
+  author: z.string().optional(),
+  publisher: z.string().optional(),
+  translator: z.string().optional(),
+  language: z.string().optional(),
+  binding: z.string().optional(),
+  edition: z.string().optional(),
+  isbn: z.string().optional(),
+  pages: z.coerce.number().min(0).optional(),
+  publicationYear: z.coerce.number().min(0).optional(),
+  // Preview
+  previewImages: z.array(
+    z.object({ url: z.string(), publicId: z.string(), alt: z.string() }),
+  ).optional(),
+  previewPdf: z
+    .object({ url: z.string(), publicId: z.string() })
+    .nullable()
+    .optional(),
   variants: z
     .array(variantSchema)
     .min(1, 'At least one variant required')
@@ -78,12 +103,9 @@ function toSlug(name: string): string {
 }
 
 function defaultVariant() {
-  return { label: '', price: 0, sku: '', weight: 0, isDefault: false };
+  return { label: '', price: 0, regularPrice: undefined, sku: '', weight: 0, isDefault: false };
 }
 
-// Walks the react-hook-form errors tree (which is nested for arrays/objects)
-// and returns the first human-readable message, so a failed submit always
-// surfaces a reason instead of the button appearing to do nothing.
 function firstErrorMessage(errors: unknown): string | undefined {
   if (!errors || typeof errors !== 'object') return undefined;
   const record = errors as Record<string, unknown>;
@@ -97,6 +119,98 @@ function firstErrorMessage(errors: unknown): string | undefined {
   return undefined;
 }
 
+// ── PDF uploader ─────────────────────────────────────────────────────────────
+
+interface PdfUploaderProps {
+  value: PreviewPdf | null | undefined;
+  onChange: (pdf: PreviewPdf | null) => void;
+}
+
+function PdfUploader({ value, onChange }: PdfUploaderProps) {
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = useCallback(
+    async (file: File) => {
+      setUploading(true);
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const result = await apiClient.upload<{ url: string; publicId: string }>('/admin/upload/pdf', fd);
+        onChange({ url: result.url, publicId: result.publicId });
+        toast.success('PDF uploaded');
+      } catch (err) {
+        toast.error(err instanceof ApiError ? err.message : 'PDF upload failed');
+      } finally {
+        setUploading(false);
+      }
+    },
+    [onChange],
+  );
+
+  if (value) {
+    return (
+      <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/50 px-3 py-2">
+        <FileText className="h-5 w-5 text-primary" />
+        <a
+          href={value.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 truncate text-sm text-primary underline"
+        >
+          View PDF
+        </a>
+        <button
+          type="button"
+          onClick={() => onChange(null)}
+          className="rounded p-0.5 text-muted-foreground hover:text-destructive"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div
+        className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-border py-5 hover:border-primary/50"
+        onClick={() => inputRef.current?.click()}
+      >
+        {uploading ? (
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        ) : (
+          <FileText className="h-6 w-6 text-muted-foreground" />
+        )}
+        <p className="text-xs text-muted-foreground">
+          {uploading ? 'Uploading...' : 'Click to upload PDF (max 20 MB)'}
+        </p>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void handleFile(file);
+          e.target.value = '';
+        }}
+      />
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+      >
+        <Upload className="mr-1.5 h-3.5 w-3.5" />
+        {uploading ? 'Uploading...' : 'Upload PDF'}
+      </Button>
+    </div>
+  );
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 interface ProductFormProps {
@@ -106,9 +220,10 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProps) {
+  // Category list from the dedicated categories endpoint
   const { data: categories = [] } = useQuery({
-    queryKey: ['product-categories'],
-    queryFn: () => productsApi.categories(),
+    queryKey: ['categories'],
+    queryFn: categoriesApi.list,
     staleTime: 60_000,
   });
 
@@ -128,10 +243,22 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           description: product.description,
           category: product.category,
           images: product.images,
+          author: product.author ?? '',
+          publisher: product.publisher ?? '',
+          translator: product.translator ?? '',
+          language: product.language ?? '',
+          binding: product.binding ?? '',
+          edition: product.edition ?? '',
+          isbn: product.isbn ?? '',
+          pages: product.pages,
+          publicationYear: product.publicationYear,
+          previewImages: product.previewImages ?? [],
+          previewPdf: product.previewPdf ?? null,
           variants: product.variants.map((v) => ({
             _id: v._id,
             label: v.label,
             price: v.price,
+            regularPrice: v.regularPrice,
             sku: v.sku,
             weight: v.weight,
             isDefault: v.isDefault,
@@ -148,6 +275,17 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           description: '',
           category: '',
           images: [],
+          author: '',
+          publisher: '',
+          translator: '',
+          language: '',
+          binding: '',
+          edition: '',
+          isbn: '',
+          pages: undefined,
+          publicationYear: undefined,
+          previewImages: [],
+          previewPdf: null,
           variants: [{ ...defaultVariant(), isDefault: true }],
           poolStock: 0,
           reorderPoint: 0,
@@ -165,9 +303,6 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
   const variants = watch('variants');
   const customDeliveryEnabled = watch('customDeliveryEnabled');
 
-  // Toggle custom delivery: turning on initialises charges for every variant
-  // (keeping any existing values) and opens the editor. Turning off keeps the
-  // entered values in form state so they persist on save.
   const handleCustomDeliveryToggle = (on: boolean) => {
     setValue('customDeliveryEnabled', on);
     if (on) {
@@ -182,7 +317,6 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
     }
   };
 
-  // Auto-generate slug from name when creating (not editing)
   useEffect(() => {
     if (!product && name) {
       setValue('slug', toSlug(name), { shouldValidate: true });
@@ -195,11 +329,27 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
     });
   };
 
+  // Build flattened category options: roots first, then children indented
+  const rootCategories = categories.filter((c) => !c.parent && c.isActive);
+  const childrenOf = (id: string) => categories.filter((c) => c.parent === id && c.isActive);
+
+  const categoryOptions: Array<{ value: string; label: string }> = [];
+  for (const root of rootCategories) {
+    categoryOptions.push({ value: root.slug, label: root.name });
+    for (const child of childrenOf(root._id)) {
+      categoryOptions.push({ value: child.slug, label: `  ↳ ${child.name}` });
+    }
+  }
+  // Also include any active categories not yet parented in the above tree
+  const coveredSlugs = new Set(categoryOptions.map((o) => o.value));
+  for (const cat of categories) {
+    if (cat.isActive && !coveredSlugs.has(cat.slug)) {
+      categoryOptions.push({ value: cat.slug, label: cat.name });
+    }
+  }
+
   const handleFormSubmit = handleSubmit(
     async (values) => {
-      // Only persist per-variant custom charges when the feature is enabled,
-      // so disabled products don't carry stale {0,0} charges that would later
-      // override the standard weight-based delivery calculation.
       const payload: ProductFormValues = {
         ...values,
         variants: values.variants.map((v) => ({
@@ -215,7 +365,6 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
       }
     },
     (formErrors) => {
-      // Validation failed — never let the submit button look like a no-op.
       toast.error(firstErrorMessage(formErrors) ?? 'Please fix the highlighted fields before saving');
     },
   );
@@ -249,17 +398,24 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="category">Category *</Label>
-            <Input
-              id="category"
-              {...register('category')}
-              list="category-options"
-              placeholder="e.g. Honey"
+            <Controller
+              control={control}
+              name="category"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
-            <datalist id="category-options">
-              {categories.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
             {errors.category && (
               <p className="text-xs text-destructive">{errors.category.message}</p>
             )}
@@ -303,6 +459,66 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
             <ImageUploader images={field.value} onChange={field.onChange} />
           )}
         />
+      </section>
+
+      {/* Book details */}
+      <section className="space-y-4">
+        <h2 className="text-base font-semibold">Book Details</h2>
+        <p className="text-xs text-muted-foreground">All fields optional — fill in for books</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="author">Author</Label>
+            <Input id="author" {...register('author')} placeholder="e.g. Humayun Ahmed" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="publisher">Publisher</Label>
+            <Input id="publisher" {...register('publisher')} placeholder="e.g. Anyaprakash" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="translator">Translator</Label>
+            <Input id="translator" {...register('translator')} placeholder="e.g. Translator name" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="language">Language</Label>
+            <Input id="language" {...register('language')} placeholder="e.g. Bengali" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="binding">Binding</Label>
+            <Input id="binding" {...register('binding')} placeholder="e.g. Hardcover" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="edition">Edition</Label>
+            <Input id="edition" {...register('edition')} placeholder="e.g. 2nd Edition" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="isbn">ISBN</Label>
+            <Input id="isbn" {...register('isbn')} placeholder="e.g. 978-3-16-148410-0" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="pages">Pages</Label>
+            <Input
+              id="pages"
+              type="number"
+              min={0}
+              {...register('pages')}
+              placeholder="e.g. 320"
+            />
+            {errors.pages && <p className="text-xs text-destructive">{errors.pages.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="publicationYear">Publication Year</Label>
+            <Input
+              id="publicationYear"
+              type="number"
+              min={0}
+              {...register('publicationYear')}
+              placeholder="e.g. 2023"
+            />
+            {errors.publicationYear && (
+              <p className="text-xs text-destructive">{errors.publicationYear.message}</p>
+            )}
+          </div>
+        </div>
       </section>
 
       {/* Variants */}
@@ -399,6 +615,21 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
                     {errors.variants?.[idx]?.price && (
                       <p className="text-xs text-destructive">
                         {errors.variants[idx]?.price?.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">MRP / Regular Price (BDT)</Label>
+                    <Input
+                      {...register(`variants.${idx}.regularPrice`)}
+                      type="number"
+                      min={0}
+                      placeholder="0 (optional)"
+                      className="h-8 text-sm"
+                    />
+                    {errors.variants?.[idx]?.regularPrice && (
+                      <p className="text-xs text-destructive">
+                        {errors.variants[idx]?.regularPrice?.message}
                       </p>
                     )}
                   </div>
@@ -541,6 +772,40 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Preview section */}
+      <section className="space-y-4">
+        <h2 className="text-base font-semibold">Read a Little (Preview)</h2>
+        <p className="text-xs text-muted-foreground">
+          Optional preview images and/or a sample PDF chapter for customers to browse before buying.
+        </p>
+
+        <div className="space-y-2">
+          <Label>Preview Images (optional)</Label>
+          <Controller
+            control={control}
+            name="previewImages"
+            render={({ field }) => (
+              <ImageUploader
+                images={field.value ?? []}
+                onChange={(imgs: ProductImage[]) => field.onChange(imgs)}
+                maxImages={10}
+              />
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Preview PDF (optional)</Label>
+          <Controller
+            control={control}
+            name="previewPdf"
+            render={({ field }) => (
+              <PdfUploader value={field.value} onChange={field.onChange} />
+            )}
+          />
+        </div>
+      </section>
 
       {/* Stock instruction */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
