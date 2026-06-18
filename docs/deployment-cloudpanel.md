@@ -65,7 +65,8 @@ cd /home/<SITE_USER>/htdocs/shukhilife.com
 rm -f index.html
 
 # Private repo — Personal Access Token (PAT) diye clone (repo scope)
-git clone https://<YOUR_PAT>@github.com/afnan-mahmud/shukhi-life.git .
+# <YOUR_PAT> ke nijer GitHub Personal Access Token diye replace koro
+git clone https://<YOUR_PAT>@github.com/afnan-mahmud/kamiab-prokashon.git .
 # (sesher '.' = current dir-e clone, notun folder banabe na)
 ```
 
