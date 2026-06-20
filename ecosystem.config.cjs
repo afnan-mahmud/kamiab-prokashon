@@ -23,11 +23,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3061,
+        PORT: 3091,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3061,
+        PORT: 3091,
       },
       restart_delay: 3000,
       max_restarts: 10,
@@ -48,11 +48,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3060,
+        PORT: 3090,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3060,
+        PORT: 3090,
       },
       max_memory_restart: '600M',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
