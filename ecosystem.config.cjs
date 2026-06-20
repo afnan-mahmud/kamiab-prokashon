@@ -15,7 +15,7 @@ const root = __dirname;
 module.exports = {
   apps: [
     {
-      name: 'shukhilife-api',
+      name: 'kamiab-prokason-api',
       // cwd = apps/api so `dotenv/config` finds apps/api/.env and uploads/ resolves correctly
       script: './dist/index.js',
       cwd: path.join(root, 'apps/api'),
@@ -23,11 +23,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3031,
+        PORT: 3061,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3031,
+        PORT: 3061,
       },
       restart_delay: 3000,
       max_restarts: 10,
@@ -38,7 +38,7 @@ module.exports = {
       // View with: pm2 logs shukhilife-api
     },
     {
-      name: 'shukhilife-web',
+      name: 'kamiab-prokason-web',
       // Point at Next's real JS CLI (not the .bin/ shell shim — PM2 runs scripts via node)
       script: 'node_modules/next/dist/bin/next',
       args: 'start',
@@ -48,11 +48,11 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'development',
-        PORT: 3030,
+        PORT: 3060,
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3030,
+        PORT: 3060,
       },
       max_memory_restart: '600M',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
