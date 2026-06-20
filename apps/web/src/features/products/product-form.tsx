@@ -93,12 +93,22 @@ export type ProductFormValues = z.infer<typeof productFormSchema>;
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function toSlug(name: string): string {
-  return name
+  // \w only matches [A-Za-z0-9_], so a pure-Bengali name strips down to "".
+  // Keep the ASCII-derived slug when possible, otherwise fall back to a
+  // unique editable slug so Bengali-named books still pass validation.
+  const ascii = name
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_]+/g, '-')
     .replace(/^-+|-+$/g, '');
+  if (ascii) return ascii;
+  // Stable per-name fallback (no flicker while typing a Bengali name).
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  return `book-${hash.toString(36)}`;
 }
 
 function defaultVariant() {

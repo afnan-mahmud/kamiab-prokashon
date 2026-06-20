@@ -1520,7 +1520,7 @@ Expected: zero errors.
 ```bash
 cd /Users/afnanmahmud/Documents/kamiab-organic/apps/api
 pnpm dev &
-curl -s http://localhost:4000/api/admin/stock/summary -H "Authorization: Bearer <token>" | jq .
+curl -s http://localhost:3061/api/admin/stock/summary -H "Authorization: Bearer <token>" | jq .
 ```
 
 Expected: response with `lowStockProducts` array (not `lowStockVariants`).
@@ -1528,7 +1528,7 @@ Expected: response with `lowStockProducts` array (not `lowStockVariants`).
 - [ ] **Step 4: Test adding stock via API**
 
 ```bash
-curl -s -X POST http://localhost:4000/api/admin/stock/movements \
+curl -s -X POST http://localhost:3061/api/admin/stock/movements \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"productId":"<id>","qty":50}' | jq .
@@ -1539,7 +1539,7 @@ Expected: 201 response with StockMovement record, `variant: null`, `qty: 50`.
 - [ ] **Step 5: Verify product poolStock updated**
 
 ```bash
-curl -s http://localhost:4000/api/admin/products/<id> -H "Authorization: Bearer <token>" | jq '.data.poolStock'
+curl -s http://localhost:3061/api/admin/products/<id> -H "Authorization: Bearer <token>" | jq '.data.poolStock'
 ```
 
 Expected: increased by 50.
