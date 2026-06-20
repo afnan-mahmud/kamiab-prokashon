@@ -13,7 +13,8 @@
     "seed": "tsx src/scripts/seed.ts",
     "migrate:customers": "tsx src/scripts/migrate-wc-customers.ts",
     "migrate:wordpress": "tsx src/scripts/migrate-wordpress.ts",
-    "migrate:pool-stock": "tsx src/scripts/migrate-pool-stock.ts"
+    "migrate:pool-stock": "tsx src/scripts/migrate-pool-stock.ts",
+    "sync:indexes": "tsx src/scripts/sync-product-indexes.ts"
   },
   "dependencies": {
     "@kamiab/types": "workspace:*",

@@ -127,6 +127,13 @@ const productSchema = new Schema<IProduct>(
 productSchema.index({ slug: 1 }, { unique: true });
 productSchema.index({ category: 1 });
 productSchema.index({ isActive: 1 });
-productSchema.index({ name: 'text', description: 'text' });
+// The book `language` field (e.g. "বাংলা", "Arabic") must NOT be treated as the
+// text-search language override, otherwise inserts fail with "language override
+// unsupported" (code 17262). Point language_override at an unused field and disable
+// stemming since Bengali isn't a supported MongoDB text-search language.
+productSchema.index(
+  { name: 'text', description: 'text' },
+  { default_language: 'none', language_override: 'textSearchLanguage' },
+);
 
 export const Product = model<IProduct>('Product', productSchema);
