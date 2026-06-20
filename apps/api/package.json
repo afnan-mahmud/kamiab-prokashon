@@ -1,5 +1,5 @@
 {
-  "name": "@shukhilife/api",
+  "name": "@kamiab/api",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -16,7 +16,7 @@
     "migrate:pool-stock": "tsx src/scripts/migrate-pool-stock.ts"
   },
   "dependencies": {
-    "@shukhilife/types": "workspace:*",
+    "@kamiab/types": "workspace:*",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
@@ -35,7 +35,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@shukhilife/config": "workspace:*",
+    "@kamiab/config": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",

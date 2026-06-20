@@ -1,8 +1,8 @@
-# Deployment Guide — Shukhi Life (CloudPanel / Shared VPS)
+# Deployment Guide — Kamiab Prokashon (CloudPanel / Shared VPS)
 
 **Stack:** Next.js 14 (web) + Express.js (api) — pnpm monorepo
 **Server:** KVM 4 VPS, **CloudPanel** installed, **multiple sites hosted** (shared)
-**Repo:** https://github.com/afnan-mahmud/shukhi-life (private)
+**Repo:** https://github.com/afnan-mahmud/kamiab-prokashon (private)
 
 > ⚠️ Ei VPS-e onno website-o ase. Tai **global Nginx config / `rm default` / `certbot --nginx`
 > chalabe NA** — sob kaj CloudPanel-er per-site UI theke hobe. `docs/deployment.md` (purono,
@@ -17,10 +17,10 @@ Ei app-e **duto** process chole, duto **alada port**-e (onno site-er sathe confl
 
 | Process | Port | Public URL |
 |---------|------|------------|
-| Web (Next.js) | **3030** | `https://shukhilife.com/` |
-| API (Express) | **3031** | `https://shukhilife.com/api/...` |
+| Web (Next.js) | **3030** | `https://kamiabprokashon.xyz/` |
+| API (Express) | **3031** | `https://kamiabprokashon.xyz/api/...` |
 
-CloudPanel-er Node.js site already `shukhilife.com → 3030` proxy korche. Amra Vhost-e ekta
+CloudPanel-er Node.js site already `kamiabprokashon.xyz → 3030` proxy korche. Amra Vhost-e ekta
 location rule add korbo jate **`/api/` → 3031** (Express) jay.
 
 **Ekta exception:** Next.js-er nijer ekta route ase — `/api/capi` (Meta Conversions API,
@@ -32,7 +32,7 @@ token hide kore). Tai routing eta:
 / (baki sob) → 3030  (Next.js — CloudPanel default)
 ```
 
-`NEXT_PUBLIC_API_URL=https://shukhilife.com` (same-origin) — tai cookie/CORS-e kono cross-site
+`NEXT_PUBLIC_API_URL=https://kamiabprokashon.xyz` (same-origin) — tai cookie/CORS-e kono cross-site
 jhamela nei, admin login cleanly kaj korbe.
 
 ---
@@ -40,18 +40,18 @@ jhamela nei, admin login cleanly kaj korbe.
 ## 1. Prerequisites (CloudPanel UI-te)
 
 1. CloudPanel → **Sites → Add Site → Create a Node.js Site**
-   - Domain: `shukhilife.com`
+   - Domain: `kamiabprokashon.xyz`
    - App Port: **3030**
    - Node.js version: **20** (ba 22)
-   - (Eta CloudPanel ekta **site user** banabe, jemon `shukhilife-XXXX`, ar htdocs path
-     `/home/<site-user>/htdocs/shukhilife.com`)
+   - (Eta CloudPanel ekta **site user** banabe, jemon `kamiab-XXXX`, ar htdocs path
+     `/home/<site-user>/htdocs/kamiabprokashon.xyz`)
 2. **DNS** (domain registrar / Cloudflare-e):
-   - `shukhilife.com` → VPS IP (A record)
-   - `www.shukhilife.com` → VPS IP (A record)
+   - `kamiabprokashon.xyz` → VPS IP (A record)
+   - `www.kamiabprokashon.xyz` → VPS IP (A record)
    - (api.* subdomain lagbe NA — same-origin setup)
 
 > Site user / path ber korte, SSH kore: `whoami` ar `pwd` (htdocs-e thakle).
-> Niche `<SITE_USER>` ar `<APP_DIR>` (= `/home/<SITE_USER>/htdocs/shukhilife.com`) bole reference korbo.
+> Niche `<SITE_USER>` ar `<APP_DIR>` (= `/home/<SITE_USER>/htdocs/kamiabprokashon.xyz`) bole reference korbo.
 
 ---
 
@@ -61,7 +61,7 @@ CloudPanel site user hisebe SSH koro (root hole: `su - <SITE_USER>`). htdocs-e d
 `index.html` thakle sorano lagbe.
 
 ```bash
-cd /home/<SITE_USER>/htdocs/shukhilife.com
+cd /home/<SITE_USER>/htdocs/kamiabprokashon.xyz
 rm -f index.html
 
 # Private repo — Personal Access Token (PAT) diye clone (repo scope)
@@ -98,7 +98,7 @@ Fill koro (`.env.example`-e production values already ase):
 ```env
 NODE_ENV=production
 PORT=3031
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/shukhilife?appName=Cluster0
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/kamiabprokashon?appName=Cluster0
 JWT_ACCESS_SECRET=<32+ char random>
 JWT_REFRESH_SECRET=<32+ char random>
 ENCRYPTION_KEY=<64 char hex>
@@ -106,9 +106,9 @@ CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 STEADFAST_BASE_URL=https://portal.packzy.com/api/v1
-PUBLIC_API_URL=https://shukhilife.com
-COOKIE_DOMAIN=shukhilife.com
-CORS_ORIGIN=https://shukhilife.com
+PUBLIC_API_URL=https://kamiabprokashon.xyz
+COOKIE_DOMAIN=kamiabprokashon.xyz
+CORS_ORIGIN=https://kamiabprokashon.xyz
 ```
 
 > Random secret banate: `openssl rand -hex 32` (secrets), `openssl rand -hex 32` (ENCRYPTION_KEY = 64 hex chars).
@@ -121,8 +121,8 @@ nano apps/web/.env.local
 ```
 
 ```env
-NEXT_PUBLIC_API_URL=https://shukhilife.com
-NEXT_PUBLIC_SITE_URL=https://shukhilife.com
+NEXT_PUBLIC_API_URL=https://kamiabprokashon.xyz
+NEXT_PUBLIC_SITE_URL=https://kamiabprokashon.xyz
 NEXT_PUBLIC_META_PIXEL_ID=<pixel id>
 META_PIXEL_ID=<pixel id>
 META_CAPI_TOKEN=<meta capi token>
@@ -135,15 +135,15 @@ NEXT_PUBLIC_GTM_ID=<gtm id>
 ## 5. Build + PM2 start
 
 ```bash
-cd /home/<SITE_USER>/htdocs/shukhilife.com
+cd /home/<SITE_USER>/htdocs/kamiabprokashon.xyz
 
 pnpm install --frozen-lockfile
 
 # Build (order: types → api → web)
-pnpm --filter @shukhilife/types build 2>/dev/null || true
-pnpm --filter @shukhilife/config build 2>/dev/null || true
-pnpm --filter @shukhilife/api build
-pnpm --filter @shukhilife/web build
+pnpm --filter @kamiab/types build 2>/dev/null || true
+pnpm --filter @kamiab/config build 2>/dev/null || true
+pnpm --filter @kamiab/api build
+pnpm --filter @kamiab/web build
 
 # PM2 install (site user) + start
 npm install -g pm2
@@ -162,18 +162,18 @@ pm2 startup
 Check:
 
 ```bash
-pm2 status                      # shukhilife-api + shukhilife-web -> online thakbe
+pm2 status                      # kamiab-api + kamiab-web -> online thakbe
 curl -I http://127.0.0.1:3030   # web (200)
 curl  http://127.0.0.1:3031/api/health   # api (200 JSON)
 ```
 
-> Memory build-e kom porle (Next.js OOM): `NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @shukhilife/web build`
+> Memory build-e kom porle (Next.js OOM): `NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @kamiab/web build`
 
 ---
 
 ## 6. CloudPanel Vhost — `/api` routing add koro
 
-CloudPanel → **Sites → shukhilife.com → Vhost** tab. Default vhost-e `location / { proxy_pass
+CloudPanel → **Sites → kamiabprokashon.xyz → Vhost** tab. Default vhost-e `location / { proxy_pass
 http://127.0.0.1:3030; ... }` ase. Tar **upore** ei duto block add koro:
 
 ```nginx
@@ -216,8 +216,8 @@ location /uploads/ {
 
 ## 7. SSL (HTTPS)
 
-DNS propagate howar por (5–15 min): CloudPanel → **Sites → shukhilife.com → SSL/TLS →
-Actions → New Let's Encrypt Certificate** (`shukhilife.com` + `www.shukhilife.com` select koro).
+DNS propagate howar por (5–15 min): CloudPanel → **Sites → kamiabprokashon.xyz → SSL/TLS →
+Actions → New Let's Encrypt Certificate** (`kamiabprokashon.xyz` + `www.kamiabprokashon.xyz` select koro).
 CloudPanel auto-renew korbe. **Manual `certbot` chalabe na.**
 
 ---
@@ -225,12 +225,12 @@ CloudPanel auto-renew korbe. **Manual `certbot` chalabe na.**
 ## 8. Verify (live)
 
 ```
-https://shukhilife.com                 → homepage (Shukhi Life branding, logo)
-https://shukhilife.com/api/health      → {"data":{"status":"ok"...}} (Express)
-https://shukhilife.com/admin/login     → admin panel (admin@shukhilife.com / Admin@1234)
+https://kamiabprokashon.xyz                 → homepage (Kamiab Prokashon branding, logo)
+https://kamiabprokashon.xyz/api/health      → {"data":{"status":"ok"...}} (Express)
+https://kamiabprokashon.xyz/admin/login     → admin panel (admin@kamiabprokashon.xyz / Admin@1234)
 ```
 
-Browser DevTools → Network-e dekho: products/login call-gula `shukhilife.com/api/...` → 200.
+Browser DevTools → Network-e dekho: products/login call-gula `kamiabprokashon.xyz/api/...` → 200.
 
 > **Admin password** prothom login-er por obosshoi change koro (Users page theke).
 
@@ -247,7 +247,7 @@ variables → Actions**-e ei secrets add koro:
 | `VPS_USER` | `<SITE_USER>` (root NOY — htdocs-er malik user) |
 | `VPS_SSH_KEY` | private key (jar public key `<SITE_USER>`-er `~/.ssh/authorized_keys`-e ache) |
 | `VPS_PORT` | `22` |
-| `VPS_APP_DIR` | `/home/<SITE_USER>/htdocs/shukhilife.com` |
+| `VPS_APP_DIR` | `/home/<SITE_USER>/htdocs/kamiabprokashon.xyz` |
 
 Deploy key banate (VPS-e, site user hisebe):
 
@@ -272,16 +272,16 @@ Erpor `git push origin main` korlei VPS-e `deploy.sh` cholbe (pull → build →
 | Port 3031 already in use | Onno site use korche — ecosystem.config.cjs + apps/api/.env + Vhost-e notun free port dao (`ss -tlnp` diye free port khojo) |
 | `/api/...` → Next 404 page | Vhost-e `/api/` block add hoy nai / `location /`-er niche chole geche. Block ta upore rakho, save koro |
 | Meta CAPI kaj korche na | `location = /api/capi` block missing — eta `/api/` block-er age thakte hobe |
-| Admin login cookie tikche na | `.env`-e `COOKIE_DOMAIN=shukhilife.com`, `CORS_ORIGIN=https://shukhilife.com`, SSL active ache check koro |
+| Admin login cookie tikche na | `.env`-e `COOKIE_DOMAIN=kamiabprokashon.xyz`, `CORS_ORIGIN=https://kamiabprokashon.xyz`, SSL active ache check koro |
 | PM2 boot-e start hoy na | `pm2 startup` je sudo command dey seta root hisebe run + `pm2 save` |
-| Build OOM | `NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @shukhilife/web build` |
+| Build OOM | `NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @kamiab/web build` |
 
 ### Useful commands
 
 ```bash
 pm2 status
-pm2 logs shukhilife-api --lines 50
-pm2 logs shukhilife-web --lines 50
+pm2 logs kamiab-api --lines 50
+pm2 logs kamiab-web --lines 50
 pm2 reload ecosystem.config.cjs --env production
 ss -tlnp | grep -E '3030|3031'      # port check
 ```

@@ -2,12 +2,12 @@
 // Usage:  pm2 start ecosystem.config.cjs --env production
 // Reload: pm2 reload ecosystem.config.cjs --env production
 //
-// Ports (this VPS hosts other sites too — these are Shukhi Life's dedicated ports):
-//   web (Next.js)  -> 3030   (CloudPanel reverse-proxies shukhilife.com -> 3030)
-//   api (Express)  -> 3031   (exposed at shukhilife.com/api via CloudPanel Vhost)
+// Ports (this VPS hosts other sites too — these are Kamiab Prokashon's dedicated ports):
+//   web (Next.js)  -> 3030   (CloudPanel reverse-proxies kamiabprokashon.xyz -> 3030)
+//   api (Express)  -> 3031   (exposed at kamiabprokashon.xyz/api via CloudPanel Vhost)
 //
 // cwd is derived from this file's location (__dirname), so it works no matter
-// where the repo is cloned (e.g. /home/<site-user>/htdocs/shukhilife.com).
+// where the repo is cloned (e.g. /home/<site-user>/htdocs/kamiabprokashon.xyz).
 
 const path = require('path');
 const root = __dirname;
@@ -35,7 +35,7 @@ module.exports = {
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       // Logs default to ~/.pm2/logs (writable by the CloudPanel site user).
-      // View with: pm2 logs shukhilife-api
+      // View with: pm2 logs kamiab-api
     },
     {
       name: 'kamiab-prokason-web',

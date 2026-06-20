@@ -1,5 +1,5 @@
 import { Schema, model, type Document, type Types } from 'mongoose';
-import type { StockMovementType } from '@shukhilife/types';
+import type { StockMovementType } from '@kamiab/types';
 
 export interface IStockMovement extends Document {
   type: StockMovementType;

@@ -55,7 +55,7 @@ Add `| BookSpecsSection | TocSection | AuthorBioSection | PreviewSection` to the
 
 - [ ] **Step 2: Verify + commit**
 
-Run: `pnpm -r type-check` (may need `pnpm --filter @shukhilife/types build` first)
+Run: `pnpm -r type-check` (may need `pnpm --filter @kamiab/types build` first)
 Expected: PASS.
 
 ```bash
@@ -118,7 +118,7 @@ import type {
   BookSpecsSection as BookSpecsSectionT,
   TocSection as TocSectionT,
   AuthorBioSection as AuthorBioSectionT,
-} from '@shukhilife/types';
+} from '@kamiab/types';
 
 const SPEC_ROWS: { key: keyof Product; label: string; bengali?: boolean }[] = [
   { key: 'author', label: 'লেখক' },

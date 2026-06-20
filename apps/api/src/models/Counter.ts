@@ -18,5 +18,5 @@ export async function nextOrderNumber(year: number): Promise<string> {
     { $inc: { seq: 1 } },
     { upsert: true, new: true },
   );
-  return `SL-${year}-${String(counter.seq).padStart(4, '0')}`;
+  return `KP-${year}-${String(counter.seq).padStart(4, '0')}`;
 }

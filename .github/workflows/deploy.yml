@@ -31,4 +31,4 @@ jobs:
 #   VPS_USER     -> CloudPanel site user (NOT root — the user that owns htdocs)
 #   VPS_SSH_KEY  -> private key whose public key is in the site user's authorized_keys
 #   VPS_PORT     -> 22
-#   VPS_APP_DIR  -> /home/<site-user>/htdocs/shukhilife.com
+#   VPS_APP_DIR  -> /home/<site-user>/htdocs/kamiabprokashon.xyz

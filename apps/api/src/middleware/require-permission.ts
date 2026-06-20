@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import type { Permission } from '@shukhilife/types';
+import type { Permission } from '@kamiab/types';
 import { sendError } from '../utils/api-response.js';
 
 export function requirePermission(permission: Permission) {

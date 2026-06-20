@@ -1,6 +1,6 @@
 'use client';
 
-import type { Permission } from '@shukhilife/types';
+import type { Permission } from '@kamiab/types';
 import { useAuthStore } from '@/stores/auth.store';
 
 interface CanProps {

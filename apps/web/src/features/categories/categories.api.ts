@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Category, CreateCategoryInput, UpdateCategoryInput } from '@shukhilife/types';
+import type { Category, CreateCategoryInput, UpdateCategoryInput } from '@kamiab/types';
 
 export const categoriesApi = {
   list: () => apiClient.get<Category[]>('/admin/categories'),

@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Product, ProductImage, PreviewPdf, PaginatedResponse } from '@shukhilife/types';
+import type { Product, ProductImage, PreviewPdf, PaginatedResponse } from '@kamiab/types';
 
 export interface ProductFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;

@@ -27,7 +27,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { productsApi } from '@/features/products/products.api';
-import type { Product } from '@shukhilife/types';
+import type { Product } from '@kamiab/types';
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();

@@ -1,4 +1,4 @@
-# Deployment Guide — Shukhi Life (Legacy: raw Nginx + PM2)
+# Deployment Guide — Kamiab Prokashon (Legacy: raw Nginx + PM2)
 
 > ⚠️ **Ei guide ta Hostinger KVM2 + raw Nginx + PM2 (root, dedicated server)-er jonno.**
 > Tomar current server **CloudPanel + shared VPS** — sei khetre **`deployment-cloudpanel.md`
@@ -7,7 +7,7 @@
 
 **Stack:** Next.js 14 + Express.js (pnpm monorepo)  
 **Server:** Hostinger KVM2 VPS — Ubuntu 24 LTS  
-**Repo:** https://github.com/afnan-mahmud/shukhilife-organic  
+**Repo:** https://github.com/afnan-mahmud/kamiab-organic  
 **CI/CD:** GitHub Actions → SSH deploy on push to `main`
 
 ---
@@ -29,7 +29,7 @@
 Project folder-এ যাও এবং Git setup করো:
 
 ```bash
-cd /path/to/shukhilife-organic
+cd /path/to/kamiab-organic
 
 # Git initialize করো (যদি না থাকে)
 git init
@@ -54,7 +54,7 @@ packages/*/dist/
 ### Step 1.2 — Remote repository যোগ করো
 
 ```bash
-git remote add origin https://github.com/afnan-mahmud/shukhilife-organic.git
+git remote add origin https://github.com/afnan-mahmud/kamiab-prokashon.git
 
 # verify করো
 git remote -v
@@ -140,8 +140,8 @@ cd /var/www
 
 # Private repo হওয়ায় deploy key দরকার (Step 3.1-এ বানাবো)
 # এখন আপাতত Personal Access Token দিয়েও করা যাবে:
-git clone https://YOUR_GITHUB_TOKEN@github.com/afnan-mahmud/shukhilife-organic.git shukhilife
-cd shukhilife
+git clone https://YOUR_GITHUB_TOKEN@github.com/afnan-mahmud/kamiab-prokashon.git kamiab-prokashon
+cd kamiab-prokashon
 ```
 
 ### Step 2.9 — Environment variables সেট করো
@@ -156,7 +156,7 @@ nano apps/api/.env
 ```env
 NODE_ENV=production
 PORT=4000
-MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/shukhilife
+MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/kamiabprokashon
 JWT_ACCESS_SECRET=your_32_char_random_secret_here
 JWT_REFRESH_SECRET=your_32_char_random_secret_here
 ENCRYPTION_KEY=your_64_char_hex_key_here
@@ -164,8 +164,8 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 STEADFAST_BASE_URL=https://portal.packzy.com/api/v1
-COOKIE_DOMAIN=.shukhilife.com
-CORS_ORIGIN=https://shukhilife.com
+COOKIE_DOMAIN=.kamiabprokashon.xyz
+CORS_ORIGIN=https://kamiabprokashon.xyz
 ```
 
 ```bash
@@ -175,23 +175,23 @@ nano apps/web/.env.local
 ```
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.shukhilife.com
-NEXT_PUBLIC_SITE_URL=https://shukhilife.com
+NEXT_PUBLIC_API_URL=https://api.kamiabprokashon.xyz
+NEXT_PUBLIC_SITE_URL=https://kamiabprokashon.xyz
 NEXT_PUBLIC_META_PIXEL_ID=your_pixel_id_here
 ```
 
 ### Step 2.10 — প্রথমবার Build ও Start করো
 
 ```bash
-cd /var/www/shukhilife
+cd /var/www/kamiab-prokashon
 
 # Dependencies install
 pnpm install --frozen-lockfile
 
 # Build করো
-pnpm --filter @shukhilife/types build 2>/dev/null || true
-pnpm --filter @shukhilife/api build
-pnpm --filter @shukhilife/web build
+pnpm --filter @kamiab/types build 2>/dev/null || true
+pnpm --filter @kamiab/api build
+pnpm --filter @kamiab/web build
 
 # PM2 দিয়ে start করো
 pm2 start ecosystem.config.cjs --env production
@@ -206,10 +206,10 @@ pm2 startup
 
 ```bash
 # Nginx config copy করো
-cp /var/www/shukhilife/nginx.conf /etc/nginx/sites-available/shukhilife.com
+cp /var/www/kamiab-prokashon/nginx.conf /etc/nginx/sites-available/kamiabprokashon.xyz
 
 # Enable করো
-ln -s /etc/nginx/sites-available/shukhilife.com /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/kamiabprokashon.xyz /etc/nginx/sites-enabled/
 
 # Default config disable করো
 rm -f /etc/nginx/sites-enabled/default
@@ -225,17 +225,17 @@ systemctl enable nginx
 ### Step 2.12 — SSL Certificate (HTTPS) নাও
 
 **আগে** Hostinger DNS-এ A record set করো:
-- `shukhilife.com` → VPS IP
-- `www.shukhilife.com` → VPS IP
-- `api.shukhilife.com` → VPS IP
+- `kamiabprokashon.xyz` → VPS IP
+- `www.kamiabprokashon.xyz` → VPS IP
+- `api.kamiabprokashon.xyz` → VPS IP
 
 DNS propagate হওয়ার পর (5-15 মিনিট):
 
 ```bash
 certbot --nginx \
-  -d shukhilife.com \
-  -d www.shukhilife.com \
-  -d api.shukhilife.com \
+  -d kamiabprokashon.xyz \
+  -d www.kamiabprokashon.xyz \
+  -d api.kamiabprokashon.xyz \
   --email afnanmahmud.afif@gmail.com \
   --agree-tos \
   --non-interactive
@@ -324,7 +324,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script_stop: true
           script: |
-            cd /var/www/shukhilife
+            cd /var/www/kamiab-prokashon
             bash deploy.sh
 ```
 
@@ -363,7 +363,7 @@ Live site update!
 ### Actions tab-এ deploy status check করো
 
 ```
-https://github.com/afnan-mahmud/shukhilife-organic/actions
+https://github.com/afnan-mahmud/kamiab-organic/actions
 ```
 
 Green checkmark = সফল deploy  
@@ -378,8 +378,8 @@ ssh root@YOUR_VPS_IP
 pm2 status
 
 # Logs দেখো
-pm2 logs shukhilife-api --lines 50
-pm2 logs shukhilife-web --lines 50
+pm2 logs kamiab-api --lines 50
+pm2 logs kamiab-web --lines 50
 
 # Nginx status
 systemctl status nginx
@@ -397,8 +397,8 @@ Actions tab → failed job → step-এ click করলে full error দেখ�
 
 ```bash
 ssh root@YOUR_VPS_IP
-pm2 logs shukhilife-api --err --lines 100
-pm2 restart shukhilife-api
+pm2 logs kamiab-api --err --lines 100
+pm2 restart kamiab-api
 ```
 
 ### Nginx 502 Bad Gateway
@@ -420,7 +420,7 @@ VPS-এ RAM কম থাকলে Next.js build-এ memory issue হতে প�
 
 ```bash
 # deploy.sh-এ web build line টা এভাবে change করো:
-NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @shukhilife/web build
+NODE_OPTIONS="--max-old-space-size=1536" pnpm --filter @kamiab/web build
 ```
 
 ### SSH Permission denied
@@ -451,9 +451,9 @@ systemctl reload nginx
 |------|---------|
 | VPS-এ SSH | `ssh root@YOUR_VPS_IP` |
 | PM2 status | `pm2 status` |
-| API logs | `pm2 logs shukhilife-api` |
-| Web logs | `pm2 logs shukhilife-web` |
-| Manual deploy | `cd /var/www/shukhilife && bash deploy.sh` |
+| API logs | `pm2 logs kamiab-api` |
+| Web logs | `pm2 logs kamiab-web` |
+| Manual deploy | `cd /var/www/kamiab-prokashon && bash deploy.sh` |
 | Nginx reload | `systemctl reload nginx` |
 | Nginx test | `nginx -t` |
-| Deploy status | https://github.com/afnan-mahmud/shukhilife-organic/actions |
+| Deploy status | https://github.com/afnan-mahmud/kamiab-organic/actions |

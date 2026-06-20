@@ -175,7 +175,7 @@ export * from './stock.js';
 - [ ] **Step 6: Build types package**
 
 ```bash
-pnpm --filter @shukhilife/types build
+pnpm --filter @kamiab/types build
 ```
 
 Expected: no errors, `dist/` files regenerated.
@@ -201,7 +201,7 @@ git commit -m "feat(types): add stock types, Returned status, reorderPoint, stoc
 
 ```ts
 import { Schema, model, type Document, type Types } from 'mongoose';
-import type { StockMovementType } from '@shukhilife/types';
+import type { StockMovementType } from '@kamiab/types';
 
 export interface IStockMovement extends Document {
   type: StockMovementType;
@@ -306,7 +306,7 @@ export type { IStockMovement } from './StockMovement.js';
 - [ ] **Step 5: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/api type-check
+pnpm --filter @kamiab/api type-check
 ```
 
 Expected: no errors.
@@ -505,7 +505,7 @@ export async function createSaleMovements(
 - [ ] **Step 2: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/api type-check
+pnpm --filter @kamiab/api type-check
 ```
 
 Expected: no errors.
@@ -713,7 +713,7 @@ router.use('/stock', stockRouter);
 - [ ] **Step 4: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/api type-check
+pnpm --filter @kamiab/api type-check
 ```
 
 Expected: no errors.
@@ -938,9 +938,9 @@ router.post('/:id/return', requirePermission('orders.edit'), async (req, res, ne
       }
     }
 
-    order.status = 'Returned' as import('@shukhilife/types').OrderStatus;
+    order.status = 'Returned' as import('@kamiab/types').OrderStatus;
     order.statusHistory.push({
-      status: 'Returned' as import('@shukhilife/types').OrderStatus,
+      status: 'Returned' as import('@kamiab/types').OrderStatus,
       changedBy: req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null,
       changedAt: new Date(),
       note: data.note || 'Courier return processed',
@@ -957,7 +957,7 @@ router.post('/:id/return', requirePermission('orders.edit'), async (req, res, ne
 - [ ] **Step 8: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/api type-check
+pnpm --filter @kamiab/api type-check
 ```
 
 Expected: no errors.
@@ -987,7 +987,7 @@ import type {
   AddStockInput,
   AdjustStockInput,
   PaginatedResponse,
-} from '@shukhilife/types';
+} from '@kamiab/types';
 
 export interface StockMovementFilters
   extends Record<string, string | number | boolean | undefined> {
@@ -1018,10 +1018,10 @@ export const stockApi = {
 
 - [ ] **Step 2: Add `processReturn` to `apps/web/src/features/orders/orders.api.ts`**
 
-Add `ProcessReturnInput` to the import from `@shukhilife/types`:
+Add `ProcessReturnInput` to the import from `@kamiab/types`:
 
 ```ts
-import type { Order, PaginatedResponse, ProcessReturnInput } from '@shukhilife/types';
+import type { Order, PaginatedResponse, ProcessReturnInput } from '@kamiab/types';
 ```
 
 Add at the end of the `ordersApi` object:
@@ -1034,7 +1034,7 @@ Add at the end of the `ordersApi` object:
 - [ ] **Step 3: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/web type-check
+pnpm --filter @kamiab/web type-check
 ```
 
 Expected: no errors.
@@ -1453,7 +1453,7 @@ import { stockApi, type StockMovementFilters } from '@/features/stock/stock.api'
 import { AddStockModal } from '@/features/stock/add-stock-modal';
 import { AdjustStockModal } from '@/features/stock/adjust-stock-modal';
 import { cn } from '@/lib/utils';
-import type { StockMovementType } from '@shukhilife/types';
+import type { StockMovementType } from '@kamiab/types';
 
 const TYPE_LABELS: Record<StockMovementType, string> = {
   purchase: 'ক্রয়',
@@ -1727,7 +1727,7 @@ export default function StockPage() {
 - [ ] **Step 4: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/web type-check
+pnpm --filter @kamiab/web type-check
 ```
 
 Expected: no errors.
@@ -1764,7 +1764,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ordersApi } from '@/features/orders/orders.api';
-import type { Order } from '@shukhilife/types';
+import type { Order } from '@kamiab/types';
 
 const schema = z.object({
   items: z.array(
@@ -1972,7 +1972,7 @@ Add the modal at the end of the component return (before the closing `</div>`):
 - [ ] **Step 3: Type-check**
 
 ```bash
-pnpm --filter @shukhilife/web type-check
+pnpm --filter @kamiab/web type-check
 ```
 
 Expected: no errors.
@@ -2087,7 +2087,7 @@ In the variants grid (`<div className="grid gap-3 sm:grid-cols-3">`), add a new 
 - [ ] **Step 4: Final type-check across all packages**
 
 ```bash
-pnpm --filter @shukhilife/types build && pnpm --filter @shukhilife/api type-check && pnpm --filter @shukhilife/web type-check
+pnpm --filter @kamiab/types build && pnpm --filter @kamiab/api type-check && pnpm --filter @kamiab/web type-check
 ```
 
 Expected: no errors in any package.

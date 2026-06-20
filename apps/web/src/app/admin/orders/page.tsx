@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Can } from '@/components/can';
 import { ordersApi } from '@/features/orders/orders.api';
 import { cn } from '@/lib/utils';
-import type { Order } from '@shukhilife/types';
+import type { Order } from '@kamiab/types';
 import { ManualOrderModal } from './manual-order-modal';
 
 const ORDER_STATUSES = [

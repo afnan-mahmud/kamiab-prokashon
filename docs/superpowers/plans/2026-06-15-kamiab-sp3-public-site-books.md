@@ -93,7 +93,7 @@ git commit -m "feat(api): price-range and nested-category filtering on public pr
 
 - [ ] **Step 1: Extend filters and add tree/banners methods**
 
-In `shop.api.ts`: add `minPrice?: number;` and `maxPrice?: number;` to `PublicProductFilters`. Import `CategoryNode, Banner` from `@shukhilife/types`. Add to `shopApi`:
+In `shop.api.ts`: add `minPrice?: number;` and `maxPrice?: number;` to `PublicProductFilters`. Import `CategoryNode, Banner` from `@kamiab/types`. Add to `shopApi`:
 
 ```ts
   categoryTree: () => apiClient.get<CategoryNode[]>('/categories'),

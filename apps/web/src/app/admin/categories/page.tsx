@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/table';
 import { Can } from '@/components/can';
 import { ApiError, apiClient } from '@/lib/api-client';
-import type { Category, CategoryImage } from '@shukhilife/types';
+import type { Category, CategoryImage } from '@kamiab/types';
 
 // ── Slugify ──────────────────────────────────────────────────────────────────
 

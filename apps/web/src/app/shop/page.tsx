@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import type { CategoryNode } from '@shukhilife/types';
+import type { CategoryNode } from '@kamiab/types';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'নতুন আগে' },

@@ -16,7 +16,7 @@ import { landingPagesApi, type CreateLandingPageInput } from './landing-pages.ap
 import { productsApi } from '@/features/products/products.api';
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { VideoUploader } from '@/components/admin/video-uploader';
-import type { LandingPage, ContentSection } from '@shukhilife/types';
+import type { LandingPage, ContentSection } from '@kamiab/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

@@ -11,7 +11,7 @@ import { shopApi } from '@/features/shop/shop.api';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { BRAND } from '@/lib/brand';
-import type { CategoryNode } from '@shukhilife/types';
+import type { CategoryNode } from '@kamiab/types';
 
 const NAV_LINKS = [
   { href: '/', label: 'হোম' },

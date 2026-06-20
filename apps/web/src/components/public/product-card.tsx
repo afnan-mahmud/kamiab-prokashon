@@ -8,7 +8,7 @@ import { useCartStore } from '@/stores/cart.store';
 import { formatPrice, discountPercent, toBengali } from '@/lib/format';
 import { fireEvent } from '@/lib/pixel';
 import { gtmAddToCart } from '@/lib/gtm';
-import type { Product } from '@shukhilife/types';
+import type { Product } from '@kamiab/types';
 
 interface ProductCardProps {
   product: Product;

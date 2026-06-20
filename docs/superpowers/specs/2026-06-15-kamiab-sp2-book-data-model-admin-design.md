@@ -32,7 +32,7 @@ menu are **SP3**.
   data + admin + public GET endpoints these will consume.
 - Author/Publisher as browsable entities (deferred to v2 per brainstorming; they remain
   plain text fields here).
-- Renaming internal `@shukhilife/*` package identifiers.
+- Renaming internal `@kamiab/*` package identifiers.
 
 ## Design decisions (locked during brainstorming)
 

@@ -1,4 +1,4 @@
-import type { LandingPageContent } from '@shukhilife/types';
+import type { LandingPageContent } from '@kamiab/types';
 import { fixImageUrl } from '@/lib/image-url';
 
 interface HeroMediaProps {

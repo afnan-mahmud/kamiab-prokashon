@@ -1,6 +1,6 @@
 # Stock Management — Design Spec
 **Date:** 2026-05-19  
-**Project:** Shukhi Life  
+**Project:** Kamiab Prokashon  
 **Pattern:** Inventory Ledger (Option A)
 
 ---

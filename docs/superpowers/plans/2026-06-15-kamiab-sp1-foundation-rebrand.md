@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace all user-facing Shukhi Life branding with Kamiab Prokashon and switch the global theme to brand colors `#8dc53d` (green) / `#0065b3` (blue).
+**Goal:** Replace all user-facing Kamiab Prokashon branding with Kamiab Prokashon and switch the global theme to brand colors `#8dc53d` (green) / `#0065b3` (blue).
 
 **Architecture:** Foundation-only rebrand — no layout restructure. A single `BRAND` constants module becomes the source of truth for name/slogan/contact/socials; Tailwind + CSS-variable color tokens are remapped; chrome (header, footer, login, sidebar, meta) is updated to consume the constants. Home hero, landing templates, and missing static pages are intentionally deferred to SP3/SP4.
 
@@ -185,7 +185,7 @@ import { BRAND } from '@/lib/brand';
 
 - [ ] **Step 2: Update logo alt and brand blurb**
 
-Change the brand `<Image>` `alt="Shukhi Life"` to `alt={BRAND.nameEn}`. Replace the blurb paragraph text with:
+Change the brand `<Image>` `alt="Kamiab Prokashon"` to `alt={BRAND.nameEn}`. Replace the blurb paragraph text with:
 
 ```tsx
             <p className="text-sm leading-relaxed text-gray-400">
@@ -214,7 +214,7 @@ Replace the three contact `<li>` values:
 
 - [ ] **Step 4: Update Facebook link and copyright**
 
-Set the Facebook `<a href>` to `{BRAND.facebook}`. Change the copyright line `Shukhi Life` to `{BRAND.nameEn}`:
+Set the Facebook `<a href>` to `{BRAND.facebook}`. Change the copyright line `Kamiab Prokashon` to `{BRAND.nameEn}`:
 
 ```tsx
             <span>© {new Date().getFullYear()} {BRAND.nameEn} — All rights reserved.</span>
@@ -251,7 +251,7 @@ import { BRAND } from '@/lib/brand';
 
 - [ ] **Step 2: Update the logo alt text**
 
-Change `alt="Shukhi Life"` on the logo `<Image>` to `alt={BRAND.nameEn}`.
+Change `alt="Kamiab Prokashon"` on the logo `<Image>` to `alt={BRAND.nameEn}`.
 
 - [ ] **Step 3: Verify + commit**
 
@@ -280,7 +280,7 @@ import { BRAND } from '@/lib/brand';
 
 - [ ] **Step 2: Replace the brand name heading**
 
-Change line 65 from `<h1 className="text-xl font-bold text-foreground">Shukhi Life</h1>` to:
+Change line 65 from `<h1 className="text-xl font-bold text-foreground">Kamiab Prokashon</h1>` to:
 
 ```tsx
           <h1 className="text-xl font-bold text-foreground">{BRAND.nameEn}</h1>
@@ -311,7 +311,7 @@ After the `cn` import (line 20) add:
 import { BRAND } from '@/lib/brand';
 ```
 
-(Keep the existing `import type { Permission } from '@shukhilife/types';` line — internal, do not change.)
+(Keep the existing `import type { Permission } from '@kamiab/types';` line — internal, do not change.)
 
 - [ ] **Step 2: Update logo badge and brand name**
 
@@ -335,7 +335,7 @@ Replace line ~118:
 - [ ] **Step 4: Verify + commit**
 
 Run: `grep -in "shukhi" apps/web/src/components/layout/admin-sidebar.tsx`
-Expected: only the `@shukhilife/types` import line.
+Expected: only the `@kamiab/types` import line.
 
 ```bash
 git add apps/web/src/components/layout/admin-sidebar.tsx
@@ -404,7 +404,7 @@ git commit -m "feat(admin): recolor dashboard & accounts charts to brand palette
 - [ ] **Step 1: Confirm no user-facing Shukhi text remains**
 
 Run: `grep -rin "shukhi" apps/web/src`
-Expected: only internal occurrences — `@shukhilife/types` import specifiers and the `shukhilife-cart` localStorage key in `apps/web/src/stores/cart.store.ts`. No display strings.
+Expected: only internal occurrences — `@kamiab/types` import specifiers and the `kamiab-cart` localStorage key in `apps/web/src/stores/cart.store.ts`. No display strings.
 
 - [ ] **Step 2: Confirm old brand-green hex is gone from chrome**
 

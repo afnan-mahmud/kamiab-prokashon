@@ -1,11 +1,11 @@
-# SP1 — Foundation & Rebrand (Shukhi Life → Kamiab Prokashon)
+# SP1 — Foundation & Rebrand (Kamiab Prokashon → Kamiab Prokashon)
 
 **Date:** 2026-06-15
 **Status:** Approved design, pending implementation plan
 
 ## Background
 
-The codebase is a fully-built MERN e-commerce platform originally for **Shukhi Life**
+The codebase is a fully-built MERN e-commerce platform originally for **Kamiab Prokashon**
 (organic food). It is being repurposed for **Kamiab Prokashon** — an Islamic book
 publisher and seller based in Banglabazar, Dhaka (reference sites: wafilife.com,
 rokomari.com).
@@ -31,7 +31,7 @@ This document covers **SP1 only**.
 
 ## Goals
 
-- Replace all user-facing Shukhi Life branding with Kamiab Prokashon.
+- Replace all user-facing Kamiab Prokashon branding with Kamiab Prokashon.
 - Switch the global theme to the brand colors `#8dc53d` (green) and `#0065b3` (blue).
 - Centralize brand info (name, slogan, phone, address, email, socials, site URL) in
   one file so later sub-projects consume it rather than hardcoding.
@@ -44,7 +44,7 @@ Foundation only — **no layout restructure**. SP1 unblocks SP2–SP4.
 - Home hero gradient colors, landing template default colors — restyled in SP3/SP4
   where those surfaces are redesigned anyway (avoids double work).
 - contact / privacy / return pages — created in SP3.
-- Renaming internal code identifiers (`@shukhilife/types` package, `shukhilife-cart`
+- Renaming internal code identifiers (`@kamiab/types` package, `kamiab-cart`
   localStorage key, root `package.json` name, repo dir). User chose **user-facing only**;
   these stay to avoid import churn and to preserve existing customer carts.
 - Backend `.env` deployment values (CORS_ORIGIN, COOKIE_DOMAIN) — deployment-time concern,
@@ -147,12 +147,12 @@ All chrome (header, footer, login, layout meta) imports from here instead of har
 | `apps/web/src/components/layout/public-header.tsx` | logo `alt` → Kamiab Prokashon |
 | `apps/web/src/components/layout/public-footer.tsx` | brand blurb → slogan + Islamic-book copy; phone `01750-036787`; email `contact@kamiabprokashon.xyz`; address (Banglabazar); FB link → kamiabprokashon; logo alt; copyright name. All sourced from `BRAND`. |
 | `apps/web/src/app/layout.tsx` | meta (section 4) |
-| `apps/web/src/app/admin/login/page.tsx` | `Shukhi Life` → `Kamiab Prokashon` |
+| `apps/web/src/app/admin/login/page.tsx` | `Kamiab Prokashon` → `Kamiab Prokashon` |
 | `apps/web/src/components/layout/admin-header.tsx`, `admin-sidebar.tsx` | brand name if shown |
 | `apps/web/src/app/admin/settings/page.tsx` | SMS senderId placeholder `SHUKHILIFE` → e.g. `KAMIAB` |
 | Admin chart hex `#4a7c2e` (`admin/page.tsx`, `accounts/page.tsx`) | → `#8dc53d` brand green (cosmetic sweep) |
 
-`@shukhilife/types` import specifiers are **not** changed (internal, out of scope).
+`@kamiab/types` import specifiers are **not** changed (internal, out of scope).
 
 ## Affected files (summary)
 
@@ -171,9 +171,9 @@ All chrome (header, footer, login, layout meta) imports from here instead of har
 - `pnpm -r type-check` passes.
 - `pnpm --filter web build` succeeds.
 - Manual: home, shop, footer, admin login show Kamiab Prokashon branding; buttons/links
-  render in brand green/blue; no leftover "Shukhi Life" user-facing text
-  (`grep -rin "shukhi" apps/web/src` returns only internal `@shukhilife/types` imports
-  and the `shukhilife-cart` key).
+  render in brand green/blue; no leftover "Kamiab Prokashon" user-facing text
+  (`grep -rin "shukhi" apps/web/src` returns only internal `@kamiab/types` imports
+  and the `kamiab-cart` key).
 - Spot-check button contrast: primary/CTA buttons readable (green-dark or blue with white text).
 
 ## Open items

@@ -30,7 +30,7 @@ import {
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { ApiError, apiClient } from '@/lib/api-client';
 import { categoriesApi } from '@/features/categories/categories.api';
-import type { Product, ProductImage, PreviewPdf } from '@shukhilife/types';
+import type { Product, ProductImage, PreviewPdf } from '@kamiab/types';
 
 // ── Schema ──────────────────────────────────────────────────────────────────
 

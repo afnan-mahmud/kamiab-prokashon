@@ -3,7 +3,7 @@ import type {
   TransactionType,
   TransactionCategory,
   TransactionPaymentMethod,
-} from '@shukhilife/types';
+} from '@kamiab/types';
 
 export interface ITransactionReference {
   type: 'order' | 'manual' | 'steadfast';

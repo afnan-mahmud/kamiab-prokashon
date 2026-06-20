@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/table';
 import { Can } from '@/components/can';
 import { ApiError, apiClient } from '@/lib/api-client';
-import type { Banner, BannerImage } from '@shukhilife/types';
+import type { Banner, BannerImage } from '@kamiab/types';
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 

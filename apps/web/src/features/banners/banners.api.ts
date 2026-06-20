@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { Banner, CreateBannerInput, UpdateBannerInput } from '@shukhilife/types';
+import type { Banner, CreateBannerInput, UpdateBannerInput } from '@kamiab/types';
 
 export const bannersApi = {
   list: () => apiClient.get<Banner[]>('/admin/banners'),

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fixImageUrl } from '@/lib/image-url';
-import type { ProductImage } from '@shukhilife/types';
+import type { ProductImage } from '@kamiab/types';
 
 interface Props {
   images: ProductImage[];

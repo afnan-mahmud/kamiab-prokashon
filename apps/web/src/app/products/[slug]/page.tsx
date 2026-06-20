@@ -32,7 +32,7 @@ import { formatPrice, toBengali, discountPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { fireEvent } from '@/lib/pixel';
 import { gtmViewItem, gtmAddToCart } from '@/lib/gtm';
-import type { CategoryNode } from '@shukhilife/types';
+import type { CategoryNode } from '@kamiab/types';
 
 function buildSlugNameMap(nodes: CategoryNode[]): Map<string, string> {
   const map = new Map<string, string>();

@@ -1,5 +1,5 @@
 {
-  "extends": "@shukhilife/config/tsconfig/base",
+  "extends": "@kamiab/config/tsconfig/base",
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

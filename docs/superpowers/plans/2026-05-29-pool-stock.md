@@ -226,7 +226,7 @@ Make `variant` optional (not required):
 
 ```typescript
 import { Schema, model, type Document, type Types } from 'mongoose';
-import type { StockMovementType } from '@shukhilife/types';
+import type { StockMovementType } from '@kamiab/types';
 
 export interface IStockMovement extends Document {
   type: StockMovementType;
@@ -397,8 +397,8 @@ export interface ProcessReturnInput {
 - [ ] **Step 5: Build shared types package to verify no compile errors**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic
-pnpm --filter @shukhilife/types build
+cd /Users/afnanmahmud/Documents/kamiab-organic
+pnpm --filter @kamiab/types build
 ```
 
 Expected: build succeeds with no TypeScript errors.
@@ -576,7 +576,7 @@ export async function createSaleMovements(
 - [ ] **Step 2: Build the API to check for TypeScript errors**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic/apps/api
+cd /Users/afnanmahmud/Documents/kamiab-organic/apps/api
 pnpm tsc --noEmit
 ```
 
@@ -914,7 +914,7 @@ Find the `createSaleMovements` call in the manual order POST handler and update 
 - [ ] **Step 5: Final backend TypeScript check**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic/apps/api
+cd /Users/afnanmahmud/Documents/kamiab-organic/apps/api
 pnpm tsc --noEmit
 ```
 
@@ -1334,7 +1334,7 @@ Update AddStockModal call at the bottom of the page — remove `prefillVariantId
 
 - [ ] **Step 4: Update `stock.api.ts` to remove `variantId` from inputs**
 
-In `apps/web/src/features/stock/stock.api.ts`, the `AddStockInput` and `AdjustStockInput` types now come from `@shukhilife/types` so no change is needed there — but verify the `StockMovementFilters` type — remove `variantId` if present:
+In `apps/web/src/features/stock/stock.api.ts`, the `AddStockInput` and `AdjustStockInput` types now come from `@kamiab/types` so no change is needed there — but verify the `StockMovementFilters` type — remove `variantId` if present:
 
 ```typescript
 export interface StockMovementFilters
@@ -1500,7 +1500,7 @@ The `inStock` expression now depends on `qty` state, which is already defined. N
 - [ ] **Step 1: Build the web app**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic/apps/web
+cd /Users/afnanmahmud/Documents/kamiab-organic/apps/web
 pnpm tsc --noEmit
 ```
 
@@ -1509,7 +1509,7 @@ Expected: zero errors.
 - [ ] **Step 2: Build the API**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic/apps/api
+cd /Users/afnanmahmud/Documents/kamiab-organic/apps/api
 pnpm tsc --noEmit
 ```
 
@@ -1518,7 +1518,7 @@ Expected: zero errors.
 - [ ] **Step 3: Start the API and verify the stock summary endpoint**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic/apps/api
+cd /Users/afnanmahmud/Documents/kamiab-organic/apps/api
 pnpm dev &
 curl -s http://localhost:4000/api/admin/stock/summary -H "Authorization: Bearer <token>" | jq .
 ```
@@ -1547,7 +1547,7 @@ Expected: increased by 50.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/afnanmahmud/Documents/shukhilife-organic
+cd /Users/afnanmahmud/Documents/kamiab-organic
 git add apps/api/src/models/Product.ts \
         apps/api/src/models/StockMovement.ts \
         apps/api/src/services/stock.service.ts \

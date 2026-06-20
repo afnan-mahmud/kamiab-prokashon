@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Banner } from '@shukhilife/types';
+import type { Banner } from '@kamiab/types';
 
 interface HeroCarouselProps {
   banners: Banner[];

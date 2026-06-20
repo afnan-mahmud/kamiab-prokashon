@@ -10,7 +10,7 @@ import type {
   BookSpecsSection as BookSpecsSectionT,
   TocSection as TocSectionT,
   AuthorBioSection as AuthorBioSectionT,
-} from '@shukhilife/types';
+} from '@kamiab/types';
 
 const SPEC_ROWS: { key: keyof Product; label: string; bengali?: boolean }[] = [
   { key: 'author', label: 'লেখক' },

@@ -1,5 +1,5 @@
 {
-  "name": "@shukhilife/web",
+  "name": "@kamiab/web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -28,7 +28,7 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.3",
-    "@shukhilife/types": "workspace:*",
+    "@kamiab/types": "workspace:*",
     "@tanstack/react-query": "^5.59.0",
     "@tanstack/react-query-devtools": "^5.59.0",
     "class-variance-authority": "^0.7.0",
@@ -48,7 +48,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@shukhilife/config": "workspace:*",
+    "@kamiab/config": "workspace:*",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

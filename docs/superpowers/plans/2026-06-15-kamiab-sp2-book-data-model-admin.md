@@ -66,7 +66,7 @@ In `CreateProductInput`, add the same optional book fields, `previewImages?: Pro
 
 - [ ] **Step 4: Verify + commit**
 
-Run: `pnpm --filter @shukhilife/types build` (or `pnpm -r type-check`)
+Run: `pnpm --filter @kamiab/types build` (or `pnpm -r type-check`)
 Expected: PASS.
 
 ```bash
@@ -921,7 +921,7 @@ Read `apps/web/src/features/roles/roles.api.ts` (CRUD api shape) and `apps/web/s
 
 - [ ] **Step 2: Create `categories.api.ts`**
 
-Export a `categoriesApi` object with `list()`, `create(input: CreateCategoryInput)`, `update(id, input: UpdateCategoryInput)`, `remove(id)` calling `/admin/categories` via the shared api client, typed with `Category`, `CreateCategoryInput`, `UpdateCategoryInput` from `@shukhilife/types`. Mirror the exact client/error pattern in `roles.api.ts`.
+Export a `categoriesApi` object with `list()`, `create(input: CreateCategoryInput)`, `update(id, input: UpdateCategoryInput)`, `remove(id)` calling `/admin/categories` via the shared api client, typed with `Category`, `CreateCategoryInput`, `UpdateCategoryInput` from `@kamiab/types`. Mirror the exact client/error pattern in `roles.api.ts`.
 
 - [ ] **Step 3: Create the categories page**
 

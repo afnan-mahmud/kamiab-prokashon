@@ -7,7 +7,7 @@ import { ReviewsCarousel } from './reviews-carousel';
 import { HeroMedia } from './hero-media';
 import { BookSpecsSection, TocSection, AuthorBioSection, PreviewSection } from './book-sections';
 import { fixImageUrl } from '@/lib/image-url';
-import type { LandingPage, Product, ContentSection } from '@shukhilife/types';
+import type { LandingPage, Product, ContentSection } from '@kamiab/types';
 
 interface Props {
   page: LandingPage;

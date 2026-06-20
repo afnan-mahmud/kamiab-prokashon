@@ -1,5 +1,5 @@
 {
-  "extends": "@shukhilife/config/tsconfig/node",
+  "extends": "@kamiab/config/tsconfig/node",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

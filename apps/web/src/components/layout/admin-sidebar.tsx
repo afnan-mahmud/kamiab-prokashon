@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Can } from '@/components/can';
-import type { Permission } from '@shukhilife/types';
+import type { Permission } from '@kamiab/types';
 import { BRAND } from '@/lib/brand';
 
 interface NavItem {

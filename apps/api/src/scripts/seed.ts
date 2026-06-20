@@ -5,7 +5,7 @@ import { Role } from '../models/Role.js';
 import { User } from '../models/User.js';
 import { DeliverySettings } from '../models/DeliverySettings.js';
 import { SmsSettings } from '../models/SmsSettings.js';
-import type { Permission } from '@shukhilife/types';
+import type { Permission } from '@kamiab/types';
 
 const ALL_PERMISSIONS: Permission[] = [
   'dashboard.view',
@@ -75,16 +75,16 @@ async function seed() {
   }
 
   // Default admin user
-  const existingAdmin = await User.findOne({ email: 'admin@shukhilife.com' });
+  const existingAdmin = await User.findOne({ email: 'admin@kamiabprokashon.xyz' });
   if (!existingAdmin) {
     await User.create({
       name: 'Super Admin',
-      email: 'admin@shukhilife.com',
+      email: 'admin@kamiabprokashon.xyz',
       password: 'Admin@1234',
       role: adminRole._id,
       isActive: true,
     });
-    console.info('✅ Created admin user: admin@shukhilife.com / Admin@1234');
+    console.info('✅ Created admin user: admin@kamiabprokashon.xyz / Admin@1234');
     console.info('⚠️  CHANGE THE PASSWORD after first login!');
   } else {
     console.info('✅ Admin user already exists');
