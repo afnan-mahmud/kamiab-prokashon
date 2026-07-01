@@ -254,10 +254,11 @@ export default function ProductDetailPage() {
             {hasPreview && (
               <Button
                 variant="outline"
-                className="w-full gap-2"
+                size="lg"
+                className="w-full gap-2 border-2 bg-primary/5 font-bold shadow-sm hover:bg-primary/10"
                 onClick={() => setPreviewOpen(true)}
               >
-                <BookOpen className="h-4 w-4" />
+                <BookOpen className="h-5 w-5" />
                 একটু পড়ে দেখুন
               </Button>
             )}
@@ -391,8 +392,8 @@ export default function ProductDetailPage() {
               {inStock && (
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="flex-1 gap-2"
+                  variant="accent"
+                  className="flex-1 gap-2 font-bold shadow-md"
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart className="h-5 w-5" />

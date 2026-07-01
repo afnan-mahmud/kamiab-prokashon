@@ -19,14 +19,21 @@ const NAV_LINKS = [
   { href: '/contact', label: 'যোগাযোগ' },
 ];
 
+// Max top-level categories shown inline before collapsing the rest into "আরও দেখুন"
+const MAX_VISIBLE_CATEGORIES = 6;
+
 function DesktopCategoryMenu({ categories }: { categories: CategoryNode[] }) {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   if (categories.length === 0) return null;
 
+  const visible = categories.slice(0, MAX_VISIBLE_CATEGORIES);
+  const overflow = categories.slice(MAX_VISIBLE_CATEGORIES);
+
   return (
     <div className="flex items-center gap-1">
-      {categories.map((cat) => {
+      {visible.map((cat) => {
         const hasChildren = cat.children.length > 0;
         const isOpen = openSlug === cat.slug;
 
@@ -63,6 +70,51 @@ function DesktopCategoryMenu({ categories }: { categories: CategoryNode[] }) {
           </div>
         );
       })}
+
+      {overflow.length > 0 && (
+        <div
+          className="relative shrink-0"
+          onMouseEnter={() => setMoreOpen(true)}
+          onMouseLeave={() => setMoreOpen(false)}
+        >
+          <button
+            type="button"
+            className="flex items-center gap-0.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-haspopup="true"
+            aria-expanded={moreOpen}
+          >
+            আরও দেখুন
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', moreOpen && 'rotate-180')} />
+          </button>
+
+          {moreOpen && (
+            <div className="absolute right-0 top-full z-50 max-h-[70vh] w-[220px] overflow-y-auto rounded-md border border-border bg-white py-1 shadow-lg">
+              {overflow.map((cat) => (
+                <div key={cat._id}>
+                  <Link
+                    href={`/shop?category=${cat.slug}`}
+                    onClick={() => setMoreOpen(false)}
+                    className="block px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    {cat.name}
+                  </Link>
+                  {cat.children.length > 0 &&
+                    cat.children.map((child) => (
+                      <Link
+                        key={child._id}
+                        href={`/shop?category=${child.slug}`}
+                        onClick={() => setMoreOpen(false)}
+                        className="block py-1.5 pl-8 pr-4 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        {child.name}
+                      </Link>
+                    ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

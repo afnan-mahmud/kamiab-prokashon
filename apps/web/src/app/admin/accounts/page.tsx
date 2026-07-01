@@ -274,25 +274,25 @@ export default function AccountsPage() {
               : [
                   {
                     label: 'Total Income',
-                    value: `৳${(summary?.totalIncome ?? 0).toLocaleString()}`,
+                    value: `৳ ${(summary?.totalIncome ?? 0).toLocaleString()}`,
                     icon: TrendingUp,
                     color: 'text-green-600',
                   },
                   {
                     label: 'Total Expense',
-                    value: `৳${(summary?.totalExpense ?? 0).toLocaleString()}`,
+                    value: `৳ ${(summary?.totalExpense ?? 0).toLocaleString()}`,
                     icon: TrendingDown,
                     color: 'text-red-600',
                   },
                   {
                     label: 'Net Profit',
-                    value: `৳${(summary?.netProfit ?? 0).toLocaleString()}`,
+                    value: `৳ ${(summary?.netProfit ?? 0).toLocaleString()}`,
                     icon: DollarSign,
                     color: (summary?.netProfit ?? 0) >= 0 ? 'text-green-600' : 'text-red-600',
                   },
                   {
                     label: 'Cash in Hand',
-                    value: `৳${(summary?.cashInHand ?? 0).toLocaleString()}`,
+                    value: `৳ ${(summary?.cashInHand ?? 0).toLocaleString()}`,
                     icon: Wallet,
                     color: 'text-blue-600',
                   },
@@ -316,8 +316,8 @@ export default function AccountsPage() {
                       return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m) - 1] ?? v;
                     }}
                   />
-                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v: number) => `৳${v.toLocaleString()}`} />
+                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `৳ ${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(v: number) => `৳ ${v.toLocaleString()}`} />
                   <Legend />
                   <Line type="monotone" dataKey="income" stroke="#8dc53d" strokeWidth={2} dot={false} name="Income" />
                   <Line type="monotone" dataKey="expense" stroke="#dc2626" strokeWidth={2} dot={false} name="Expense" />
@@ -348,7 +348,7 @@ export default function AccountsPage() {
                         <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number) => `৳${v.toLocaleString()}`} />
+                    <Tooltip formatter={(v: number) => `৳ ${v.toLocaleString()}`} />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -362,9 +362,9 @@ export default function AccountsPage() {
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={pieExpenseData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
+                    <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v: number) => `৳ ${(v / 1000).toFixed(0)}k`} />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={70} />
-                    <Tooltip formatter={(v: number) => `৳${v.toLocaleString()}`} />
+                    <Tooltip formatter={(v: number) => `৳ ${v.toLocaleString()}`} />
                     <Bar dataKey="value" fill="#0065b3" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -449,7 +449,7 @@ export default function AccountsPage() {
                           {tx.description || '—'}
                         </TableCell>
                         <TableCell className={`text-right text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                          {tx.type === 'income' ? '+' : '−'}৳{tx.amount.toLocaleString()}
+                          {tx.type === 'income' ? '+' : '−'}৳ {tx.amount.toLocaleString()}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -528,7 +528,7 @@ export default function AccountsPage() {
                             {tx.description || '—'}
                           </TableCell>
                           <TableCell className="text-right text-sm font-semibold text-red-600">
-                            −৳{tx.amount.toLocaleString()}
+                            −৳ {tx.amount.toLocaleString()}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center justify-end gap-1">

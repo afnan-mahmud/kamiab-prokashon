@@ -338,7 +338,7 @@ export default function OrderDetailPage() {
                     <TableRow key={i}>
                       <TableCell className="text-sm font-medium">{item.productName}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.variantLabel}</TableCell>
-                      <TableCell className="text-right text-sm">৳{item.price.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-sm">৳ {item.price.toLocaleString()}</TableCell>
                       <TableCell className="text-right text-sm">
                         <Input
                           type="number"
@@ -351,7 +351,7 @@ export default function OrderDetailPage() {
                         />
                       </TableCell>
                       <TableCell className="text-right text-sm font-medium">
-                        ৳{(item.price * item.quantity).toLocaleString()}
+                        ৳ {(item.price * item.quantity).toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -371,9 +371,9 @@ export default function OrderDetailPage() {
                     <TableRow key={i}>
                       <TableCell className="text-sm font-medium">{item.productName}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.variantLabel}</TableCell>
-                      <TableCell className="text-right text-sm">৳{item.price.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-sm">৳ {item.price.toLocaleString()}</TableCell>
                       <TableCell className="text-right text-sm">{item.quantity}</TableCell>
-                      <TableCell className="text-right text-sm font-medium">৳{item.subtotal.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-sm font-medium">৳ {item.subtotal.toLocaleString()}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -412,7 +412,7 @@ export default function OrderDetailPage() {
                       <SelectContent>
                         {selectedProduct?.variants.map(v => (
                           <SelectItem key={v._id} value={v._id} className="text-xs">
-                            {v.label} — ৳{v.price.toLocaleString()}
+                            {v.label} — ৳ {v.price.toLocaleString()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -443,24 +443,24 @@ export default function OrderDetailPage() {
             <div className="space-y-1.5 border-t border-border p-4 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>৳{(editItems ? draftSubtotal : order.subtotal).toLocaleString()}</span>
+                <span>৳ {(editItems ? draftSubtotal : order.subtotal).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Delivery ({order.deliveryLocation === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'})</span>
                 {editItems ? (
                   <span className="text-xs italic">recalculated on save</span>
                 ) : (
-                  <span>৳{order.deliveryCharge.toLocaleString()}</span>
+                  <span>৳ {order.deliveryCharge.toLocaleString()}</span>
                 )}
               </div>
               {order.discount > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>Discount</span><span>−৳{order.discount.toLocaleString()}</span>
+                  <span>Discount</span><span>−৳ {order.discount.toLocaleString()}</span>
                 </div>
               )}
               {!editItems && (
                 <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
-                  <span>Total</span><span className="text-primary">৳{order.total.toLocaleString()}</span>
+                  <span>Total</span><span className="text-primary">৳ {order.total.toLocaleString()}</span>
                 </div>
               )}
             </div>

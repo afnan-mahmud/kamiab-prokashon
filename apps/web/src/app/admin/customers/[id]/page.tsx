@@ -117,8 +117,8 @@ export default function CustomerDetailPage() {
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Orders', value: customer.totalOrders },
-              { label: 'Lifetime', value: `৳${customer.totalSpent.toLocaleString()}` },
-              { label: 'Avg. Order', value: `৳${avgOrderValue.toLocaleString()}` },
+              { label: 'Lifetime', value: `৳ ${customer.totalSpent.toLocaleString()}` },
+              { label: 'Avg. Order', value: `৳ ${avgOrderValue.toLocaleString()}` },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-white p-3 text-center shadow-sm">
                 <p className="text-lg font-bold">{s.value}</p>
@@ -281,7 +281,7 @@ export default function CustomerDetailPage() {
                         </TableCell>
                         <TableCell className="text-sm">{order.items.length} items</TableCell>
                         <TableCell className="text-right text-sm font-semibold">
-                          ৳{order.total.toLocaleString()}
+                          ৳ {order.total.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <span className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-800'}`}>

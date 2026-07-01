@@ -351,7 +351,7 @@ function ProductsStep({
                 <SelectContent>
                   {selectedProduct.variants.map((v) => (
                     <SelectItem key={v._id} value={v._id}>
-                      {v.label} — ৳{v.price}
+                      {v.label} — ৳ {v.price}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -387,7 +387,7 @@ function ProductsStep({
               <span className="flex-1 truncate">{item.productName} — {item.variantLabel}</span>
               <div className="flex items-center gap-3">
                 <span className="text-muted-foreground">× {item.quantity}</span>
-                <span className="font-medium">৳{(item.price * item.quantity).toLocaleString()}</span>
+                <span className="font-medium">৳ {(item.price * item.quantity).toLocaleString()}</span>
                 <button
                   type="button"
                   onClick={() => setCartItems(cartItems.filter((_, j) => j !== i))}
@@ -451,7 +451,7 @@ function DeliveryStep({
               <div>
                 <p className="text-sm font-medium">{opt.label}</p>
                 {opt.charge !== undefined && (
-                  <p className="text-xs text-muted-foreground">from ৳{opt.charge}</p>
+                  <p className="text-xs text-muted-foreground">from ৳ {opt.charge}</p>
                 )}
               </div>
             </label>
@@ -480,18 +480,18 @@ function DeliveryStep({
 
       <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm space-y-1.5">
         <div className="flex justify-between text-muted-foreground">
-          <span>Subtotal</span><span>৳{subtotal.toLocaleString()}</span>
+          <span>Subtotal</span><span>৳ {subtotal.toLocaleString()}</span>
         </div>
         <div className="flex justify-between text-muted-foreground">
-          <span>Delivery</span><span>৳{deliveryCharge.toLocaleString()}</span>
+          <span>Delivery</span><span>৳ {deliveryCharge.toLocaleString()}</span>
         </div>
         {discount > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Discount</span><span>−৳{discount.toLocaleString()}</span>
+            <span>Discount</span><span>−৳ {discount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between border-t border-border pt-1.5 font-bold">
-          <span>Total</span><span>৳{total.toLocaleString()}</span>
+          <span>Total</span><span>৳ {total.toLocaleString()}</span>
         </div>
       </div>
 
@@ -532,21 +532,21 @@ function ConfirmStep({
         {cartItems.map((i, idx) => (
           <div key={idx} className="flex justify-between">
             <span>{i.productName} ({i.variantLabel}) × {i.quantity}</span>
-            <span className="font-medium">৳{(i.price * i.quantity).toLocaleString()}</span>
+            <span className="font-medium">৳ {(i.price * i.quantity).toLocaleString()}</span>
           </div>
         ))}
       </div>
       <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
         <div className="flex justify-between text-muted-foreground">
           <span>Delivery · {deliveryLocation === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}</span>
-          <span>৳{deliveryCharge.toLocaleString()}</span>
+          <span>৳ {deliveryCharge.toLocaleString()}</span>
         </div>
         <div className="flex justify-between text-muted-foreground">
           <span>Payment: {paymentMethod}</span>
-          {discount > 0 && <span className="text-green-600">−৳{discount.toLocaleString()} discount</span>}
+          {discount > 0 && <span className="text-green-600">−৳ {discount.toLocaleString()} discount</span>}
         </div>
         <div className="flex justify-between border-t border-border pt-1.5 font-bold text-base">
-          <span>Total</span><span className="text-primary">৳{total.toLocaleString()}</span>
+          <span>Total</span><span className="text-primary">৳ {total.toLocaleString()}</span>
         </div>
       </div>
       <DialogFooter>

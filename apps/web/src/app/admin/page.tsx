@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
             ))
           : [
               { label: 'Total Orders', value: String(stats?.totalOrders ?? 0), icon: ShoppingCart, color: 'bg-blue-500' },
-              { label: 'Revenue', value: `৳${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: DollarSign, color: 'bg-green-500' },
+              { label: 'Revenue', value: `৳ ${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: DollarSign, color: 'bg-green-500' },
               { label: 'Pending Orders', value: String(stats?.pendingOrders ?? 0), icon: Clock, color: 'bg-orange-500' },
               { label: 'Total Customers', value: String(stats?.totalCustomers ?? 0), icon: Users, color: 'bg-purple-500' },
             ].map((s) => <StatCard key={s.label} {...s} />)}
@@ -132,10 +132,10 @@ export default function AdminDashboardPage() {
             <LineChart data={revenueChart}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={(v: string) => format(new Date(v + 'T00:00:00'), 'dd MMM')} />
-              <YAxis yAxisId="rev" tick={{ fontSize: 11 }} tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
+              <YAxis yAxisId="rev" tick={{ fontSize: 11 }} tickFormatter={(v: number) => `৳ ${(v / 1000).toFixed(0)}k`} />
               <YAxis yAxisId="ord" orientation="right" tick={{ fontSize: 11 }} />
               <Tooltip
-                formatter={(v: number, name: string) => name === 'Revenue' ? `৳${v.toLocaleString()}` : v}
+                formatter={(v: number, name: string) => name === 'Revenue' ? `৳ ${v.toLocaleString()}` : v}
                 labelFormatter={(l: string) => format(new Date(l + 'T00:00:00'), 'dd MMM yyyy')}
               />
               <Legend />
@@ -235,7 +235,7 @@ export default function AdminDashboardPage() {
                       <p className="text-sm font-medium">{order.customerName}</p>
                       <p className="text-xs text-muted-foreground">{order.customerPhone}</p>
                     </TableCell>
-                    <TableCell className="text-right text-sm font-semibold">৳{order.total.toLocaleString()}</TableCell>
+                    <TableCell className="text-right text-sm font-semibold">৳ {order.total.toLocaleString()}</TableCell>
                     <TableCell>
                       <span className={cn('rounded px-2 py-0.5 text-xs font-medium', STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-800')}>
                         {order.status}

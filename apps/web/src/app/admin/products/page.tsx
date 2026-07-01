@@ -61,7 +61,7 @@ export default function ProductsPage() {
 
   const defaultPrice = (p: Product) => {
     const def = p.variants.find((v) => v.isDefault) ?? p.variants[0];
-    return def ? `৳${def.price.toLocaleString()}` : '—';
+    return def ? `৳ ${def.price.toLocaleString()}` : '—';
   };
 
   return (

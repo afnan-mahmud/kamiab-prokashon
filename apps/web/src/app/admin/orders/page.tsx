@@ -277,7 +277,7 @@ function OrderRow({
         </div>
       </TableCell>
       <TableCell className="text-sm">{order.items.length} items</TableCell>
-      <TableCell className="text-sm font-semibold">৳{order.total.toLocaleString()}</TableCell>
+      <TableCell className="text-sm font-semibold">৳ {order.total.toLocaleString()}</TableCell>
       <TableCell>
         <Badge variant="outline" className="text-xs capitalize">{order.paymentMethod}</Badge>
       </TableCell>

@@ -210,7 +210,7 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
                   style={selectedVariantId === vid ? { borderColor: primaryColor, color: primaryColor, backgroundColor: primaryColor + '10' } : {}}
                 >
                   <div className="font-medium">{v.label}</div>
-                  <div className="text-xs mt-0.5">৳{v.price.toLocaleString()}</div>
+                  <div className="text-xs mt-0.5">৳ {v.price.toLocaleString()}</div>
                 </button>
               );
             })}
@@ -278,7 +278,7 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
               style={deliveryLocation === o.val ? { borderColor: primaryColor, backgroundColor: primaryColor + '10' } : {}}
             >
               <div>{o.label}</div>
-              <div className="text-xs mt-0.5 text-muted-foreground">ডেলিভারি ৳{o.charge}</div>
+              <div className="text-xs mt-0.5 text-muted-foreground">ডেলিভারি ৳ {o.charge}</div>
             </button>
           ))}
         </div>
@@ -303,16 +303,16 @@ export function LandingCheckoutForm({ slug, product, selectedVariantIds, ctaText
       {selectedVariant && (
         <div className="rounded-lg p-3 text-sm space-y-1.5" style={{ backgroundColor: primaryColor + '10' }}>
           <div className="flex justify-between">
-            <span>পণ্যের মূল্য ({quantity}×৳{selectedVariant.price.toLocaleString()})</span>
-            <span className="font-medium">৳{subtotal.toLocaleString()}</span>
+            <span>পণ্যের মূল্য ({quantity} × ৳ {selectedVariant.price.toLocaleString()})</span>
+            <span className="font-medium">৳ {subtotal.toLocaleString()}</span>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>ডেলিভারি চার্জ</span>
-            <span>৳{deliveryCharge}</span>
+            <span>৳ {deliveryCharge}</span>
           </div>
           <div className="flex justify-between font-bold border-t pt-1.5">
             <span>মোট</span>
-            <span>৳{total.toLocaleString()}</span>
+            <span>৳ {total.toLocaleString()}</span>
           </div>
         </div>
       )}

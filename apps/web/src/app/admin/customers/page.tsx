@@ -110,7 +110,7 @@ export default function CustomersPage() {
                     <TableCell className="font-mono text-sm">{c.phone}</TableCell>
                     <TableCell className="text-right text-sm">{c.totalOrders}</TableCell>
                     <TableCell className="text-right text-sm font-semibold">
-                      ৳{c.totalSpent.toLocaleString()}
+                      ৳ {c.totalSpent.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {c.firstOrderAt ? format(new Date(c.firstOrderAt), 'dd MMM yy') : '—'}

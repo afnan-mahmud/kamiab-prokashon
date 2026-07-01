@@ -7,9 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatCurrency(amount: number, bengaliDigits = true): string {
   const formatted = amount.toLocaleString('en-IN');
-  if (!bengaliDigits) return `${formatted}৳`;
+  if (!bengaliDigits) return `৳ ${formatted}`;
   const bn = formatted.replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[parseInt(d, 10)] ?? d);
-  return `${bn}৳`;
+  return `৳ ${bn}`;
 }
 
 export function slugify(text: string): string {

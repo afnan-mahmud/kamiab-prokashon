@@ -212,7 +212,7 @@ function ProductStep({
                   <span className="font-medium">{v.label}</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">৳{v.price.toLocaleString()}</p>
+                  <p className="font-semibold">৳ {v.price.toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">Weight: {v.weight} kg</p>
                 </div>
               </button>

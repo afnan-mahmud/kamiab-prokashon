@@ -69,7 +69,7 @@ function SteadfastSection() {
     mutationFn: settingsApi.testSteadfast,
     onSuccess: (res) => {
       setTestResult(res);
-      toast.success(`Connected! Balance: ৳${res.balance}`);
+      toast.success(`Connected! Balance: ৳ ${res.balance}`);
     },
     onError: (err: Error) => {
       setTestResult({ connected: false });
@@ -164,7 +164,7 @@ function SteadfastSection() {
           {testResult && (
             <div className={`flex items-center gap-2 rounded-lg p-3 text-sm ${testResult.connected ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
               {testResult.connected
-                ? <><CheckCircle2 className="h-4 w-4" /> Connected — Balance: ৳{testResult.balance?.toLocaleString()}</>
+                ? <><CheckCircle2 className="h-4 w-4" /> Connected — Balance: ৳ {testResult.balance?.toLocaleString()}</>
                 : <><XCircle className="h-4 w-4" /> Connection failed</>}
             </div>
           )}
@@ -262,7 +262,7 @@ function ChargesSection() {
 
           {/* Formula preview */}
           <div className="rounded-lg bg-muted/40 p-3 text-xs font-mono text-muted-foreground">
-            Charge = baseCharge + max(0, totalWeight − {form.watch('baseWeightKg')}kg) × ৳{form.watch('extraPerKg')}/kg
+            Charge = baseCharge + max(0, totalWeight − {form.watch('baseWeightKg')}kg) × ৳ {form.watch('extraPerKg')}/kg
           </div>
 
           <Button type="submit" disabled={saveMutation.isPending}>

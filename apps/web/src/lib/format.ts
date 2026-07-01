@@ -4,10 +4,10 @@ function toBengaliDigits(n: string): string {
   return n.replace(/[0-9]/g, (d) => BENGALI_DIGITS[Number(d)] ?? d);
 }
 
-// Formats a BDT integer price as Bengali-digit currency: ১,২০০৳
+// Formats a BDT integer price as Bengali-digit currency: ৳ ১,২০০
 export function formatPrice(amount: number): string {
   const formatted = amount.toLocaleString('en-IN');
-  return toBengaliDigits(formatted) + '৳';
+  return '৳ ' + toBengaliDigits(formatted);
 }
 
 // Formats a number with Bengali digits only (no symbol)

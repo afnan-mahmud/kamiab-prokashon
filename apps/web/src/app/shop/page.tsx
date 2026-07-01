@@ -407,7 +407,7 @@ function ShopContent() {
             )}
             {(minPrice !== undefined || maxPrice !== undefined) && (
               <span className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
-                মূল্য: {minPrice ?? '০'} – {maxPrice ?? '∞'} ৳
+                মূল্য: ৳ {minPrice ?? '০'} – {maxPrice ?? '∞'}
                 <button
                   onClick={() => {
                     setMinPrice(undefined);
