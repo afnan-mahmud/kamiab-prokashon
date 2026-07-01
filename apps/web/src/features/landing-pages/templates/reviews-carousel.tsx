@@ -15,7 +15,7 @@ interface Props {
 }
 
 // গ্রাহকদের মন্তব্য — auto-sliding screenshot carousel for the public landing page
-export function ReviewsCarousel({ images, primary, title, interval = 3060 }: Props) {
+export function ReviewsCarousel({ images, primary, title, interval = 3090 }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 

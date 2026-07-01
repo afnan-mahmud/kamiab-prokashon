@@ -54,7 +54,7 @@ export const accountsApi = {
     if (filters.type) params.set('type', filters.type);
     if (filters.from) params.set('from', filters.from);
     if (filters.to) params.set('to', filters.to);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3061';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3091';
     return `${apiUrl}/api/admin/transactions/export?${params.toString()}`;
   },
 };

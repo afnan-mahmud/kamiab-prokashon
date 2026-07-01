@@ -13,7 +13,7 @@
 ## 0. Architecture (kibhabe kaj kore)
 
 Ei app-e **duto** process chole, duto **alada port**-e (onno site-er sathe conflict eraate
-3060/3061 use kora hoy nai):
+3090/3091 use kora hoy nai):
 
 | Process | Port | Public URL |
 |---------|------|------------|

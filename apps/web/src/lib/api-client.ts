@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/stores/auth.store';
 import { queryClient } from './query-client';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3061';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3091';
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;

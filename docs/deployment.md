@@ -155,7 +155,7 @@ nano apps/api/.env
 নিচের values গুলো fill করো:
 ```env
 NODE_ENV=production
-PORT=3061
+PORT=3091
 MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/kamiabprokashon
 JWT_ACCESS_SECRET=your_32_char_random_secret_here
 JWT_REFRESH_SECRET=your_32_char_random_secret_here

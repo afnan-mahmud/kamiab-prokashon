@@ -35,7 +35,7 @@ export default function LandingPagesPage() {
   });
 
   const pages = data?.data ?? [];
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3060';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3090';
 
   return (
     <div className="space-y-5">
