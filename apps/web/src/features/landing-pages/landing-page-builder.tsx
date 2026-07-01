@@ -42,9 +42,9 @@ interface BuilderState {
 }
 
 const TEMPLATES: { id: Template; label: string; desc: string; color: string }[] = [
-  { id: 'template1', label: 'Bold Hero', desc: 'Full-width hero with large CTA — best for high-impact campaigns', color: '#8dc53d' },
+  { id: 'template1', label: 'Bold Hero', desc: 'Full-width hero with large CTA — best for high-impact campaigns', color: '#0365b3' },
   { id: 'template2', label: 'Minimal', desc: 'Clean, distraction-free layout — best for premium products', color: '#1f2937' },
-  { id: 'template3', label: 'Story', desc: 'Long-form scroll with testimonials and FAQs', color: '#0065b3' },
+  { id: 'template3', label: 'Story', desc: 'Long-form scroll with testimonials and FAQs', color: '#89c349' },
   { id: 'template4', label: 'Grid', desc: 'Product feature grid — best for showcasing multiple benefits', color: '#7c3aed' },
 ];
 
@@ -510,7 +510,15 @@ function ContentStep({
 
             {section.type === 'why_product' && (
               <div className="space-y-3">
-                <p className="text-xs font-medium text-muted-foreground">Title: কেন পড়বেন এই বইটি? <span className="italic">(hardcoded)</span></p>
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="কেন পড়বেন এই বইটি?"
+                  />
+                </div>
                 {section.items.map((item, j) => (
                   <div key={j} className="flex gap-2">
                     <Input
@@ -537,7 +545,15 @@ function ContentStep({
 
             {section.type === 'why_us' && (
               <div className="space-y-3">
-                <p className="text-xs font-medium text-muted-foreground">Title: কেন আমাদের থেকে কিনবেন? <span className="italic">(hardcoded)</span></p>
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="কেন আমাদের থেকে কিনবেন?"
+                  />
+                </div>
                 {section.items.map((item, j) => (
                   <div key={j} className="flex gap-2">
                     <Input
@@ -564,8 +580,17 @@ function ContentStep({
 
             {section.type === 'reviews' && (
               <div className="space-y-3">
-                <p className="text-xs font-medium text-muted-foreground">
-                  Title: গ্রাহকদের মন্তব্য <span className="italic">(hardcoded)</span> — স্ক্রিনশট আপলোড করুন, ওয়েবসাইটে অটো-স্লাইড হবে
+                <div>
+                  <label className="text-xs text-muted-foreground">Section Title</label>
+                  <Input
+                    value={section.title ?? ''}
+                    onChange={(e) => updateSection(i, { ...section, title: e.target.value })}
+                    className="mt-1"
+                    placeholder="গ্রাহকদের মন্তব্য"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  স্ক্রিনশট আপলোড করুন, ওয়েবসাইটে অটো-স্লাইড হবে।
                 </p>
                 <ImageUploader
                   images={section.images}
@@ -838,7 +863,7 @@ export function LandingPageBuilder({ initial }: LandingPageBuilderProps) {
       heroMediaType: initial?.content.heroMediaType ?? 'image',
       heroVideo: initial?.content.heroVideo ?? { url: '', publicId: '' },
       ctaText: initial?.content.ctaText ?? 'অর্ডার করুন',
-      colors: initial?.content.colors ?? { primary: '#8dc53d', accent: '#0065b3', background: '#fefcf7' },
+      colors: initial?.content.colors ?? { primary: '#0365b3', accent: '#89c349', background: '#fefcf7' },
       sections: initial?.content.sections ?? [],
     },
     isActive: initial?.isActive ?? true,

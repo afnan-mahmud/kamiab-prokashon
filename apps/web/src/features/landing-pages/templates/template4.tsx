@@ -32,18 +32,23 @@ export default function Template4({ page, product }: Props) {
   const extraImages = content.sections.filter(
     (s): s is Extract<ContentSection, { type: 'image' }> => s.type === 'image',
   );
-  const whyProductItems = content.sections
-    .filter(
-      (s): s is Extract<ContentSection, { type: 'why_product' }> => s.type === 'why_product',
-    )
-    .flatMap((s) => s.items);
-  const whyUsItems = content.sections
-    .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
-    .flatMap((s) => s.items);
+  const whyProductSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'why_product' }> => s.type === 'why_product',
+  );
+  const whyProductItems = whyProductSections.flatMap((s) => s.items);
+  const whyProductTitle = whyProductSections.find((s) => s.title?.trim())?.title;
 
-  const reviewImages = content.sections
-    .filter((s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews')
-    .flatMap((s) => s.images);
+  const whyUsSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us',
+  );
+  const whyUsItems = whyUsSections.flatMap((s) => s.items);
+  const whyUsTitle = whyUsSections.find((s) => s.title?.trim())?.title;
+
+  const reviewSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews',
+  );
+  const reviewImages = reviewSections.flatMap((s) => s.images);
+  const reviewsTitle = reviewSections.find((s) => s.title?.trim())?.title;
 
   const bookSpecsSections = content.sections.filter(
     (s): s is Extract<ContentSection, { type: 'book_specs' }> => s.type === 'book_specs',
@@ -225,7 +230,7 @@ export default function Template4({ page, product }: Props) {
       {whyProductItems.length > 0 && (
         <div className="py-10 mx-auto max-w-3xl px-4">
           <h2 className="text-2xl font-extrabold text-center mb-6" style={{ color: primary }}>
-            কেন পড়বেন এই বইটি?
+            {whyProductTitle ?? 'কেন পড়বেন এই বইটি?'}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {whyProductItems.map((point, i) => (
@@ -251,7 +256,7 @@ export default function Template4({ page, product }: Props) {
         <div className="py-10" style={{ backgroundColor: primary + '08' }}>
           <div className="mx-auto max-w-3xl px-4">
             <h2 className="text-2xl font-extrabold text-center mb-6" style={{ color: primary }}>
-              কেন আমাদের থেকে কিনবেন?
+              {whyUsTitle ?? 'কেন আমাদের থেকে কিনবেন?'}
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
               {whyUsItems.map((point, i) => (
@@ -309,7 +314,7 @@ export default function Template4({ page, product }: Props) {
       {/* Review screenshots — গ্রাহকদের মন্তব্য (auto-slide) */}
       {reviewImages.length > 0 && (
         <div className="py-12 mx-auto max-w-5xl px-4">
-          <ReviewsCarousel images={reviewImages} primary={primary} />
+          <ReviewsCarousel images={reviewImages} primary={primary} title={reviewsTitle} />
         </div>
       )}
 

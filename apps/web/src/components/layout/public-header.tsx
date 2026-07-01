@@ -33,14 +33,14 @@ function DesktopCategoryMenu({ categories }: { categories: CategoryNode[] }) {
         return (
           <div
             key={cat._id}
-            className="relative"
+            className="relative shrink-0"
             onMouseEnter={() => hasChildren && setOpenSlug(cat.slug)}
             onMouseLeave={() => setOpenSlug(null)}
           >
             <Link
               href={`/shop?category=${cat.slug}`}
               onClick={() => setOpenSlug(null)}
-              className="flex items-center gap-0.5 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex items-center gap-0.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {cat.name}
               {hasChildren && <ChevronDown className="h-3.5 w-3.5" />}
@@ -213,13 +213,13 @@ export function PublicHeader() {
       <div className="hidden border-t border-border/60 bg-white md:block">
         <div className="container-page flex h-10 items-center gap-4">
           <DesktopCategoryMenu categories={categories} />
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex shrink-0 items-center gap-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground',
+                  'whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground',
                   pathname === link.href ? 'text-primary' : 'text-muted-foreground',
                 )}
               >

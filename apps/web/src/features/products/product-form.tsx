@@ -30,6 +30,8 @@ import {
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { ApiError, apiClient } from '@/lib/api-client';
 import { categoriesApi } from '@/features/categories/categories.api';
+import { authorsApi } from '@/features/authors/authors.api';
+import { publishersApi } from '@/features/publishers/publishers.api';
 import type { Product, ProductImage, PreviewPdf } from '@kamiab/types';
 
 // ── Schema ──────────────────────────────────────────────────────────────────
@@ -236,6 +238,18 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
     staleTime: 60_000,
   });
 
+  // Author & publisher lists (managed collections, selected by name on the product)
+  const { data: authors = [] } = useQuery({
+    queryKey: ['authors'],
+    queryFn: authorsApi.list,
+    staleTime: 60_000,
+  });
+  const { data: publishers = [] } = useQuery({
+    queryKey: ['publishers'],
+    queryFn: publishersApi.list,
+    staleTime: 60_000,
+  });
+
   const {
     register,
     control,
@@ -355,6 +369,17 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
     if (cat.isActive && !coveredSlugs.has(cat.slug)) {
       categoryOptions.push({ value: cat.slug, label: cat.name });
     }
+  }
+
+  // Author/publisher options — active managed names, plus the product's current
+  // value if it's a legacy/free-text name not in the active list (so it's preserved).
+  const currentAuthor = watch('author');
+  const currentPublisher = watch('publisher');
+  const authorOptions = authors.filter((a) => a.isActive).map((a) => a.name);
+  if (currentAuthor && !authorOptions.includes(currentAuthor)) authorOptions.unshift(currentAuthor);
+  const publisherOptions = publishers.filter((p) => p.isActive).map((p) => p.name);
+  if (currentPublisher && !publisherOptions.includes(currentPublisher)) {
+    publisherOptions.unshift(currentPublisher);
   }
 
   const handleFormSubmit = handleSubmit(
@@ -477,11 +502,63 @@ export function ProductForm({ product, onSubmit, isSubmitting }: ProductFormProp
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="author">Author</Label>
-            <Input id="author" {...register('author')} placeholder="e.g. Humayun Ahmed" />
+            <Controller
+              control={control}
+              name="author"
+              render={({ field }) => (
+                <Select
+                  value={field.value || '__none__'}
+                  onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
+                >
+                  <SelectTrigger id="author">
+                    <SelectValue placeholder="Select an author" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {authorOptions.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {authorOptions.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                No authors yet — add them in Admin → Authors.
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="publisher">Publisher</Label>
-            <Input id="publisher" {...register('publisher')} placeholder="e.g. Anyaprakash" />
+            <Controller
+              control={control}
+              name="publisher"
+              render={({ field }) => (
+                <Select
+                  value={field.value || '__none__'}
+                  onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
+                >
+                  <SelectTrigger id="publisher">
+                    <SelectValue placeholder="Select a publisher" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {publisherOptions.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {publisherOptions.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                No publishers yet — add them in Admin → Publishers.
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="translator">Translator</Label>

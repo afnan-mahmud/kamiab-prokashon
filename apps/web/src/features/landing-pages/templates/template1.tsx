@@ -122,7 +122,7 @@ function SectionRenderer({
       return (
         <div className="rounded-2xl overflow-hidden shadow-md">
           <div className="px-6 py-4" style={{ backgroundColor: primary }}>
-            <h2 className="text-lg font-bold text-white">কেন পড়বেন এই বইটি?</h2>
+            <h2 className="text-lg font-bold text-white">{section.title?.trim() ? section.title : 'কেন পড়বেন এই বইটি?'}</h2>
           </div>
           <div className="bg-white p-5 space-y-3">
             {section.items.map((point, i) => (
@@ -143,7 +143,7 @@ function SectionRenderer({
       return (
         <div className="rounded-2xl overflow-hidden shadow-md">
           <div className="px-6 py-4" style={{ backgroundColor: accent }}>
-            <h2 className="text-lg font-bold text-white">কেন আমাদের থেকে কিনবেন?</h2>
+            <h2 className="text-lg font-bold text-white">{section.title?.trim() ? section.title : 'কেন আমাদের থেকে কিনবেন?'}</h2>
           </div>
           <div className="bg-white p-5 space-y-3">
             {section.items.map((point, i) => (
@@ -161,7 +161,7 @@ function SectionRenderer({
         </div>
       );
     case 'reviews':
-      return <ReviewsCarousel images={section.images} primary={primary} />;
+      return <ReviewsCarousel images={section.images} primary={primary} title={section.title} />;
     case 'book_specs':
       return <BookSpecsSection section={section} product={product} primary={primary} />;
     case 'toc':
@@ -177,8 +177,8 @@ function SectionRenderer({
 
 export default function Template1({ page, product }: Props) {
   const { content } = page;
-  const primary = content.colors?.primary ?? '#8dc53d';
-  const accent = content.colors?.accent ?? '#0065b3';
+  const primary = content.colors?.primary ?? '#0365b3';
+  const accent = content.colors?.accent ?? '#89c349';
   const bg = content.colors?.background ?? '#fefcf7';
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
   const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;

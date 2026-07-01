@@ -1,11 +1,20 @@
 import { apiClient } from '@/lib/api-client';
-import type { Product, PaginatedResponse, CategoryNode, Banner } from '@kamiab/types';
+import type {
+  Product,
+  PaginatedResponse,
+  CategoryNode,
+  Banner,
+  AuthorDetail,
+  PublisherDetail,
+} from '@kamiab/types';
 
 export interface PublicProductFilters extends Record<string, string | number | boolean | undefined> {
   page?: number;
   limit?: number;
   search?: string;
   category?: string;
+  author?: string;
+  publisher?: string;
   sort?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -59,6 +68,10 @@ export const shopApi = {
 
   categoryTree: () => apiClient.get<CategoryNode[]>('/categories'),
   banners: () => apiClient.get<Banner[]>('/banners'),
+
+  author: (name: string) => apiClient.get<AuthorDetail>(`/authors/${encodeURIComponent(name)}`),
+  publisher: (name: string) =>
+    apiClient.get<PublisherDetail>(`/publishers/${encodeURIComponent(name)}`),
 
   lookup: (phone: string) =>
     apiClient.get<CustomerLookup>('/customers/lookup', { params: { phone } }),

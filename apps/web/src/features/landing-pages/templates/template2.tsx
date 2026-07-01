@@ -118,7 +118,7 @@ function Section({
         <div className="max-w-xl mx-auto w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           <div className="px-6 py-3.5" style={{ backgroundColor: primary + '15' }}>
             <h2 className="text-base font-bold" style={{ color: primary }}>
-              কেন পড়বেন এই বইটি?
+              {section.title?.trim() ? section.title : 'কেন পড়বেন এই বইটি?'}
             </h2>
           </div>
           <div className="bg-white p-5 space-y-3">
@@ -141,7 +141,7 @@ function Section({
         <div className="max-w-xl mx-auto w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           <div className="px-6 py-3.5" style={{ backgroundColor: accent + '15' }}>
             <h2 className="text-base font-bold" style={{ color: accent }}>
-              কেন আমাদের থেকে কিনবেন?
+              {section.title?.trim() ? section.title : 'কেন আমাদের থেকে কিনবেন?'}
             </h2>
           </div>
           <div className="bg-white p-5 space-y-3">
@@ -160,7 +160,7 @@ function Section({
         </div>
       );
     case 'reviews':
-      return <ReviewsCarousel images={section.images} primary={primary} />;
+      return <ReviewsCarousel images={section.images} primary={primary} title={section.title} />;
     case 'book_specs':
       return <BookSpecsSection section={section} product={product} primary={primary} />;
     case 'toc':
@@ -177,7 +177,7 @@ function Section({
 export default function Template2({ page, product }: Props) {
   const { content } = page;
   const primary = content.colors?.primary ?? '#1f2937';
-  const accent = content.colors?.accent ?? '#0065b3';
+  const accent = content.colors?.accent ?? '#89c349';
   const bg = content.colors?.background ?? '#ffffff';
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
   const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;

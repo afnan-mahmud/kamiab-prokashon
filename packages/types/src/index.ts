@@ -9,4 +9,6 @@ export * from './delivery.js';
 export * from './dashboard.js';
 export * from './stock.js';
 export * from './category.js';
+export * from './author.js';
+export * from './publisher.js';
 export * from './banner.js';

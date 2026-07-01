@@ -54,17 +54,20 @@ export interface FaqSection {
 
 export interface WhyProductSection {
   type: 'why_product';
+  title?: string;
   items: string[];
 }
 
 export interface WhyUsSection {
   type: 'why_us';
+  title?: string;
   items: string[];
 }
 
 // গ্রাহকদের মন্তব্য — customer review screenshots that auto-slide on the public page
 export interface ReviewsSection {
   type: 'reviews';
+  title?: string;
   images: ProductImage[];
 }
 

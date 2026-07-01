@@ -171,9 +171,14 @@ export default function ProductDetailPage() {
   const hasPreview = (product.previewImages?.length ?? 0) > 0 || !!product.previewPdf;
 
   // Build specs rows — only present fields
-  const specs: { label: string; value: string }[] = [
-    product.author ? { label: 'লেখক', value: product.author } : null,
-    product.publisher ? { label: 'প্রকাশনী', value: product.publisher } : null,
+  type SpecRow = { label: string; value: string; href?: string };
+  const specs: SpecRow[] = [
+    product.author
+      ? { label: 'লেখক', value: product.author, href: `/authors/${encodeURIComponent(product.author)}` }
+      : null,
+    product.publisher
+      ? { label: 'প্রকাশনী', value: product.publisher, href: `/publishers/${encodeURIComponent(product.publisher)}` }
+      : null,
     product.translator ? { label: 'অনুবাদক', value: product.translator } : null,
     product.pages ? { label: 'পৃষ্ঠা', value: toBengali(product.pages) } : null,
     product.language ? { label: 'ভাষা', value: product.language } : null,
@@ -181,7 +186,7 @@ export default function ProductDetailPage() {
     product.edition ? { label: 'সংস্করণ', value: product.edition } : null,
     product.isbn ? { label: 'ISBN', value: product.isbn } : null,
     product.publicationYear ? { label: 'প্রকাশকাল', value: toBengali(product.publicationYear) } : null,
-  ].filter((row): row is { label: string; value: string } => row !== null);
+  ].filter((row): row is SpecRow => row !== null);
 
   return (
     <PublicLayout>
@@ -265,9 +270,29 @@ export default function ProductDetailPage() {
               <h1 className="mt-1 text-2xl font-bold leading-snug">{product.name}</h1>
               {(product.author || product.publisher) && (
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {product.author && <span>লেখক: {product.author}</span>}
+                  {product.author && (
+                    <span>
+                      লেখক:{' '}
+                      <Link
+                        href={`/authors/${encodeURIComponent(product.author)}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {product.author}
+                      </Link>
+                    </span>
+                  )}
                   {product.author && product.publisher && <span> · </span>}
-                  {product.publisher && <span>প্রকাশনী: {product.publisher}</span>}
+                  {product.publisher && (
+                    <span>
+                      প্রকাশনী:{' '}
+                      <Link
+                        href={`/publishers/${encodeURIComponent(product.publisher)}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {product.publisher}
+                      </Link>
+                    </span>
+                  )}
                 </p>
               )}
 
@@ -381,12 +406,20 @@ export default function ProductDetailPage() {
               <div className="rounded-xl border border-border overflow-hidden">
                 <table className="w-full text-sm">
                   <tbody>
-                    {specs.map(({ label, value }) => (
+                    {specs.map(({ label, value, href }) => (
                       <tr key={label} className="border-b border-border last:border-0">
                         <td className="w-1/3 bg-muted/50 px-4 py-2.5 font-medium text-muted-foreground">
                           {label}
                         </td>
-                        <td className="px-4 py-2.5">{value}</td>
+                        <td className="px-4 py-2.5">
+                          {href ? (
+                            <Link href={href} className="font-medium text-primary hover:underline">
+                              {value}
+                            </Link>
+                          ) : (
+                            value
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

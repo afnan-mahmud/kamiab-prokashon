@@ -16,6 +16,8 @@ import {
   MessageSquare,
   ShoppingCart,
   FolderTree,
+  PenLine,
+  Building2,
   Images,
   X,
 } from 'lucide-react';
@@ -39,6 +41,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Accounts', href: '/admin/accounts', icon: Wallet, permission: 'accounts.view' },
   { label: 'Products', href: '/admin/products', icon: Package, permission: 'products.view' },
   { label: 'Categories', href: '/admin/categories', icon: FolderTree, permission: 'categories.view' },
+  { label: 'Authors', href: '/admin/authors', icon: PenLine, permission: 'authors.view' },
+  { label: 'Publishers', href: '/admin/publishers', icon: Building2, permission: 'publishers.view' },
   { label: 'Banners', href: '/admin/banners', icon: Images, permission: 'banners.view' },
   { label: 'Stock', href: '/admin/stock', icon: BarChart3, permission: 'stock.view' },
   { label: 'Landing Pages', href: '/admin/landing-pages', icon: FileText, permission: 'landing.view' },

@@ -22,10 +22,11 @@ const contentSectionSchema = z.discriminatedUnion('type', [
     type: z.literal('faq'),
     items: z.array(z.object({ q: z.string(), a: z.string() })),
   }),
-  z.object({ type: z.literal('why_product'), items: z.array(z.string()) }),
-  z.object({ type: z.literal('why_us'), items: z.array(z.string()) }),
+  z.object({ type: z.literal('why_product'), title: z.string().optional(), items: z.array(z.string()) }),
+  z.object({ type: z.literal('why_us'), title: z.string().optional(), items: z.array(z.string()) }),
   z.object({
     type: z.literal('reviews'),
+    title: z.string().optional(),
     images: z.array(
       z.object({ url: z.string(), publicId: z.string(), alt: z.string().default('') }),
     ),

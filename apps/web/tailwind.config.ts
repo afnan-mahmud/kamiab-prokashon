@@ -13,21 +13,21 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#8dc53d',
-          dark: '#6fa32e',
-          light: '#aadd6b',
+          DEFAULT: '#0365b3',
+          dark: '#024e8c',
+          light: '#3a8fd0',
           foreground: '#ffffff',
         },
         accent: {
-          DEFAULT: '#0065b3',
-          soft: '#3a8fd0',
+          DEFAULT: '#89c349',
+          soft: '#a4d46e',
           foreground: '#ffffff',
         },
         background: '#fefcf7',
         surface: '#ffffff',
         border: '#e5e7eb',
         input: '#e5e7eb',
-        ring: '#8dc53d',
+        ring: '#0365b3',
         foreground: '#1f2937',
         muted: {
           DEFAULT: '#f3f4f6',
@@ -61,12 +61,12 @@ const config: Config = {
         sidebar: {
           DEFAULT: '#1f2937',
           foreground: '#ffffff',
-          primary: '#8dc53d',
+          primary: '#0365b3',
           'primary-foreground': '#ffffff',
           accent: '#374151',
           'accent-foreground': '#ffffff',
           border: '#374151',
-          ring: '#8dc53d',
+          ring: '#0365b3',
         },
       },
       fontFamily: {

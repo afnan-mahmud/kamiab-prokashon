@@ -10,6 +10,8 @@ export { SmsSettings } from './SmsSettings.js';
 export { StockMovement } from './StockMovement.js';
 export type { IStockMovement } from './StockMovement.js';
 export { Category } from './Category.js';
+export { Author } from './Author.js';
+export { Publisher } from './Publisher.js';
 export { Banner } from './Banner.js';
 
 export type { IRole } from './Role.js';
@@ -22,4 +24,6 @@ export type { ILandingPage, ILandingPageContent } from './LandingPage.js';
 export type { IDeliverySettings, IDeliveryCharges, ISteadfastConfig } from './DeliverySettings.js';
 export type { ISmsSettings, IBulkSmsBdConfig, ISmsTemplates } from './SmsSettings.js';
 export type { ICategory } from './Category.js';
+export type { IAuthor } from './Author.js';
+export type { IPublisher } from './Publisher.js';
 export type { IBanner } from './Banner.js';

@@ -8,12 +8,14 @@ import type { ProductImage } from '@kamiab/types';
 interface Props {
   images: ProductImage[];
   primary: string;
+  /** section heading — falls back to the default when not provided */
+  title?: string;
   /** auto-slide interval in ms */
   interval?: number;
 }
 
 // গ্রাহকদের মন্তব্য — auto-sliding screenshot carousel for the public landing page
-export function ReviewsCarousel({ images, primary, interval = 3060 }: Props) {
+export function ReviewsCarousel({ images, primary, title, interval = 3060 }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -38,7 +40,7 @@ export function ReviewsCarousel({ images, primary, interval = 3060 }: Props) {
   return (
     <div>
       <h2 className="mb-6 text-center text-2xl font-extrabold sm:text-3xl" style={{ color: primary }}>
-        গ্রাহকদের মন্তব্য
+        {title?.trim() ? title : 'গ্রাহকদের মন্তব্য'}
       </h2>
 
       <div

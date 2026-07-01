@@ -15,6 +15,8 @@ router.get('/', async (req, res, next) => {
 
     const filter: Record<string, unknown> = { isActive: true, deletedAt: null };
     if (req.query['search']) filter['$text'] = { $search: String(req.query['search']) };
+    if (req.query['author']) filter['author'] = String(req.query['author']);
+    if (req.query['publisher']) filter['publisher'] = String(req.query['publisher']);
 
     if (req.query['category']) {
       const slug = String(req.query['category']);

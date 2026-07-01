@@ -15,6 +15,8 @@ import smsSettingsRouter from './sms-settings.routes.js';
 import stockRouter from './stock.routes.js';
 import abandonedOrdersRouter from './abandoned-orders.routes.js';
 import categoriesRouter from './categories.routes.js';
+import authorsRouter from './authors.routes.js';
+import publishersRouter from './publishers.routes.js';
 import bannersRouter from './banners.routes.js';
 
 const router: Router = Router();
@@ -35,6 +37,8 @@ router.use('/sms-settings', smsSettingsRouter);
 router.use('/stock', stockRouter);
 router.use('/abandoned-orders', abandonedOrdersRouter);
 router.use('/categories', categoriesRouter);
+router.use('/authors', authorsRouter);
+router.use('/publishers', publishersRouter);
 router.use('/banners', bannersRouter);
 
 export default router;

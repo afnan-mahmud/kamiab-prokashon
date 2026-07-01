@@ -16,8 +16,8 @@ interface Props {
 
 export default function Template3({ page, product }: Props) {
   const { content } = page;
-  const primary = content.colors?.primary ?? '#0065b3';
-  const accent = content.colors?.accent ?? '#8dc53d';
+  const primary = content.colors?.primary ?? '#0365b3';
+  const accent = content.colors?.accent ?? '#89c349';
   const bg = content.colors?.background ?? '#fffbf0';
 
   const features = content.sections
@@ -32,21 +32,25 @@ export default function Template3({ page, product }: Props) {
   const textSections = content.sections.filter(
     (s): s is Extract<ContentSection, { type: 'text' }> => s.type === 'text',
   );
-  const whyProductItems = content.sections
-    .filter(
-      (s): s is Extract<ContentSection, { type: 'why_product' }> => s.type === 'why_product',
-    )
-    .flatMap((s) => s.items);
+  const whyProductSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'why_product' }> => s.type === 'why_product',
+  );
+  const whyProductItems = whyProductSections.flatMap((s) => s.items);
+  const whyProductTitle = whyProductSections.find((s) => s.title?.trim())?.title;
   const heroDisplayImage = content.heroImage?.url || product.images?.[0]?.url;
   const hasHeroVideo = content.heroMediaType === 'video' && !!content.heroVideo?.url;
 
-  const whyUsItems = content.sections
-    .filter((s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us')
-    .flatMap((s) => s.items);
+  const whyUsSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'why_us' }> => s.type === 'why_us',
+  );
+  const whyUsItems = whyUsSections.flatMap((s) => s.items);
+  const whyUsTitle = whyUsSections.find((s) => s.title?.trim())?.title;
 
-  const reviewImages = content.sections
-    .filter((s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews')
-    .flatMap((s) => s.images);
+  const reviewSections = content.sections.filter(
+    (s): s is Extract<ContentSection, { type: 'reviews' }> => s.type === 'reviews',
+  );
+  const reviewImages = reviewSections.flatMap((s) => s.images);
+  const reviewsTitle = reviewSections.find((s) => s.title?.trim())?.title;
 
   const bookSpecsSections = content.sections.filter(
     (s): s is Extract<ContentSection, { type: 'book_specs' }> => s.type === 'book_specs',
@@ -162,7 +166,7 @@ export default function Template3({ page, product }: Props) {
         <div className="mx-auto max-w-3xl px-4 py-10">
           <div className="text-center mb-7">
             <h2 className="text-2xl sm:text-3xl font-extrabold" style={{ color: primary }}>
-              কেন পড়বেন এই বইটি?
+              {whyProductTitle ?? 'কেন পড়বেন এই বইটি?'}
             </h2>
           </div>
           <div className="space-y-3">
@@ -190,7 +194,7 @@ export default function Template3({ page, product }: Props) {
           <div className="mx-auto max-w-3xl px-4">
             <div className="text-center mb-7">
               <h2 className="text-2xl sm:text-3xl font-extrabold" style={{ color: primary }}>
-                কেন আমাদের থেকে কিনবেন?
+                {whyUsTitle ?? 'কেন আমাদের থেকে কিনবেন?'}
               </h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -288,7 +292,7 @@ export default function Template3({ page, product }: Props) {
       {reviewImages.length > 0 && (
         <div className="py-12">
           <div className="mx-auto max-w-3xl px-4">
-            <ReviewsCarousel images={reviewImages} primary={primary} />
+            <ReviewsCarousel images={reviewImages} primary={primary} title={reviewsTitle} />
           </div>
         </div>
       )}

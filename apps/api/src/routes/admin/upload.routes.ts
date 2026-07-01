@@ -46,7 +46,16 @@ const uploadPdf = multer({
 // POST /api/admin/upload — shared image upload, reachable from several feature areas
 router.post(
   '/',
-  requireAnyPermission('products.create', 'categories.create', 'banners.create', 'landing.create'),
+  requireAnyPermission(
+    'products.create',
+    'categories.create',
+    'authors.create',
+    'authors.edit',
+    'publishers.create',
+    'publishers.edit',
+    'banners.create',
+    'landing.create',
+  ),
   upload.single('file'),
   async (req, res, next) => {
     try {
